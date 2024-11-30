@@ -1,7 +1,26 @@
 @extends('layouts.landing_page.app')
 @section('content')
-       <!-- Kontak Start -->
-       <div class="container-xxl py-5">
+    <div class="container-xxl py-5 bg-dark hero-header mb-5">
+        <div class="container my-5 py-5">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 text-center text-lg-start">
+                    <h1 class="display-3 text-white animated slideInLeft">Hubungi Kami</h1>
+                    <p class="text-white animated slideInLeft mb-4 pb-2">
+                        Kami selalu siap membantu Anda! Jika Anda memiliki pertanyaan, masukan, atau ingin melakukan
+                        reservasi,
+                        jangan ragu untuk menghubungi kami. Tim kami akan dengan senang hati memberikan informasi dan
+                        layanan terbaik.
+                    </p>
+                </div>
+                <div class="col-lg-6 text-center text-lg-end overflow-hidden">
+                    <img class="img-fluid" src="{{ asset('asset_landing/img/hero.png') }}" alt="Kontak Kami">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kontak Start -->
+    <div class="container-xxl py-5">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
                 <h5 class="section-title ff-secondary text-center text-primary fw-normal">Hubungi Kami</h5>
