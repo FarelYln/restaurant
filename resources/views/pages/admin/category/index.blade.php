@@ -8,20 +8,33 @@
 </head>
 
 <div class="container mt-5">
-    <h1 class="mb-4">Category List</h1>
+    <div class="card" 
+    style="border-radius: 25px 25px 10px 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <div class="container">
+    <h1 class="mt-5">-- Category List</h1>
 
-    <!-- Form Pencarian -->
-    <form method="GET" action="{{ route('admin.category.index') }}" class="mb-4">
-        <div class="input-group">
-            <input type="text" class="form-control" name="search" placeholder="Search by category name" value="{{ request('search') }}">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="submit">Search</button>
-            </div>
+    <div class="d-flex justify-content-between mb-4">
+    <div class="d-flex justify-content-start mb-4" style="margin-top: 30px;">
+    <!-- Form pencarian di kiri -->
+    <form method="GET" action="{{ route('admin.category.index') }}" class="d-flex">
+        <div class="input-group input-group-md" style="margin-left: 60px;">
+            <input type="text" class="form-control" name="search" placeholder="Cari Berdasarkan Nama" value="{{ request('search') }}">
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
         </div>
     </form>
+</div>
 
-    <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addCategoryModal">Add Category</button>
 
+<div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-outline-primary btn-md mb-2" data-toggle="modal" data-target="#addCategoryModal" style="margin-right: 70px;">
+        <i class="bi bi-plus"></i>
+        </button>
+    </div>
+    </div></div>
+</div>
     <!-- Menampilkan pesan success atau error -->
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -32,24 +45,53 @@
     @endif
 
     <!-- Card Container -->
-    <div class="row">
-        @foreach ($categories as $category)
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $category->nama_kategori }}</h5>
-                        <p class="card-text">Some details about this category...</p>
-                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editCategoryModal" data-id="{{ $category->id }}" data-name="{{ $category->nama_kategori }}">Edit</button>
-                        <form action="{{ route('admin.category.destroy', $category->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
-                    </div>
-                </div>
+    <div class="container mt-4">
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-borderless table-hover align-middle mb-5">
+                    <thead class="bg-light text-muted">
+                        <tr>
+                            <th style=" padding-left:2%;" class="text-center">NO</th>
+                            <th style="padding-left: 15%;">Nama Kategori</th>
+                            <th style="padding-left: 28%;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($categories as $index => $category)
+                            <tr class="border-bottom">
+                                <td class="pc-4 text-center text-muted">{{ $index + 1 }}</td>
+                                <td style="padding-left: 16%;">{{ $category->nama_kategori }}</td>
+                                <td style="padding-left: 25%;">
+                                    <button class="btn btn-sm btn-outline-warning rounded-pill px-3" data-toggle="modal" data-target="#editCategoryModal" 
+                                        data-id="{{ $category->id }}" data-name="{{ $category->nama_kategori }}">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form action="{{ route('admin.category.destroy', $category->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('Are you sure?')">
+                                        <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Tidak ada kategori ditemukan.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-        @endforeach
+        </div>
     </div>
+</div>
+
+
+
+
+
 </div>
 
 <!-- Modal for Adding Category -->
