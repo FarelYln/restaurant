@@ -1,11 +1,6 @@
 @extends('layouts.admin_landing.app')
 
 @section('content')
-<!-- Tambahkan CDNs Bootstrap di bagian <head> jika belum ada -->
-<head>
-    <!-- CDN Bootstrap -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
 
 <div class="container mt-5">
     <div class="card" 
