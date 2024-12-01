@@ -7,7 +7,7 @@
     style="border-radius: 25px 25px 10px 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="container">
-    <h1 class="mt-5">-- list Kategori</h1>
+    <h1 class="mt-5"> List Kategori</h1>
 
     <div class="d-flex justify-content-between mb-4">
     <div class="d-flex justify-content-start mb-4" style="margin-top: 30px;">
