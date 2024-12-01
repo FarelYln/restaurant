@@ -39,6 +39,7 @@
     
         <!-- Main Content -->
         <div class="content">
+            @include('layouts.admin_landing.topbar')
             @yield('content')
         </div>
     </div>
