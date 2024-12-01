@@ -51,3 +51,18 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
+Route::get('/reservasi', function () {
+    return view('pages.user.reservasi.index');
+});
+ 
+Route::get('/profil', function () {
+    return view('pages.user.profile.index');
+});
+
+Route::get('/menu', function () {
+    return view('pages.user.menu.index');
+});
+
+Route::get('/contact', function () {
+    return view('pages.user.contact.index');
+});
