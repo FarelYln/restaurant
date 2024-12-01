@@ -9,16 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        //
+        Schema::create('meja', function (Blueprint $table) {
+            $table->id();
+            $table->integer('nomor_meja')->unique();
+            $table->integer('kapasitas');
+            $table->timestamps();
+        });
     }
+    
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('meja');
     }
 };

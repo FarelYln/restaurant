@@ -5,6 +5,7 @@ use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MejaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -34,6 +35,13 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
     Route::get('/admin/category/{id}/edit', [CategoryController::class, 'edit'])->name('admin.category.edit');
     Route::put('/admin/category/{id}', [CategoryController::class, 'update'])->name('admin.category.update');
     Route::delete('/admin/category/{id}/destroy', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
+
+    Route::get('/admin/meja', [MejaController::class, 'adminIndex'])->name('admin.meja.index');
+    Route::get('/admin/meja/create', [MejaController::class, 'create'])->name('admin.meja.create');
+    Route::post('/admin/meja', [MejaController::class, 'store'])->name('admin.meja.store');
+    Route::get('/admin/meja/{id}/edit', [MejaController::class, 'edit'])->name('admin.meja.edit');
+    Route::put('/admin/meja/{id}', [MejaController::class, 'update'])->name('admin.meja.update');
+    Route::delete('/admin/meja/{id}/destroy', [MejaController::class, 'destroy'])->name('admin.meja.destroy');
 });
 
 
