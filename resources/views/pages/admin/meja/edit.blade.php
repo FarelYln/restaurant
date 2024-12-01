@@ -22,7 +22,18 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
-        
+
+        <div class="mb-3">
+            <label for="status" class="form-label">Status Meja</label>
+            <select name="status" id="status" class="form-control @error('status') is-invalid @enderror">
+                <option value="tersedia" {{ old('status', $meja->status) == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
+                <option value="tidak tersedia" {{ old('status', $meja->status) == 'tidak tersedia' ? 'selected' : '' }}>Tidak Tersedia</option>
+            </select>
+            @error('status')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
         <button type="submit" class="btn btn-success">Update</button>
     </form>
 </div>

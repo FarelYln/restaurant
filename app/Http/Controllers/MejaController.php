@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\meja;
+use App\Models\Meja;
 use Illuminate\Http\Request;
 
 class MejaController extends Controller
@@ -10,7 +10,7 @@ class MejaController extends Controller
     public function adminIndex()
     {
         // Mengambil semua data meja
-        $meja = meja::all();
+        $meja = Meja::all();
         return view('pages.admin.meja.index', compact('meja'));
     }
 
@@ -25,9 +25,10 @@ class MejaController extends Controller
         $request->validate([
             'nomor_meja' => 'required|integer|unique:meja,nomor_meja',
             'kapasitas' => 'required|integer|min:1', // Kapasitas minimal 1
+            'status' => 'required|in:tersedia,tidak tersedia', // Validasi status meja
         ]);
 
-        // Menyimpan data meja baru
+        // Menyimpan data meja baru, termasuk status
         Meja::create($request->all());
 
         // Mengarahkan ke halaman index dengan pesan sukses
@@ -37,29 +38,29 @@ class MejaController extends Controller
     public function edit($id)
     {
         // Menampilkan form edit dengan data meja yang sesuai
-        $meja = meja::findOrFail($id);
+        $meja = Meja::findOrFail($id);
         return view('pages.admin.meja.edit', compact('meja'));
     }
 
     public function update(Request $request, $id)
     {
-    // Cek ID yang diterima
+        // Validasi input untuk update
         $request->validate([
-            'nomor_meja' => 'required|integer|unique:meja,nomor_meja,',
+            'nomor_meja' => 'required|integer|unique:meja,nomor_meja,' . $id,
             'kapasitas' => 'required|integer|min:1',
+            'status' => 'required|in:tersedia,tidak tersedia', // Validasi status meja
         ]);
-    
-        $meja = meja::findOrFail($id); // Menemukan meja berdasarkan ID
+
+        $meja = Meja::findOrFail($id); // Menemukan meja berdasarkan ID
         $meja->update($request->all()); // Memperbarui meja
-    
+
         return redirect()->route('admin.meja.index')->with('success', 'Meja berhasil diperbarui.');
     }
-    
-    
 
-    public function destroy(Meja $meja)
+    public function destroy($id)
     {
         // Menghapus data meja yang dipilih
+        $meja = Meja::findOrFail($id);
         $meja->delete();
 
         // Mengarahkan kembali ke halaman index dengan pesan sukses

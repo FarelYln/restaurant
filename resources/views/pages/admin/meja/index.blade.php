@@ -15,6 +15,7 @@
                 <th>#</th>
                 <th>Nomor Meja</th>
                 <th>Kapasitas</th>
+                <th>Status</th> <!-- Menambahkan kolom status -->
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -24,6 +25,12 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->nomor_meja }}</td>
                     <td>{{ $item->kapasitas }}</td>
+                    <td>
+                        <!-- Menampilkan status meja -->
+                        <span class="badge {{ $item->status == 'tersedia' ? 'bg-success' : 'bg-danger' }}">
+                            {{ ucfirst($item->status) }}
+                        </span>
+                    </td>
                     <td>
                         <a href="{{ route('admin.meja.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('admin.meja.destroy', $item->id) }}" method="POST" class="d-inline">

@@ -14,5 +14,6 @@ class meja extends Model
     protected $fillable = [
         'nomor_meja',
         'kapasitas',
+        'status'
     ];
 }

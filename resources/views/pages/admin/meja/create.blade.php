@@ -19,6 +19,10 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+
+        <!-- Menambahkan input status yang tersembunyi (hidden) -->
+        <input type="hidden" name="status" value="tersedia">
+
         <button type="submit" class="btn btn-success">Simpan</button>
     </form>
 </div>
