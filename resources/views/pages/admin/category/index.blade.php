@@ -12,14 +12,23 @@
     style="border-radius: 25px 25px 10px 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <div class="container">
-    <h1 class="mt-5">-- Category List</h1>
+    <h1 class="mt-5">-- list Kategori</h1>
 
     <div class="d-flex justify-content-between mb-4">
     <div class="d-flex justify-content-start mb-4" style="margin-top: 30px;">
     <!-- Form pencarian di kiri -->
-    <form method="GET" action="{{ route('admin.category.index') }}" class="d-flex">
-        <div class="input-group input-group-md" style="margin-left: 60px;">
-            <input type="text" class="form-control" name="search" placeholder="Cari Berdasarkan Nama" value="{{ request('search') }}">
+    <form 
+        method="GET" 
+        action="{{ route('admin.category.index') }}" 
+        class="d-flex"
+        style="position: absolute; bottom: 10px; left: 10px; width: auto;">
+        <div class="input-group input-group-md" style="width: 250px;">
+            <input 
+                type="text" 
+                class="form-control" 
+                name="search" 
+                placeholder="Cari Berdasarkan Nama" 
+                value="{{ request('search') }}">
             <button class="btn btn-outline-primary" type="submit">
                 <i class="bi bi-search"></i>
             </button>
@@ -29,11 +38,16 @@
 
 
 <div class="d-flex justify-content-end mb-3">
-        <button class="btn btn-outline-primary btn-md mb-2" data-toggle="modal" data-target="#addCategoryModal" style="margin-right: 70px;">
+<button 
+        class="btn btn-primary btn-md" 
+        data-toggle="modal" 
+        data-target="#addCategoryModal" 
+        style="position: absolute; bottom: 10px; right: 10px;">
         <i class="bi bi-plus"></i>
-        </button>
+    </button>
     </div>
-    </div></div>
+    </div>
+</div>
 </div>
     <!-- Menampilkan pesan success atau error -->
     @if (session('success'))
