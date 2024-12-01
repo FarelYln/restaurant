@@ -17,6 +17,6 @@ class Category extends Model
     // Relasi ke tabel menu
     public function menus()
     {
-        return $this->hasMany(Menu::class, 'id_category', 'id');
+        return $this->belongsToMany(Menu::class, 'category_menu', 'category_id', 'menu_id');
     }
 }

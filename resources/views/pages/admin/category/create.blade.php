@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h1>Add Category</h1>
-    <form action="{{ route('category.store') }}" method="POST">
+    <form action="{{ route('admin.category.store') }}" method="POST">
         @csrf
         <div class="form-group">
             <label for="nama_kategori">Category Name</label>

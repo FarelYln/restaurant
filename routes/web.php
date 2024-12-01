@@ -37,8 +37,8 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
 });
 
 
-Route::middleware('auth')->get('/dashboard', function () {
-    return view('dashboard'); // Halaman dashboard
+Route::middleware('auth')->get('/', function () {
+    return view('welcome'); // Halaman dashboard
 })->name('dashboard');
 
 
