@@ -21,4 +21,11 @@ class menu extends Model
     {
         return $this->belongsToMany(Category::class, 'category_menu', 'menu_id', 'category_id');
     }
+
+    public function reservasis()
+    {
+        return $this->belongsToMany(Reservasi::class, 'reservasi_menu', 'id_menu', 'id_reservasi')
+            ->withPivot('jumlah_pesanan')
+            ->withTimestamps();
+    }
 }

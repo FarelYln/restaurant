@@ -4,8 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MejaController;
+use App\Http\Controllers\ReservasiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -45,9 +47,6 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
 });
 
 
-Route::middleware('auth')->get('/', function () {
-    return view('welcome'); // Halaman dashboard
-})->name('dashboard');
 
 
 
@@ -55,14 +54,34 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/reservasi', [ReservasiController::class, 'index'])->name('user.reservasi.index');
+
+    // Rute untuk menampilkan form pembuatan reservasi
+    Route::get('/reservasi/create', [ReservasiController::class, 'create'])->name('user.reservasi.create');
+
+    // Rute untuk menyimpan data reservasi
+    Route::post('/reservasi', [ReservasiController::class, 'store'])->name('user.reservasi.store');
+    Route::get('/reservasi/{id}', [ReservasiController::class, 'show'])->name('user.reservasi.show');
+    Route::get('/reservasi/{id}/edit', [ReservasiController::class, 'edit'])->name('user.reservasi.edit');
+    Route::put('/reservasi/{id}', [ReservasiController::class, 'update'])->name('user.reservasi.update');
+    Route::delete('/reservasi/{id}', [ReservasiController::class, 'destroy'])->name('user.reservasi.destroy');
+    Route::get('/cancel/{reservasi}', [ReservasiController::class, 'cancel'])->name('user.reservasi.cancel');
+    Route::get('/reservasi/{reservasi}/remaining-time', [ReservasiController::class, 'getRemainingTime'])
+        ->name('user.reservasi.remaining-time ');
+        Route::get('/reservasi/{reservasi}/payment', 
+        [PaymentController::class, 'showPaymentPage'])
+        ->name('user.reservasi.payment');
+    
+    Route::post('/reservasi/{reservasi}/payment', 
+        [PaymentController::class, 'processPayment'])
+        ->name('user.reservasi.payment.process');
+        Route::get('/reservasi/{reservasi}/prevent-auto-cancel', 
+    [ReservasiController::class, 'preventAutoCancel'])
+    ->name('user.reservasi.prevent-auto-cancel');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
-Route::get('/reservasi', function () {
-    return view('pages.user.reservasi.index');
-});
- 
 Route::get('/profil', function () {
     return view('pages.user.profile.index');
 });
