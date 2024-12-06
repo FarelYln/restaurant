@@ -25,13 +25,13 @@
                         class="nav-item nav-link {{ Request::is('admin/category') ? 'active' : '' }}">
                         <i class="fa fa-list me-2"></i>Kategori
                     </a>
-                    <a href="form.html" class="nav-item nav-link">
+                    <a href="/admin/menu" class="nav-item nav-link {{ Request::is('admin/menu') ? 'active' : '' }}">
                         <i class="fa fa-utensils me-2"></i>Menu
                     </a>                    
-                    <a href="table.html" class="nav-item nav-link">
+                    <a href="/admin/reservasi" class="nav-item nav-link {{ Request::is('admin/reservasi') ? 'active' : '' }}">
                         <i class="fa fa-calendar-alt me-2"></i>Reservasi
                     </a>
-                    <a href="chart.html" class="nav-item nav-link">
+                    <a href="/admin/pembayaran" class="nav-item nav-link {{ Request::is('admin/pembayaran') ? 'active' : '' }}">
                         <i class="fa fa-credit-card me-2"></i>Pembayaran
                     </a>
 
