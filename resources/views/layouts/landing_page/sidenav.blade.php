@@ -11,7 +11,7 @@
                 
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0 pe-4">
-                        <a href="/dashboard" class="nav-item nav-link {{ request()->is('dashboard') ? 'active' : '' }}">Beranda</a>
+                        <a href="/" class="nav-item nav-link {{ request()->is('dashboard') ? 'active' : '' }}">Beranda</a>
                         <a href="/menu" class="nav-item nav-link {{ request()->is('menu') ? 'active' : '' }}">Menu</a>
                         <a href="/profil" class="nav-item nav-link {{ request()->is('profil') ? 'active' : '' }}">Profil</a>
                         <a href="/reservasi" class="nav-item nav-link {{ request()->is('service.html') ? 'active' : '' }}">Reservasi</a>
