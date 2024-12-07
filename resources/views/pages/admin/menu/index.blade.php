@@ -174,12 +174,6 @@
             <a href="{{ route('admin.menu.create') }}" class="btn btn-primary">Add New Menu</a>
         </div>
     </div>
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
     <!-- Menu Grid -->
     <div class="menu-grid">
         @forelse($menus as $index => $menu)
@@ -208,4 +202,5 @@
         @endforelse
     </div>
 </div>
+
 @endsection

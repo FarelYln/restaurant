@@ -37,7 +37,7 @@ class CategoryController extends Controller
         Category::create($request->all());
     
         // Redirect with success message
-        return redirect()->route('admin.category.index')->with('success', 'Category added successfully.');
+        return redirect()->route('admin.category.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
     
 
@@ -57,7 +57,7 @@ class CategoryController extends Controller
 
         $category = Category::findOrFail($id);
         $category->update($request->all());
-        return redirect()->route('admin.category.index')->with('success', 'Category updated successfully.');
+        return redirect()->route('admin.category.index')->with('success', 'Kategori berhasil diubah.');
 
     }
 
@@ -65,7 +65,7 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         $category->delete();
-        return redirect()->route('admin.category.index')->with('success', 'Category deleted successfully.');
+        return redirect()->route('admin.category.index')->with('success', 'Kategori berhasil dihapus.');
 
     }
 }

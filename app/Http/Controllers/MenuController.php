@@ -76,7 +76,7 @@ class MenuController extends Controller
         // Attach kategori ke menu
         $menu->categories()->attach($validatedData['category_ids']);
 
-        return redirect()->route('admin.menu.index')->with('success', 'Menu created successfully!');
+        return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil ditambahkan!');
     }
 
     /**
@@ -155,7 +155,7 @@ class MenuController extends Controller
         // Sync kategori dengan menu
         $menu->categories()->sync($validatedData['category_ids']);
 
-        return redirect()->route('admin.menu.index')->with('success', 'Menu updated successfully!');
+        return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil diperbarui!');
     }
 
     /**
@@ -176,6 +176,6 @@ class MenuController extends Controller
         // Hapus data menu
         $menu->delete();
 
-        return redirect()->route('admin.menu.index')->with('success', 'Menu deleted successfully!');
+        return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil dihapus!');
     }
 }
