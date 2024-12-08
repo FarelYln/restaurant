@@ -185,21 +185,21 @@
         <div class="header-card">
             <div class="header">
                 <h1 class="title">List Menu</h1>
-                <a href="{{ route('admin.menu.create') }}" class="btn btn-primary">Add New Menu</a>
+                <a href="{{ route('admin.menu.create') }}" class="btn btn-primary">Tambah Menu</a>
             </div>
             <form method="GET" action="{{ route('admin.menu.index') }}" class="form-inline">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name"
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Berdasarkan Nama..."
                     class="form-control">
                 <select name="category_id" class="form-control">
-                    <option value="">Select Category</option>
+                    <option value="">Pilih Kategori</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
                             {{ $category->nama_kategori }}</option>
                     @endforeach
                 </select>
-                <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min Price"
+                <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Harga Minimal"
                     class="form-control">
-                <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max Price"
+                <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Harga Maksimal"
                     class="form-control">
                 <button type="submit" class="btn btn-primary">Filter</button>
             </form>
@@ -231,7 +231,7 @@
                     </div>
                 </div>
             @empty
-                <p class="no-menu">No menu found</p>
+                <p class="no-menu">Tidak ada menu </p>
             @endforelse
         </div>
         <div class="mt-3">
