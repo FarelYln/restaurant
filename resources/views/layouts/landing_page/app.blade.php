@@ -30,6 +30,8 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('asset_landing/css/style.css') }}" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>

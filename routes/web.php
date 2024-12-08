@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
-use App\Http\Controllers\UlasanController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MejaController;
@@ -19,14 +18,14 @@ Route::get('/', function () {
 
 // Rute untuk admin
 Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('pages.admin.dashboard'); // Halaman Dashboard
-    })->name('dashboard');
+    Route::get('/admin', function () {
+        return view('pages.admin.dashboard'); // Halaman Admin
+    })->name('admin.dashboard');
+
     // Routes untuk Menu
     Route::get('/admin/menu', [MenuController::class, 'adminIndex'])->name('admin.menu.index');
     Route::get('/admin/menu/create', [MenuController::class, 'create'])->name('admin.menu.create');
     Route::post('/admin/menu', [MenuController::class, 'store'])->name('admin.menu.store');
-    Route::get('/admin/menu/{id}', [MenuController::class, 'show'])->name('admin.menu.show');
     Route::get('/admin/menu/{id}/edit', [MenuController::class, 'edit'])->name('admin.menu.edit');
     Route::put('/admin/menu/{id}', [MenuController::class, 'update'])->name('admin.menu.update');
     Route::delete('/admin/menu/{id}', [MenuController::class, 'destroy'])->name('admin.menu.destroy');
@@ -52,19 +51,6 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
 
 
 Route::middleware('auth')->group(function () {
-
-    Route::post('/reservasi/{reservasi}/konfirmasi', [
-        'uses' => 'ReservasiController@konfirmasiReservasi',
-        'as' => 'user.reservasi.konfirmasi'
-    ]);
-
-    Route::get('/payment/{payment}/nota', 'PaymentController@showNota')->name('payment.nota');
-Route::get('/payment/{payment}/cetak', 'PaymentController@cetakNota')->name('payment.cetak');
-
-Route::post('/ulasans', [UlasanController::class, 'store'])->name('ulasans.store');
-
-Route::get('/menu/{id}', [MenuController::class, 'usershow'])->name('user.menu.show');
-
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -80,7 +66,8 @@ Route::get('/menu/{id}', [MenuController::class, 'usershow'])->name('user.menu.s
     Route::put('/reservasi/{id}', [ReservasiController::class, 'update'])->name('user.reservasi.update');
     Route::delete('/reservasi/{id}', [ReservasiController::class, 'destroy'])->name('user.reservasi.destroy');
     Route::get('/cancel/{reservasi}', [ReservasiController::class, 'cancel'])->name('user.reservasi.cancel');
-    Route::get('/reservasi/{id}/remaining-time', [ReservasiController::class, 'getRemainingTime']);
+    Route::get('/reservasi/{reservasi}/remaining-time', [ReservasiController::class, 'getRemainingTime'])
+        ->name('user.reservasi.remaining-time ');
         Route::get('/reservasi/{reservasi}/payment', 
         [PaymentController::class, 'showPaymentPage'])
         ->name('user.reservasi.payment');
@@ -99,7 +86,9 @@ Route::get('/profil', function () {
     return view('pages.user.profile.index');
 });
 
-Route::get('/menu', [MenuController::class, 'index'])->name('menus.index');
+Route::get('/menu', function () {
+    return view('pages.user.menu.index');
+});
 
 Route::get('/contact', function () {
     return view('pages.user.contact.index');

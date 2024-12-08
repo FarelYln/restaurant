@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reservasi;
 use App\Models\Meja;
 use App\Models\Menu;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Payment;
+use App\Models\Reservasi;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ReservasiController extends Controller
 {
@@ -27,7 +27,23 @@ class ReservasiController extends Controller
             return $reservasi;
         });
 
-        return view('pages.user.reservasi.index', compact('reservasis'));
+        $totalReservasi = Reservasi::count();
+
+        // Reservasi hari ini
+        $reservasiHariIni = Reservasi::whereDate('created_at', Carbon::today())->count();
+
+        // Reservasi minggu ini
+        $reservasiMingguIni = Reservasi::whereBetween('created_at', [
+            Carbon::now()->startOfWeek(),
+            Carbon::now()->endOfWeek(),
+        ])->count();
+
+        // Reservasi bulan ini
+        $reservasiBulanIni = Reservasi::whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
+
+        return view('pages.user.reservasi.index', compact('reservasis', 'totalReservasi', 'reservasiHariIni', 'reservasiMingguIni', 'reservasiBulanIni'));
     }
 
     public function create()
@@ -315,4 +331,29 @@ class ReservasiController extends Controller
 
         return response()->json(['status' => 'invalid']);
     }
+
+    public function chart()
+{
+    $reservasiPerBulan = Reservasi::selectRaw('MONTH(created_at) as bulan, COUNT(*) as jumlah')
+        ->groupBy('bulan')
+        ->orderBy('bulan')
+        ->get();
+
+    if ($reservasiPerBulan->isEmpty()) {
+        // Data kosong
+        $dataKosong = true;
+        $labels = [];
+        $data = [];
+    } else {
+        // Data ada
+        $dataKosong = false;
+        $labels = $reservasiPerBulan->pluck('bulan')->map(function ($bulan) {
+            return date('F', mktime(0, 0, 0, $bulan, 1)); // Nama bulan
+        })->toArray();
+        $data = $reservasiPerBulan->pluck('jumlah')->toArray();
+    }
+
+    return view('pages.admin.dashboard', compact('labels', 'data', 'dataKosong'));
+}
+
 }
