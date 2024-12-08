@@ -1,81 +1,84 @@
 @extends('layouts.admin_landing.app')
 
 @section('content')
-<style>
- .star-rating {
-    display: inline-flex;
-    direction: ltr; /* Bintang dari kiri ke kanan */
-    font-size: 1.5rem;
-}
+    <style>
+        .star-rating {
+            display: inline-flex;
+            direction: rtl;
+            font-size: 1.5rem;
+        }
 
-.star-rating input {
-    display: none;
-}
+        .star-rating input {
+            display: none;
+        }
 
-.star-rating label {
-    color: lightgray; /* Warna bintang default */
-    cursor: pointer;
-}
+        .star-rating label {
+            color: lightgray;
+            cursor: pointer;
+        }
 
-/* Atur bintang saat dipilih */
-.star-rating input:checked ~ label {
-    color: gold; /* Warna kuning untuk bintang yang dipilih */
-}
+        .star-rating input:checked~label {
+            color: gold;
+        }
 
-/* Atur bintang saat dihover */
-.star-rating label:hover,
-.star-rating label:hover ~ label {
-    color: gold; /* Warna kuning saat hover */
-}
+        .star-rating label:hover,
+        .star-rating label:hover~label {
+            color: gold;
+        }
 
-/* Atur bintang yang sudah dipilih dan saat dihover */
-.star-rating input:checked + label,
-.star-rating input:checked + label ~ label {
-    color: gold; /* Warna kuning untuk bintang yang dipilih */
-}
+        .star-rating input:checked+label,
+        .star-rating input:checked+label~label {
+            color: gold;
+        }
 
-/* Gradasi untuk kartu ulasan */
-.card-review:nth-child(1) {
-    background: linear-gradient(to right, #67cffc, #ffffff);
-    color: #333;
-}
+        /* Gradasi untuk kartu ulasan */
+        .card-review:nth-child(1) {
+            background: linear-gradient(to right, #ffffff, #b6def7);
+            color: #333;
+        }
 
-.card-review:nth-child(2) {
-    background: linear-gradient(to right, #a18cd1, #fbc2eb);
-    color: #333;
-}
+        .card-review:nth-child(2) {
+            background: linear-gradient(to right, #a18cd1, #fbc2eb);
+            color: #333;
+        }
 
-.card-review:nth-child(3) {
-    background: linear-gradient(to right, #fbc2eb, #a6c1ee);
-    color: #333;
-}
+        .card-review:nth-child(3) {
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+            color: #333;
+        }
 
-.card-review:nth-child(4) {
-    background: linear-gradient(to right, #84fab0, #8fd3f4);
-    color: #333;
-}
+        .card-review:nth-child(4) {
+            background: linear-gradient(to right, #84fab0, #8fd3f4);
+            color: #333;
+        }
 
-.card-review:nth-child(5) {
-    background: linear-gradient(to right, #8fd3f4, #a1c4fd);
-    color: #333;
-}
-
-/* Tambahan gaya untuk semua kartu ulasan */
-.card-review {
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease;
-}
-
-.card-review:hover {
-    transform: scale(1.05);
-   
-}
+        .card-review:nth-child(5) {
+            background: linear-gradient(to right, #8fd3f4, #a1c4fd);
+            color: #333;
+        }
 
 
-</style>
+        .card-review {
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+            font-size: 0.9rem;
+        }
 
+        .card-review:hover {
+            transform: scale(1.05);
+        }
+
+        .star {
+            font-size: 20px;
+            color: lightgray;
+        }
+
+        .star.filled {
+            color: gold;
+        }
+    </style>
 
     <div class="container">
         <!-- Header -->
@@ -128,15 +131,21 @@
                 @else
                     <div class="row">
                         @foreach ($menu->ulasans as $ulasan)
-                        <div class="col-md-6">
-                            <div class="card card-review shadow border-0">
-                                <div class="card-body">
-                                    <h6><strong>{{ $ulasan->user->name }}</strong> - {{ $ulasan->rating }} Bintang</h6>
-                                    <p>{{ $ulasan->description }}</p>
+                            <div class="col-md-6">
+                                <div class="card card-review shadow border-0">
+                                    <div class="card-body">
+                                        <h6><strong>{{ $ulasan->user->name }}</strong></h6>
+                                        <!-- Rating bintang di bawah nama pengguna -->
+                                        <div class="star-rating mb-3">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <span class="star {{ $i <= $ulasan->rating ? 'filled' : '' }}">★</span>
+                                            @endfor
+                                        </div>
+                                        <p>{{ $ulasan->description }}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach                    
+                        @endforeach
                     </div>
                 @endif
 
@@ -150,12 +159,12 @@
                         <label for="rating" class="form-label">Rating:</label>
                         <div class="star-rating">
                             @for ($i = 1; $i <= 5; $i++)
-                                <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}" required>
+                                <input type="radio" id="star{{ $i }}" name="rating"
+                                    value="{{ $i }}" required>
                                 <label for="star{{ $i }}" title="{{ $i }} Bintang">&#9733;</label>
                             @endfor
                         </div>
                     </div>
-                    
 
                     <div class="mb-3">
                         <label for="description" class="form-label">Deskripsi:</label>
@@ -163,34 +172,9 @@
                             placeholder="Tulis ulasan Anda di sini..."></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary ">Kirim Ulasan</button>
+                    <button type="submit" class="btn btn-primary">Kirim Ulasan</button>
                 </form>
-
-                <style>
-                    .star {
-                        font-size: 20px;
-                        color: lightgray;
-                    }
-
-                    .star.filled {
-                        color: gold;
-                    }
-
-                    .badge {
-                        margin-right: 5px;
-                    }
-
-                    .form-select,
-                    .form-control {
-                        border-radius: 5px;
-                    }
-
-                    .btn-success {
-                        font-weight: bold;
-                    }
-
-                    .object-fit-cover {
-                        object-fit: cover;
-                    }
-                </style>
-            @endsection
+            </div>
+        </div>
+    </div>
+@endsection
