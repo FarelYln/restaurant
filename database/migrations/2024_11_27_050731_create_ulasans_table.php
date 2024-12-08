@@ -6,21 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('ulasans', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_user'); // Foreign key ke tabel users
+            $table->enum('rating', [1, 2, 3, 4, 5]); // Rating antara 1-5
+            $table->text('description')->nullable(); // Deskripsi ulasan
             $table->timestamps();
+
+            // Menambahkan foreign key constraint
+            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('ulasans');
     }

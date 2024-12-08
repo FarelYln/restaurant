@@ -64,8 +64,13 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
-        $category->delete();
-        return redirect()->route('admin.category.index')->with('success', 'Kategori berhasil dihapus.');
-
+        
+        try {
+            $category->delete();
+            return redirect()->route('admin.category.index')->with('success', 'Kategori berhasil dihapus.');
+        } catch (\Exception $e) {
+            // Jika terjadi kesalahan, misalnya karena foreign key constraint
+            return redirect()->route('admin.category.index')->with('error', 'Kategori tidak dapat dihapus karena masih digunakan.');
+        }
     }
 }

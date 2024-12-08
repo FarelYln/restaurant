@@ -166,6 +166,19 @@
     }
 
 </style>
+<style>
+    .form-inline {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.form-control {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+</style>
 <div class="container">
     <!-- Header Card -->
     <div class="header-card">
@@ -173,34 +186,53 @@
             <h1 class="title">List Menu</h1>
             <a href="{{ route('admin.menu.create') }}" class="btn btn-primary">Add New Menu</a>
         </div>
+        <form method="GET" action="{{ route('admin.menu.index') }}" class="form-inline">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name" class="form-control">
+            <select name="category_id" class="form-control">
+                <option value="">Select Category</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->nama_kategori }}</option>
+                @endforeach
+            </select>
+            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min Price" class="form-control">
+            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max Price" class="form-control">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
     </div>
     <!-- Menu Grid -->
     <div class="menu-grid">
         @forelse($menus as $index => $menu)
-            <div class="card">
+        <div class="card">
+            <a href="{{ route('admin.menu.show', $menu->id) }}">
                 <img src="{{ asset('storage/' . $menu->image) }}" alt="{{ $menu->nama_menu }}" class="card-img">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $menu->nama_menu }}</h5>
-                    <p class="card-price">Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
-                    <div class="card-categories">
-                        @foreach($menu->categories as $category)
-                            <span class="badge">{{ $category->nama_kategori }}</span>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-edit">Edit</a>
-                    <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-delete">Delete</button>
-                    </form>
+            </a>
+            <div class="card-body">
+                <h5 class="card-title">{{ $menu->nama_menu }}</h5>
+                <p class="card-price">Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
+                <div class="card-categories">
+                    @foreach($menu->categories as $category)
+                        <span class="badge">{{ $category->nama_kategori }}</span>
+                    @endforeach
                 </div>
             </div>
+            <div class="card-footer">
+                <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-edit">Edit</a>
+                <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Are you sure?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
+            </div>
+        </div>
         @empty
             <p class="no-menu">No menu found</p>
         @endforelse
     </div>
+    <!-- Paginasi -->
+    <div class="pagination">
+        {{ $menus->links() }}
+    </div>
 </div>
-
 @endsection
+
+

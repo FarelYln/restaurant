@@ -12,10 +12,33 @@ class MenuController extends Controller
     /**
      * Display a listing of the menus.
      */
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        $menus = Menu::with('categories')->get();
-        return view('pages.admin.menu.index', compact('menus'));
+        $search = $request->input('search');
+        $categoryFilter = $request->input('category_id');
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+    
+        $menus = Menu::with('categories')
+            ->when($search, function ($query, $search) {
+                return $query->where('nama_menu', 'like', '%' . $search . '%');
+            })
+            ->when($categoryFilter, function ($query, $categoryFilter) {
+                return $query->whereHas('categories', function ($q) use ($categoryFilter) {
+                    $q->where('categories.id', $categoryFilter); // Spesifikasikan tabel 'categories'
+                });
+            })
+            ->when($minPrice, function ($query, $minPrice) {
+                return $query->where('harga', '>=', $minPrice);
+            })
+            ->when($maxPrice, function ($query, $maxPrice) {
+                return $query->where('harga', '<=', $maxPrice);
+            })
+            ->paginate(5); // Paginasi 10 item per halaman
+    
+        $categories = Category::all(); // Ambil semua kategori untuk filter
+    
+        return view('pages.admin.menu.index', compact('menus', 'categories', 'search', 'categoryFilter', 'minPrice', 'maxPrice'));
     }
 
     /**
@@ -79,14 +102,14 @@ class MenuController extends Controller
         return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified menu.
-     */
-    public function show($id)
-    {
-        $menu = Menu::with('categories')->findOrFail($id);
-        return view('menu.show', compact('menu'));
-    }
+   /**
+ * Display the specified menu.
+ */
+public function show($id)
+{
+    $menu = Menu::with('categories')->findOrFail($id);
+    return view('pages.admin.menu.show', compact('menu'));
+}
 
     /**
      * Show the form for editing the specified menu.
