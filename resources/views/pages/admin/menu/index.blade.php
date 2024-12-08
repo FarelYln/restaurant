@@ -158,7 +158,7 @@
 
         .btn-delete:hover {
             background-color: #dc3545;
-            color: #fff;
+            color: #ff0000;
         }
 
         .no-menu {
