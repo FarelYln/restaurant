@@ -16,7 +16,7 @@
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="fa fa-envelope me-lg-2"></i>
-                        <span class="d-none d-lg-inline-flex">Message</span>
+                        <span class="d-none d-lg-inline-flex">Pesan</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                         <a href="#" class="dropdown-item">
@@ -55,7 +55,7 @@
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="fa fa-bell me-lg-2"></i>
-                        <span class="d-none d-lg-inline-flex">Notificatin</span>
+                        <span class="d-none d-lg-inline-flex">Notifikasi</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                         <a href="#" class="dropdown-item">
@@ -82,7 +82,7 @@
                         <span class="d-none d-lg-inline-flex">John Doe</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                        <a href="#" class="dropdown-item">My Profile</a>
+                        <a href="" class="dropdown-item">My Profile</a>
                         <a href="#" class="dropdown-item">Settings</a>
                         <a href="#" class="dropdown-item">Log Out</a>
                     </div>

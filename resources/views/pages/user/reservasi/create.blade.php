@@ -2,8 +2,23 @@
 
 @section('content')
 
-
+    <div class="container-xxl py-5 bg-dark hero-header mb-5">
+        <div class="container my-5 py-5 text-center">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Reservasi</h1>
+            <p class="text-white-50 mb-4">
+                Pesan reservasi untuk pengalaman bersantap yang nyaman dan terorganisir.
+                Pilih meja favorit Anda dan nikmati layanan terbaik kami.
+            </p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center text-uppercase">
+                    <li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Reservasi</li>
+                </ol>
+            </nav>
+        </div>
     </div>
+
+
     <div class="container">
         <h1>Buat Reservasi</h1>
 

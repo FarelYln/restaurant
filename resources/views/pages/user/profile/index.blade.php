@@ -1,22 +1,17 @@
 @extends('layouts.landing_page.app')
 @section('content')
     <div class="container-xxl py-5 bg-dark hero-header mb-5">
-        <div class="container my-5 py-5">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-6 text-center text-lg-start">
-                    <h1 class="display-3 text-white animated slideInLeft">Tentang Restoran Kami</h1>
-                    <p class="text-white animated slideInLeft mb-4 pb-2">
-                        Kami adalah restoran yang berdedikasi menghadirkan pengalaman kuliner terbaik. Dengan resep
-                        istimewa dan bahan berkualitas, kami mengutamakan kepuasan pelanggan dalam setiap sajian.
-                        Jelajahi sejarah kami dan temukan apa yang membuat kami menjadi pilihan favorit Anda.
-                    </p>
-                    <a href="#tentang-kami" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Pelajari Lebih
-                        Lanjut</a>
-                </div>
-                <div class="col-lg-6 text-center text-lg-end overflow-hidden">
-                    <img class="img-fluid" src="{{ asset('asset_landing/img/hero.png') }}" alt="Profil Restoran">
-                </div>
-            </div>
+        <div class="container my-5 py-5 text-center">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Profil</h1>
+            <p class="text-white-50 mb-4">
+                Kelola informasi profil Anda untuk pengalaman yang lebih personal.
+            </p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center text-uppercase">
+                    <li class="breadcrumb-item"><a href="/" class="text-white-50">Home</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Profil</li>
+                </ol>
+            </nav>
         </div>
     </div>
     <!-- About Start -->

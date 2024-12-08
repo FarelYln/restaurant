@@ -113,7 +113,7 @@
                 <label for="image" class="form-label mt-4">Gambar</label>
                 <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*" onchange="previewImage(event)">
                 @error('image')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">Gambar wajib diunggah.</div>
                 @enderror
                 <div class="mt-3">
                     <img id="imagePreview" src="#" alt="Preview" class="image-preview">
@@ -123,17 +123,17 @@
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="nama_menu" class="form-label">Halaman Nama Menu</label>
+                <label for="nama_menu" class="form-label">Nama Menu</label>
                 <input type="text" class="form-control @error('nama_menu') is-invalid @enderror" id="nama_menu" name="nama_menu" value="{{ old('nama_menu') }}">
                 @error('nama_menu')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">Nama menu wajib diisi.</div>
                 @enderror
             </div>
             <div class="col-md-6">
                 <label for="harga" class="form-label">Harga</label>
                 <input type="number" class="form-control @error('harga') is-invalid @enderror" id="harga" name="harga" step="0.01" value="{{ old('harga') }}">
                 @error('harga')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">Harga wajib diisi .</div>
                 @enderror
             </div>
         </div>
@@ -150,7 +150,7 @@
                     @endforeach
                 </div>
                 @error('category_ids')
-                    <div class="text-danger">{{ $message }}</div>
+                <div class="text-danger">Setidaknya satu kategori harus dipilih.</div>
                 @enderror
             </div>
         </div>
@@ -167,9 +167,16 @@
 
         <div class="row">
             <div class="col-md-12 text-end">
-                <button type="submit" class="btn btn-success">Tambah</button>
+                <a href="/admin/menu" class="btn btn-warning text-white">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>                
+                <button type="submit" class="btn btn-primary">
+                   Tambah <i class="bi bi-send"></i> 
+                </button>                
             </div>
         </div>
+        
+        
     </form>
 </div>
 

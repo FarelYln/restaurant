@@ -2,168 +2,165 @@
 
 @section('content')
 <style>
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: Arial, sans-serif;
-    }
+   .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
 
-    /* Header Card */
-    .header-card {
-        background-color: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-    }
+/* Header Card */
+.header-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
 
-    .header-card .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.header-card .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    .title {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #333;
-    }
+.title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
 
-    .btn {
-        padding: 10px 20px;
-        text-decoration: none;
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
+.btn {
+    padding: 10px 20px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-    .btn-primary {
-        background-color: #007bff;
-        color: #fff;
-    }
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
 
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
+.btn-primary:hover {
+    background-color: #0056b3;
+}
 
-    /* Menu Grid */
-    .menu-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); /* Tiga kolom untuk tampilan standar */
-        gap: 20px;
-        margin-top: 20px;
-    }
+/* Menu Grid */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Tiga kolom untuk tampilan standar */
+    gap: 10 px; /* Kurangi jarak antar kartu */
+    margin-top: 20px;
+}
 
-    /* Menampilkan postingan ke-4 dan seterusnya di bawah */
-    .menu-grid > .card:nth-child(n+4) {
-        grid-column: span 1; /* Elemen ke-4 dan seterusnya tetap di baris kedua */
-    }
+/* Card Style */
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    text-align: center;
+    padding: 10px 5px; /* Kurangi padding samping */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Sesuaikan lebar kartu */
+    max-width: 300px; /* Batasan lebar maksimum */
+    margin: 0; /* Hapus margin untuk menghindari jarak tambahan */
+}
+.card:hover {
+    transform: translateY(-5px);
+}
 
-    /* Card Style */
-    .card-img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        margin: 10px auto;
-        border-radius: 8px;
-    }
+.card-img {
+    width: 100%;
+    height: 170px; /* Sesuaikan tinggi gambar */
+    object-fit: cover;
+    margin: 5px auto; /* Kurangi margin */
+    border-radius: 8px;
+}
 
-    .card {
-        background-color: #fff;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s;
-        text-align: center;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+.card-body {
+    padding: 5px; /* Kurangi padding */
+}
 
-    .card:hover {
-        transform: translateY(-5px);
-    }
+.card-title {
+    font-size: 1rem; /* Kurangi ukuran font */
+    font-weight: bold;
+    color: #333;
+}
 
-    .card-body {
-        padding: 15px;
-    }
+.card-price {
+    font-size: 0.9rem; /* Kurangi ukuran font */
+    color: #666;
+    margin: 5px 0; /* Kurangi margin */
+}
 
-    .card-title {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #333;
-    }
+.card-categories {
+    margin-top: 5px; /* Kurangi margin */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
 
-    .card-price {
-        font-size: 1rem;
-        color: #666;
-        margin: 10px 0;
-    }
+.badge {
+    display: inline-block;
+    background-color: #e0f7fa;
+    color: #007bff;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin: 2px 0;
+}
 
-    .card-categories {
-        margin-top: 10px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-    }
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 5px; /* Kurangi padding */
+    background-color: #f9f9f9;
+    border-top: 1px solid #eee;
+    gap: 5px; /* Kurangi jarak antar elemen */
+}
 
-    .badge {
-        display: inline-block;
-        background-color: #e0f7fa;
-        color: #007bff;
-        font-size: 0.8rem;
-        padding: 5px 10px;
-        border-radius: 3px;
-        margin: 2px 0;
-    }
+.btn-edit {
+    color: #ffc107;
+    background: none;
+    font-weight: bold;
+    border: 1px solid #ffc107;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
 
-    .card-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 15px;
-        background-color: #f9f9f9;
-        border-top: 1px solid #eee;
-        gap: 10px;
-    }
+.btn-edit:hover {
+    background-color: #ffc107;
+    color: #fff;
+}
 
-    .btn-edit {
-        color: #ffc107;
-        background: none;
-        font-weight: bold;
-        border: 1px solid #ffc107;
-        padding: 5px 10px;
-        border-radius: 5px;
-    }
+.btn-delete {
+    color: #dc3545;
+    background: none;
+    font-weight: bold;
+    border: 1px solid #dc3545;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
 
-    .btn-edit:hover {
-        background-color: #ffc107;
-        color: #fff;
-    }
+.btn-delete:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
 
-    .btn-delete {
-        color: #dc3545;
-        background: none;
-        font-weight: bold;
-        border: 1px solid #dc3545;
-        padding: 5px 10px;
-        border-radius: 5px;
-    }
-
-    .btn-delete:hover {
-        background-color: #dc3545;
-        color: #fff;
-    }
-
-    .no-menu {
-        text-align: center;
-        font-size: 1.2rem;
-        color: #666;
-    }
+.no-menu {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+}
 
 </style>
 <style>
