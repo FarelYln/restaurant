@@ -10,12 +10,14 @@ return new class extends Migration
     {
         Schema::create('ulasans', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_user'); // Foreign key ke tabel users
-            $table->enum('rating', [1, 2, 3, 4, 5]); // Rating antara 1-5
-            $table->text('description')->nullable(); // Deskripsi ulasan
+            $table->unsignedBigInteger('id_menu'); // Kolom untuk menyimpan ID menu
+            $table->unsignedBigInteger('id_user'); // Kolom untuk menyimpan ID pengguna
+            $table->integer('rating'); // Kolom untuk menyimpan rating
+            $table->text('description'); // Kolom untuk menyimpan deskripsi ulasan
             $table->timestamps();
-
-            // Menambahkan foreign key constraint
+        
+            // Definisikan foreign key
+            $table->foreign('id_menu')->references('id')->on('menus')->onDelete('cascade');
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
         });
     }

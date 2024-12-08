@@ -14,8 +14,6 @@ return new class extends Migration
             $table->string('nama_menu');
             $table->decimal('harga', 10, 2);
             $table->text('description')->nullable();
-            $table->unsignedBigInteger('id_ulasan')->nullable();
-            $table->foreign('id_ulasan')->references('id')->on('ulasans')->onDelete('cascade');
             $table->timestamps();
         });
     }

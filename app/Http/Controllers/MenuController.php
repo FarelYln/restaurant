@@ -10,6 +10,24 @@ use Illuminate\Http\Request;
 class MenuController extends Controller
 {
 
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+        
+        // Ambil semua kategori
+        $categories = Category::all();
+    
+        $menus = Menu::with('categories')
+            ->when($search, function ($query, $search) {
+                return $query->where('nama_menu', 'like', '%' . $search . '%');
+            })
+            ->paginate(10); // Paginasi 10 item per halaman
+    
+        return view('pages.user.menu.index', compact('menus', 'categories'));
+    }
+    /**
+     * Display a listing of the menus.
+     */
     public function adminIndex(Request $request)
 
     {
@@ -80,13 +98,30 @@ class MenuController extends Controller
         return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil ditambahkan!');
     }
 
+   /**
+ * Display the specified menu.
+ */
+public function show($id)
+{
+    // Memuat menu beserta kategori dan ulasan (termasuk pengguna yang memberikan ulasan)
+    $menu = Menu::with(['categories', 'ulasans.user'])->findOrFail($id);
 
-    public function show($id)
-    {
-        $menu = Menu::with('categories')->findOrFail($id);
-        return view('pages.admin.menu.show', compact('menu'));
-    }
+    // Menghitung rata-rata rating
+    $averageRating = $menu->ulasans->avg('rating');
 
+    return view('pages.admin.menu.show', compact('menu', 'averageRating'));
+}
+public function usershow($id)
+{
+    $menu = Menu::with(['categories', 'ulasans.user'])->findOrFail($id);
+    $averageRating = $menu->ulasans->avg('rating');
+
+    // Pastikan Anda mengembalikan tampilan pengguna
+    return view('pages.user.menu.show', compact('menu', 'averageRating'));
+}
+    /**
+     * Show the form for editing the specified menu.
+     */
     public function edit($id)
     {
         $menu = Menu::findOrFail($id);

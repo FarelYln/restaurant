@@ -28,4 +28,8 @@ class menu extends Model
             ->withPivot('jumlah_pesanan')
             ->withTimestamps();
     }
+    public function ulasans()
+    {
+        return $this->hasMany(Ulasan::class, 'id_menu', 'id'); // Menghubungkan dengan model Ulasan
+    }
 }

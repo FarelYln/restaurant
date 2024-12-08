@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Reservasi::class, 'user_id', 'id');
     }
+
+    public function ulasans()
+    {
+        return $this->hasMany(Ulasan::class, 'id_user', 'id'); // Menghubungkan dengan model Ulasan
+    }
 }

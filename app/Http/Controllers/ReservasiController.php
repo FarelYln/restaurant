@@ -101,8 +101,8 @@ class ReservasiController extends Controller
 
     public function show($id)
     {
-        $reservasi = Reservasi::with(['menus', 'meja', 'user'])->findOrFail($id);
-        return view('pages.user.reservasi.show', compact('reservasi'));
+        $menu = Menu::with(['ulasans.user', 'categories'])->findOrFail($id);
+        return view('pages.user.menu.show', compact('menu'));
     }
 
     public function destroy($id)
