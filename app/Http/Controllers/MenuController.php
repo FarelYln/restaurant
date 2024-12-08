@@ -51,7 +51,7 @@ class MenuController extends Controller
             ->when($maxPrice, function ($query, $maxPrice) {
                 return $query->where('harga', '<=', $maxPrice);
             })
-            ->paginate(5); // Paginasi 10 item per halaman
+            ->paginate(6); // Paginasi 10 item per halaman
 
         $categories = Category::all(); // Ambil semua kategori untuk filter
 

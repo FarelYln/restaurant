@@ -17,7 +17,6 @@
         </div>
     </div>
 
-
     <div class="container-xxl">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
@@ -27,8 +26,6 @@
             <div class="row">
                 <!-- Sidebar untuk kategori -->
                 <div class="col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
-                    <!-- Search bar -->
-                    <!-- Search bar -->
                     <div class="mb-4">
                         <div class="input-group">
                             <input type="search" name="search" class="form-control p-2" placeholder="Cari menu..."
@@ -63,31 +60,27 @@
                 </div>
                 <!-- Menu items -->
                 <div class="col-lg-9 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="row g-3"> <!-- Mengurangi jarak antar elemen -->
+                    <div class="row g-3">
                         @foreach ($menus as $menu)
                             <div class="col-md-6 col-sm-12">
                                 <div class="d-flex align-items-start border rounded p-2 shadow-sm"
-                                    style="font-size: 0.9rem;"> <!-- Ukuran font lebih kecil -->
+                                    style="font-size: 0.9rem;">
                                     <a href="{{ route('user.menu.show', $menu->id) }}">
                                         <img class="img-fluid rounded-3" src="{{ asset('storage/' . $menu->image) }}"
                                             alt="{{ $menu->nama_menu }}" style="max-width: 80px; height: auto;">
-                                        <!-- Ukuran gambar lebih kecil -->
                                     </a>
-                                    <div class="w-100 d-flex flex-column text-start ps-2"> <!-- Padding dikurangi -->
+                                    <div class="w-100 d-flex flex-column text-start ps-2">
                                         <h5 class="d-flex justify-content-between border-bottom pb-1 mb-1">
                                             <span class="fw-bold" style="font-size: 1rem;">{{ $menu->nama_menu }}</span>
-                                            <!-- Ukuran teks lebih kecil -->
                                             <span class="text-primary" style="font-size: 0.9rem;">Rp
                                                 {{ number_format($menu->harga, 2, ',', '.') }}</span>
                                         </h5>
                                         <small class="fst-italic text-muted"
                                             style="font-size: 0.8rem;">{{ $menu->description }}</small>
-                                        <!-- Ukuran deskripsi lebih kecil -->
                                         <div class="card-categories mt-2">
                                             @foreach ($menu->categories as $category)
                                                 <span class="badge bg-secondary"
                                                     style="font-size: 0.75rem;">{{ $category->nama_kategori }}</span>
-                                                <!-- Ukuran badge lebih kecil -->
                                             @endforeach
                                         </div>
                                     </div>
@@ -95,12 +88,66 @@
                             </div>
                         @endforeach
                     </div>
-                    <div class="mt-3"> <!-- Margin lebih kecil -->
+                    <div class="mt-3">
                         <nav aria-label="Page navigation">
                             <ul class="pagination justify-content-center">
-                                {{ $menus->links() }}
+                                <!-- Previous Button -->
+                                <li class="page-item {{ $menus->onFirstPage() ? 'disabled' : '' }}">
+                                    <a class="page-link" href="{{ $menus->previousPageUrl() }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <!-- Page Numbers -->
+                                @foreach ($menus->getUrlRange(1, $menus->lastPage()) as $page => $url)
+                                    <li class="page-item {{ $menus->currentPage() == $page ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                    </li>
+                                @endforeach
+                                <!-- Next Button -->
+                                <li class="page-item {{ $menus->hasMorePages() ? '' : 'disabled' }}">
+                                    <a class="page-link" href="{{ $menus->nextPageUrl() }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </div>
                 </div>
-            @endsection
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .pagination {
+            border-radius: 5px;
+            background-color: #f9deb9;
+            box-shadow: 0 2px 4px #ddd;
+        }
+
+        .pagination .page-item {
+            margin: 0 2px;
+        }
+
+        .pagination .page-link {
+            border: 1px solid #ddd;
+            color: #495057;
+            border-radius: 5px;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e28d38;
+            color: white;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #e28d38;
+            border-color: #007bff;
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+        }
+    </style>
+@endsection
