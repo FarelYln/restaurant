@@ -7,10 +7,23 @@ use Illuminate\Http\Request;
 
 class MejaController extends Controller
 {
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        // Mengambil semua data meja
-        $meja = Meja::all();
+        // Mengambil semua data meja dengan fitur pencarian dan pengurutan
+        $query = Meja::query();
+
+        // Pencarian
+        if ($request->has('search')) {
+            $query->where('nomor_meja', 'like', '%' . $request->search . '%')
+                  ->orWhere('kapasitas', 'like', '%' . $request->search . '%');
+        }
+
+        // Pengurutan
+        if ($request->has('sort_by')) {
+            $query->orderBy($request->sort_by, 'asc');
+        }
+
+        $meja = $query->get();
         return view('pages.admin.meja.index', compact('meja'));
     }
 
@@ -24,46 +37,37 @@ class MejaController extends Controller
         // Validasi input
         $request->validate([
             'nomor_meja' => 'required|integer|unique:meja,nomor_meja',
-            'kapasitas' => 'required|integer|min:1', // Kapasitas minimal 1
-            'status' => 'required|in:tersedia,tidak tersedia', // Validasi status meja
+            'kapasitas' => 'required|integer|min:1',
+            'status' => 'required|in:tersedia,tidak tersedia',
         ]);
 
-        // Menyimpan data meja baru, termasuk status
         Meja::create($request->all());
-
-        // Mengarahkan ke halaman index dengan pesan sukses
         return redirect()->route('admin.meja.index')->with('success', 'Meja berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
-        // Menampilkan form edit dengan data meja yang sesuai
         $meja = Meja::findOrFail($id);
         return view('pages.admin.meja.edit', compact('meja'));
     }
 
     public function update(Request $request, $id)
     {
-        // Validasi input untuk update
         $request->validate([
             'nomor_meja' => 'required|integer|unique:meja,nomor_meja,' . $id,
             'kapasitas' => 'required|integer|min:1',
-            'status' => 'required|in:tersedia,tidak tersedia', // Validasi status meja
+            'status' => 'required|in:tersedia,tidak tersedia',
         ]);
 
-        $meja = Meja::findOrFail($id); // Menemukan meja berdasarkan ID
-        $meja->update($request->all()); // Memperbarui meja
-
+        $meja = Meja::findOrFail($id);
+        $meja->update($request->all());
         return redirect()->route('admin.meja.index')->with('success', 'Meja berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        // Menghapus data meja yang dipilih
         $meja = Meja::findOrFail($id);
         $meja->delete();
-
-        // Mengarahkan kembali ke halaman index dengan pesan sukses
         return redirect()->route('admin.meja.index')->with('success', 'Meja berhasil dihapus.');
     }
 }

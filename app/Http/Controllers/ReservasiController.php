@@ -44,9 +44,9 @@ class ReservasiController extends Controller
             'jam_reservasi' => 'required|date_format:H:i',
             'id_meja' => 'required|exists:meja,id',
         ]);
-    
+
         DB::beginTransaction();
-    
+
         try {
             // Buat reservasi
             $reservasi = Reservasi::create([
@@ -54,20 +54,21 @@ class ReservasiController extends Controller
                 'id_meja' => $request->id_meja,
                 'tanggal_reservasi' => Carbon::parse($request->tanggal_reservasi . ' ' . $request->jam_reservasi),
                 'status_reservasi' => 'pending',
+                'expired_at' => Carbon::now()->addHour(), // Set expired_at otomatis 1 jam setelah reservasi
             ]);
-    
+
             // Proses menu yang dipesan
             if ($request->has('menu') && is_array($request->menu)) {
                 $menuToAttach = [];
                 foreach ($request->menu as $menuId => $quantity) {
                     $quantity = intval($quantity);
-    
+
                     // Hanya tambahkan menu dengan quantity > 0
                     if ($quantity > 0) {
                         $menuToAttach[$menuId] = ['jumlah_pesanan' => $quantity];
                     }
                 }
-    
+
                 // Attach semua menu sekaligus
                 if (!empty($menuToAttach)) {
                     try {
@@ -79,25 +80,23 @@ class ReservasiController extends Controller
                     }
                 }
             }
-    
+
             // Update status meja
             $meja = Meja::findOrFail($request->id_meja);
             $meja->update(['status' => 'tidak tersedia']);
-    
+
             DB::commit();
-    
+
             return redirect()->route('user.reservasi.index')
                 ->with('success', 'Reservasi berhasil dibuat');
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
-    
+
             // Tangkap error dengan pesan detail
             return back()->withInput()->with('error', 'Gagal membuat reservasi: ' . $e->getMessage());
         }
     }
-
-
 
     public function show($id)
     {
@@ -111,7 +110,7 @@ class ReservasiController extends Controller
 
         try {
             $reservasi = Reservasi::findOrFail($id);
-            
+
             // Update status meja
             $meja = Meja::findOrFail($reservasi->id_meja);
             $meja->update(['status' => 'tersedia']);
@@ -136,22 +135,13 @@ class ReservasiController extends Controller
         }
     }
 
-
     public function cancel($id)
     {
-        // Pembatalan reservasi
         $reservasi = Reservasi::findOrFail($id);
 
         // Pastikan hanya pemilik reservasi yang bisa membatalkan
         if ($reservasi->id_user !== auth()->id()) {
             return back()->with('error', 'Anda tidak memiliki izin untuk membatalkan reservasi ini.');
-        }
-
-        // Cek apakah reservasi masih bisa dibatalkan (misal: H-1)
-        $canCancel = Carbon::parse($reservasi->tanggal_reservasi)->subDay()->isFuture();
-
-        if (!$canCancel) {
-            return back()->with('error', 'Reservasi tidak bisa dibatalkan.');
         }
 
         DB::beginTransaction();
@@ -218,7 +208,7 @@ class ReservasiController extends Controller
             DB::rollBack();
             Log::error('Penyelesaian Reservasi Error: ' . $e->getMessage());
 
-            return back()->with('error', 'Terjadi kesalahan saat men yelesaikan reservasi.');
+            return back()->with('error', 'Terjadi kesalahan saat menyelesaikan reservasi.');
         }
     }
 
@@ -232,15 +222,14 @@ class ReservasiController extends Controller
             return 'Expired';
         }
 
-        // Cek apakah reservasi sudah melewati waktu
-        if ($now->greaterThan($reservasiTime->copy()->addHours(1))) {
+        // Cek apakah reservasi sudah melewati waktu expired_at
+        if ($now->greaterThan($reservasi->expired_at)) {
             $this->autoCancelReservation($reservasi);
             return 'Expired';
         }
 
         // Hitung sisa waktu
-        $expiryTime = $reservasiTime->copy()->addHour();
-        $remainingTime = $now->diff($expiryTime);
+        $remainingTime = $now->diff($reservasi->expired_at);
         
         return sprintf(
             '%02d:%02d:%02d', 
@@ -277,6 +266,18 @@ class ReservasiController extends Controller
             DB::rollBack();
             Log::error('Auto Cancel Reservasi Error: ' . $e->getMessage());
         }
+    }
+
+    public function payment($id)
+    {
+        $reservasi = Reservasi::findOrFail($id);
+
+        // Pastikan hanya pemilik reservasi yang bisa melihat halaman pembayaran
+        if ($reservasi->id_user !== auth()->id()) {
+            return back()->with('error', 'Anda tidak memiliki izin untuk melihat pembayaran ini.');
+        }
+
+        return view('pages.user.reservasi.payment', compact('reservasi'));
     }
 
     public function getRemainingTime(Reservasi $reservasi)

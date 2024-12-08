@@ -18,6 +18,7 @@ class reservasi extends Model
         'id_meja',
         'tanggal_reservasi',
         'status_reservasi',
+        'expired_at',
     ];
 
     protected $casts = [
