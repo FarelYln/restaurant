@@ -19,10 +19,9 @@ Route::get('/', function () {
 
 // Rute untuk admin
 Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
-    Route::get('/admin', function () {
-        return view('pages.admin.dashboard'); // Halaman Admin
-    })->name('admin');
-
+    Route::get('/dashboard', function () {
+        return view('pages.admin.dashboard'); // Halaman Dashboard
+    })->name('dashboard');
     // Routes untuk Menu
     Route::get('/admin/menu', [MenuController::class, 'adminIndex'])->name('admin.menu.index');
     Route::get('/admin/menu/create', [MenuController::class, 'create'])->name('admin.menu.create');
@@ -54,6 +53,13 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
 
 Route::middleware('auth')->group(function () {
 
+    Route::post('/reservasi/{reservasi}/konfirmasi', [
+        'uses' => 'ReservasiController@konfirmasiReservasi',
+        'as' => 'user.reservasi.konfirmasi'
+    ]);
+
+    Route::get('/payment/{payment}/nota', 'PaymentController@showNota')->name('payment.nota');
+Route::get('/payment/{payment}/cetak', 'PaymentController@cetakNota')->name('payment.cetak');
 
 Route::post('/ulasans', [UlasanController::class, 'store'])->name('ulasans.store');
 
@@ -74,8 +80,7 @@ Route::get('/menu/{id}', [MenuController::class, 'usershow'])->name('user.menu.s
     Route::put('/reservasi/{id}', [ReservasiController::class, 'update'])->name('user.reservasi.update');
     Route::delete('/reservasi/{id}', [ReservasiController::class, 'destroy'])->name('user.reservasi.destroy');
     Route::get('/cancel/{reservasi}', [ReservasiController::class, 'cancel'])->name('user.reservasi.cancel');
-    Route::get('/reservasi/{reservasi}/remaining-time', [ReservasiController::class, 'getRemainingTime'])
-        ->name('user.reservasi.remaining-time ');
+    Route::get('/reservasi/{id}/remaining-time', [ReservasiController::class, 'getRemainingTime']);
         Route::get('/reservasi/{reservasi}/payment', 
         [PaymentController::class, 'showPaymentPage'])
         ->name('user.reservasi.payment');

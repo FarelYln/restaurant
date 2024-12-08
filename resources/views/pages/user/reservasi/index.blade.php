@@ -1,7 +1,6 @@
 @extends('layouts.landing_page.app')
 
 @section('content')
-
     <div class="container-xxl py-5 bg-dark hero-header mb-5">
         <div class="container my-5 py-5 text-center">
             <h1 class="display-3 text-white mb-3 animated slideInDown">Reservasi</h1>
@@ -17,7 +16,6 @@
             </nav>
         </div>
     </div>
-
 
     <div class="container-xxl py-5">
         <div class="container">
@@ -52,26 +50,22 @@
                                         $totalSeconds = $timeParts[0] * 3600 + $timeParts[1] * 60 + $timeParts[2];
 
                                         if ($totalSeconds <= 900) {
-                                            // < 15 menit
                                             $timerClass = 'bg-danger';
                                         } elseif ($totalSeconds <= 1800) {
-                                            // < 30 menit
                                             $timerClass = 'bg-warning text-dark';
                                         }
                                     }
                                 @endphp
 
                                 <div id="timer-{{ $reservasi->id }}"
-                                    class="timer badge {{ $timerClass }} {{ $remainingTime == 'Expired' ? 'timer-expired' : '' }}"
-                                    style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+                                     class="timer badge {{ $timerClass }} {{ $remainingTime == 'Expired' ? 'timer-expired' : '' }}"
+                                     style="position: absolute; top: 10px; right: 10px; z-index: 10;">
                                     {{ $remainingTime }}
                                 </div>
 
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <h5 class="card-title mb-0">
-                                            Reservasi #{{ $reservasi->id }}
-                                        </h5>
+                                        <h5 class="card-title mb-0">Reservasi #{{ $reservasi->id }}</h5>
                                     </div>
 
                                     <div class="mb-2">
@@ -84,9 +78,7 @@
                                     <div class="mb-2">
                                         <div class="d-flex align-items-center">
                                             <i class="bi bi-calendar-check text-primary me-2"></i>
-                                            <span>
-                                                {{ \Carbon\Carbon::parse($reservasi->tanggal_reservasi)->format('d M Y, H:i') }}
-                                            </span>
+                                            <span>{{ \Carbon\Carbon::parse($reservasi->tanggal_reservasi)->format('d M Y, H:i') }}</span>
                                         </div>
                                     </div>
 
@@ -95,19 +87,16 @@
                                         @switch($reservasi->status_reservasi)
                                             @case('pending')
                                                 <span class="badge bg-warning text-dark">Pending</span>
-                                            @break
-
+                                                @break
                                             @case('confirmed')
                                                 <span class="badge bg-success">Confirmed</span>
-                                            @break
-
+                                                @break
                                             @case('completed')
                                                 <span class="badge bg-info">Completed</span>
-                                            @break
-
+                                                @break
                                             @case('canceled')
                                                 <span class="badge bg-danger">Canceled</span>
-                                            @break
+                                                @break
                                         @endswitch
                                     </div>
 
@@ -121,8 +110,7 @@
                                             <ul class="list-unstyled small">
                                                 @foreach ($reservasi->menus as $menu)
                                                     <li>
-                                                        {{ $menu->nama_menu }}
-                                                        ({{ $menu->pivot->jumlah_pesanan }} x)
+                                                        {{ $menu->nama_menu }} ({{ $menu->pivot->jumlah_pesanan }} x)
                                                     </li>
                                                 @endforeach
                                             </ul>
@@ -131,12 +119,10 @@
 
                                     <div class="d-flex justify-content-between mt-auto">
                                         @if ($reservasi->status_reservasi == 'pending')
-                                            <a href="{{ route('user.reservasi.payment', $reservasi->id) }}"
-                                                class="btn btn-sm btn-success">
+                                            <a href="{{ route('user.reservasi.payment', $reservasi->id) }}" class="btn btn-sm btn-success">
                                                 <i class="bi bi-credit-card me-1"></i>Bayar
                                             </a>
-                                            <a href="{{ route('user.reservasi.cancel', $reservasi->id) }}"
-                                                class="btn btn-sm btn-outline-danger"
+                                            <a href="{{ route('user.reservasi.cancel', $reservasi->id) }}" class="btn btn-sm btn-outline-danger"
                                                 onclick="return confirm('Yakin ingin membatalkan reservasi?')">
                                                 <i class="bi bi-x-circle me-1"></i>Batalkan
                                             </a>
@@ -185,8 +171,7 @@
                             timerEl.textContent = data.remaining_time;
 
                             // Reset class
-                            timerEl.classList.remove('bg-success', 'bg-warning', 'bg-danger',
-                                'text-dark', 'timer-expired');
+                            timerEl.classList.remove('bg-success', 'bg-warning', 'bg-danger', 'text-dark', 'timer-expired');
 
                             if (data.remaining_time === 'Expired' || data.status !== 'pending') {
                                 timerEl.classList.add('bg-danger', 'timer-expired');
