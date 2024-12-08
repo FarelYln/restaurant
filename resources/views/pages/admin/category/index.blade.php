@@ -1,37 +1,99 @@
 @extends('layouts.admin_landing.app')
 
 @section('content')
-    <div class="container mt-5">
-        <div class="card" style="border-radius: 25px 25px 10px 10px;">
-            <div class="container">
-                <h1 class="mt-5"> List Kategori</h1>
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
 
-                <div class="d-flex justify-content-between mb-4">
-                    <div class="d-flex justify-content-start mb-4" style="margin-top: 30px;">
-                        <!-- Form pencarian di kiri -->
-                        <form method="GET" action="{{ route('admin.category.index') }}" class="d-flex"
-                            style="position: absolute; bottom: 10px; left: 10px; width: auto;">
-                            <div class="input-group input-group-md" style="width: 250px;">
-                                <input type="text" class="form-control" name="search"
-                                    placeholder="Cari Berdasarkan Nama" value="{{ request('search') }}">
-                                <button class="btn btn-outline-primary" type="submit">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+        /* Header Card */
+        .header-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
 
-                    <div class="d-flex justify-content-end mb-3">
-                        <button class="btn btn-primary btn-md" data-toggle="modal" data-target="#addCategoryModal"
-                            style="position: absolute; bottom: 10px; right: 10px;">
-                            <i class="bi bi-plus"></i>
-                        </button>
-                    </div>
-                </div>
+        .header-card .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .form-inline {
+            display: flex;
+            gap: 8px;
+            /* Reduced gap */
+            margin-top: 10px;
+        }
+
+        .form-control {
+            padding: 8px;
+            /* Reduced padding */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            /* Adjust font size */
+            width: 180px;
+            /* Set a fixed width */
+        }
+
+        .btn-primary {
+            padding: 8px 16px;
+            /* Reduced padding */
+            font-size: 0.9rem;
+            /* Adjust font size */
+        }
+    </style>
+
+    <div class="container">
+        <!-- Header Card -->
+        <div class="header-card">
+            <div class="header">
+                <h1 class="title">List Kategori</h1>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#addCategoryModal">
+                    <i class="bi bi-plus"></i> Tambah Kategori
+                </button>
             </div>
+            <form method="GET" action="{{ route('admin.category.index') }}" class="form-inline">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Berdasarkan Nama"
+                    class="form-control">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
         </div>
 
-        <!-- Card Container -->
+         <!-- Card Container -->
         <div class="container mt-4">
             <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-body p-0">
@@ -96,11 +158,11 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="category_name">Nama Kategori</label>
-                            <input type="text" class="form-control @error('nama_kategori') is-invalid @enderror"
+                            <input type="text" class="form-control w-100 @error('nama_kategori') is-invalid @enderror"
                                 id="category_name" name="nama_kategori" required value="{{ old('nama_kategori') }}">
                             @error('nama_kategori')
                                 <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @enderror                            
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -129,9 +191,9 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="edit_category_name">Nama Kategori</label>
-                            <input type="text" class="form-control" id="edit_category_name" name="nama_kategori"
-                                required>
+                            <input type="text" class="form-control w-100" id="edit_category_name" name="nama_kategori" required>
                         </div>
+                        
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -142,6 +204,8 @@
         </div>
     </div>
 
+    <!-- Existing modal for adding and editing category -->
+    
     <!-- CDN Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.0/dist/umd/popper.min.js"></script>
