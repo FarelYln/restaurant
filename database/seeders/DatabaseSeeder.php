@@ -30,5 +30,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             MejaSeeder::class,
         ]);
+
+        $this->call([
+            CategorySeeder::class,
+        ]);
     }
 }

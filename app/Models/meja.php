@@ -23,4 +23,9 @@ class meja extends Model
     {
         return $this->belongsTo(Location::class);
     }
+    
+    public function reservasi()
+    {
+        return $this->belongsToMany(Reservasi::class, 'reservasi_meja');
+    }
 }

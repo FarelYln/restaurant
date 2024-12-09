@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
-
 class RoleMiddleware
 {
     /**
@@ -15,12 +14,18 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle($request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, $role)
     {
-        if (Auth::check() && auth()->user()->role === $role) {
-            return $next($request);
+        if (Auth::check()) {
+            if (auth()->user()->role === $role) {
+                return $next($request);
+            } else {
+                // Jika pengguna tidak memiliki peran yang sesuai, arahkan ke halaman landing
+                return redirect('/');
+            }
         }
 
-        abort(403, 'Unauthorized action.');
+        // Jika pengguna tidak terautentikasi, arahkan ke halaman login atau landing
+        return redirect('/'); // Atau bisa juga ke route login
     }
 }

@@ -15,7 +15,6 @@ class reservasi extends Model
     // Menentukan kolom yang dapat diisi (mass assignable)
     protected $fillable = [
         'id_user',
-        'id_meja',
         'tanggal_reservasi',
         'status_reservasi',
         'expired_at',
@@ -35,7 +34,7 @@ class reservasi extends Model
     // Menentukan relasi antara reservasi dan meja
     public function meja()
     {
-        return $this->belongsTo(Meja::class, 'id_meja');
+        return $this->belongsToMany(Meja::class, 'reservasi_meja');
     }
 
     // Menentukan relasi antara reservasi dan pembayaran

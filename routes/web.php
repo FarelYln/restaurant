@@ -21,9 +21,9 @@ Route::get('/', function () {
 
 // Rute untuk admin
 Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
-    Route::get('/admin', function () {
-        return view('pages.admin.dashboard'); // Halaman Admin
-    })->name('admin.dashboard');
+    Route::get('/dashboard', function () {
+        return view('pages.admin.dashboard'); // Halaman Dashboard
+    })->name('dashboard');
 
     // Routes untuk Menu
     Route::get('/admin/menu', [MenuController::class, 'adminIndex'])->name('admin.menu.index');

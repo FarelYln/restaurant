@@ -16,10 +16,10 @@
                     <a href="/admin/menu" class="nav-item nav-link {{ Request::is('admin/menu') ? 'active' : '' }}">
                         <i class="fa fa-utensils me-2"></i>Menu
                     </a>              
-                    <a href="/admin/location" class="nav-item nav-link {{ Request::is('admin/menu') ? 'active' : '' }}">
+                    <a href="/admin/location" class="nav-item nav-link {{ Request::is('admin/location') ? 'active' : '' }}">
                         <i class="fa fa-map-marker me-2"></i>Lokasi
                     </a>
-                    <a href="/admin/meja" class="nav-item nav-link {{ Request::is('admin/menu') ? 'active' : '' }}">
+                    <a href="/admin/meja" class="nav-item nav-link {{ Request::is('admin/meja') ? 'active' : '' }}">
                         <i class="fa fa-table me-2"></i>Meja
                     </a>      
                     <a href="/admin/reservasi" class="nav-item nav-link {{ Request::is('admin/reservasi') ? 'active' : '' }}">
