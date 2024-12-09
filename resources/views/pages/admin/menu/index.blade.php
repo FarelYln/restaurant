@@ -193,7 +193,8 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-warning"> <i class="bi bi-pencil-square"></i> </a>
+                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-warning"> <i
+                                class="bi bi-pencil-square"></i> </a>
                         <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST"
                             onsubmit="return confirm('Are you sure?')">
                             @csrf
@@ -234,6 +235,29 @@
     </div>
     </div>
     </div>
+    <!-- Script untuk SweetAlert -->
+    <script>
+        document.querySelectorAll('.btn-danger').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Mencegah form submit otomatis
+                const form      = this.closest('form');
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: 'Menu ini akan dihapus!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Melanjutkan pengiriman form
+                    }
+                });
+            });
+        });
+    </script>
 
     <style>
         .pagination {
@@ -268,4 +292,5 @@
             pointer-events: none;
         }
     </style>
+
 @endsection
