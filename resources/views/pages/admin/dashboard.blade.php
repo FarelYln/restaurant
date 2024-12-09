@@ -7,7 +7,7 @@
             <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                 <i class="fa fa-chart-line fa-3x text-primary"></i>
                 <div class="ms-3">
-                    <p class="mb-2">Total Reservasi</p>
+                    <p class="mb-2">Jumlah User</p>
                     <h6 class="mb-0">{{ $totalReservasi ?? 0 }}</h6>
                 </div>
             </div>
@@ -16,7 +16,7 @@
             <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                 <i class="fa fa-chart-bar fa-3x text-primary"></i>
                 <div class="ms-3">
-                    <p class="mb-2">Reservasi Hari Ini</p>
+                    <p class="mb-2">Jumlah Menu</p>
                     <h6 class="mb-0">{{ $reservasiHariIni ?? 0 }}</h6>
                 </div>
             </div>
@@ -25,8 +25,8 @@
             <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                 <i class="fa fa-chart-area fa-3x text-primary"></i>
                 <div class="ms-3">
-                    <p class="mb-2">Reservasi Minggu Ini</p>
-                    <h6 class="mb-0">{{ $reservasiMingguIni ?? 0 }}</h6>
+                    <p class="mb-2">Jumlah Reservasi</p>
+                    <h6 class="mb-0">{{ $totalReservasi ?? 0 }}</h6>
                 </div>
             </div>
         </div>
@@ -34,8 +34,8 @@
             <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
                 <i class="fa fa-chart-pie fa-3x text-primary"></i>
                 <div class="ms-3">
-                    <p class="mb-2">Reservasi Bulan Ini</p>
-                    <h6 class="mb-0">{{ $reservasiBulanIni ?? 0 }}</h6>
+                    <p class="mb-2">Jumlah Meja</p>
+                    <h6 class="mb-0">{{ $jumlahMeja ?? 0 }}</h6>
                 </div>
             </div>
         </div>

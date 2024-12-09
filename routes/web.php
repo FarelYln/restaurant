@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\LocationController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UlasanController;
-use App\Http\Controllers\MenuController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\MejaController;
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UlasanController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ReservasiController;
 
 
@@ -21,9 +22,10 @@ Route::get('/', function () {
 
 // Rute untuk admin
 Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('pages.admin.dashboard'); // Halaman Dashboard
-    })->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'index']);
+    // Route::get('/dashboard', function () {
+    //     return view('pages.admin.dashboard'); // Halaman Dashboard
+    // })->name('dashboard');
 
     // Routes untuk Menu
     Route::get('/admin/menu', [MenuController::class, 'adminIndex'])->name('admin.menu.index');

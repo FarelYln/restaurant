@@ -110,6 +110,29 @@
                         <label for="menu">Pilih Menu (Opsional)</label>
                         <input type="text " id="search-menu" class="form-control" placeholder="Cari menu...">
                         <div class="d-flex flex-wrap overflow-auto" style="max-width: 100%; padding: 10px;" id="menu-list">
+                        <form id="filterForm" action="{{ route('user.reservasi.index') }}" method="GET" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Harga Minimal" class="form-control">
+    </div>
+    <div class="col-md-4">
+        <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Harga Maksimal" class="form-control">
+    </div>
+    <div class="col-md-4">
+        <button type="button" class="btn btn-primary w-100" id="filterButton">Filter</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById('filterButton').addEventListener('click', function () {
+        // Ambil elemen form
+        const form = document.getElementById('filterForm');
+        // Kirimkan form secara manual
+        form.submit();
+    });
+</script>
+
+
+
                             @foreach ($menus as $menu)
                                 <div class="card menu-card" style="width: 150px; margin: 10px; cursor: pointer;"
                                     id="menu-card-{{ $menu->id }}"
@@ -391,6 +414,10 @@
         }
     `;
         document.head.appendChild(style);
+
+
+
+        
     </script>
 
 @endsection

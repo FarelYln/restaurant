@@ -14,29 +14,49 @@ class ReservasiController extends Controller
 {
     public function index(Request $request)
     {
+        // Input untuk filter
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+    
+        // Ambil data reservasi dengan filter
         $reservasis = Reservasi::where('id_user', auth()->id())
             ->with(['meja', 'menus'])
+            ->when($minPrice, function ($query, $minPrice) {
+                return $query->whereHas('menus', function ($q) use ($minPrice) {
+                    $q->where('harga', '>=', $minPrice); // Filter harga minimal
+                });
+            })
+            ->when($maxPrice, function ($query, $maxPrice) {
+                return $query->whereHas('menus', function ($q) use ($maxPrice) {
+                    $q->where('harga', '<=', $maxPrice); // Filter harga maksimal
+                });
+            })
             ->latest()
             ->paginate(6);
-
-        $totalReservasi = Reservasi::count();
-        $reservasiHariIni = Reservasi::whereDate('created_at', Carbon::today())->count();
-        $reservasiMingguIni = Reservasi::whereBetween('created_at', [
-            Carbon::now()->startOfWeek(),
-            Carbon::now()->endOfWeek(),
-        ])->count();
-        $reservasiBulanIni = Reservasi::whereMonth('created_at', Carbon::now()->month)
+    
+        // Statistik reservasi
+        $totalReservasi = Reservasi::where('id_user', auth()->id())->count();
+        $reservasiHariIni = Reservasi::where('id_user', auth()->id())
+            ->whereDate('created_at', Carbon::today())
+            ->count();
+        $reservasiMingguIni = Reservasi::where('id_user', auth()->id())
+            ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->count();
+        $reservasiBulanIni = Reservasi::where('id_user', auth()->id())
+            ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->count();
-
+    
+        // Return view dengan data
         return view('pages.user.reservasi.index', compact(
-            'reservasis', 
-            'totalReservasi', 
-            'reservasiHariIni', 
-            'reservasiMingguIni', 
+            'reservasis',
+            'totalReservasi',
+            'reservasiHariIni',
+            'reservasiMingguIni',
             'reservasiBulanIni'
         ));
     }
+    
 
     public function create()
     {
