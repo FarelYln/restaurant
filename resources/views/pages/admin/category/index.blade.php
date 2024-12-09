@@ -141,68 +141,68 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal for Adding Category -->
-    <div class="modal fade @if ($errors->any()) show @endif" id="addCategoryModal" tabindex="-1"
-        role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Kategori Baru</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form action="{{ route('admin.category.store') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="category_name">Nama Kategori</label>
-                            <input type="text" class="form-control w-100 @error('nama_kategori') is-invalid @enderror"
-                                id="category_name" name="nama_kategori" required value="{{ old('nama_kategori') }}">
-                            @error('nama_kategori')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror                            
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                </form>
+<!-- Modal for Adding Category -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Kategori Baru</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <form action="{{ route('admin.category.store') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="category_name">Nama Kategori</label>
+                        <input type="text" class="form-control w-100 @error('nama_kategori') is-invalid @enderror"
+                            id="category_name" name="nama_kategori" required value="{{ old('nama_kategori') }}">
+                        @error('nama_kategori')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror                            
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
-
+</div>
     <!-- Modal for Editing Category -->
-    <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editCategoryModalLabel">Edit Kategori</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form id="editCategoryForm" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="edit_category_name">Nama Kategori</label>
-                            <input type="text" class="form-control w-100" id="edit_category_name" name="nama_kategori" required>
-                        </div>
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                    </div>
-                </form>
-            </div>
+<div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="editCategoryModalLabel"
+aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="editCategoryModalLabel">Edit Kategori</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
+        <form id="editCategoryForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit_category_name">Nama Kategori</label>
+                    <input type="text" class="form-control w-100 @error('nama_kategori') is-invalid @enderror" id="edit_category_name" name="nama_kategori" required>
+                    @error('nama_kategori')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            </div>
+        </form>
     </div>
+</div>
+</div>
+
 
     <!-- Existing modal for adding and editing category -->
     
@@ -243,4 +243,11 @@
             });
         });
     </script>
+    @if ($errors->any())
+    <script>
+        $(document).ready(function() {
+            $('#addCategoryModal').modal('show');
+        });
+    </script>
+@endif
 @endsection

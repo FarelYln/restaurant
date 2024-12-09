@@ -21,7 +21,7 @@ return new class extends Migration
             
             // Foreign key constraints
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade'); // Referensi ke tabel users
-            $table->foreign('id_meja')->references('id')->on('meja')->onDelete('cascade'); // Referensi ke tabel mejas
+            $table->foreign('id_meja')->references('id')->on('meja')->onDelete('restrict'); // Referensi ke tabel mejas
         });
     }
 
