@@ -11,12 +11,6 @@
             border-radius: 5px;
         }
 
-        .star-rating {
-            display: inline-flex;
-            direction: rtl;
-            font-size: 1.5rem;
-        }
-
         .star-rating input {
             display: none;
         }
@@ -37,11 +31,11 @@
 
         .star {
             font-size: 20px;
-            color: lightgray;
+            color: gold;
         }
 
         .star.filled {
-            color: gold;
+            color: lightgray;
         }
 
         .badge {
@@ -87,9 +81,12 @@
                             @endforeach
                         </div>
                         <h5 class="mb-3"><strong>Rata-rata Rating:</strong></h5>
-                        <div class="star-ratting mb-3">
-                            @for ($i = 1; $i <= 5; $i++)
-                                <span class="star {{ $i <= round($averageRating) ? 'filled' : '' }}">★</span>
+                        <div class="star-rating mb-3" style="direction: rtl; text-align: left;">
+                            @for ($i = 5; $i >= 1; $i--)
+                                <span class="star"
+                                    style="color: {{ $i <= $averageRating ? 'gold' : 'lightgray' }}; display: inline-block;">
+                                    ★
+                                </span>
                             @endfor
                             <span> ({{ number_format($averageRating, 1) }})</span>
                         </div>
@@ -97,7 +94,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Form Ulasan -->
         <div class="card shadow border-0 mb-5">
             <div class="card-body">
@@ -108,13 +104,18 @@
 
                     <div class="mb-3">
                         <label for="rating" class="form-label">Rating:</label>
-                        <div class="star-rating">
-                            @for ($i = 1; $i <= 5; $i++)
+                        <!-- Form Ulasan -->
+                        <div class="star-rating" style="direction: rtl; display: block; text-align: left;">
+                            @for ($i = 5; $i >= 1; $i--)
                                 <input type="radio" id="star{{ $i }}" name="rating"
                                     value="{{ $i }}" required>
-                                <label for="star{{ $i }}" title="{{ $i }} Bintang">&#9733;</label>
+                                <label for="star{{ $i }}" title="{{ $i }} Bintang"
+                                    style="font-size: 1.5rem; cursor: pointer;">
+                                    &#9733;
+                                </label>
                             @endfor
                         </div>
+
                     </div>
 
                     <div class="mb-3">
@@ -139,9 +140,12 @@
                         @foreach ($menu->ulasans as $ulasan)
                             <div class="card card-review">
                                 <h6><strong>{{ $ulasan->user->name }}</strong></h6>
-                                <div class="star-ratting mb-2">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        <span class="star {{ $i <= $ulasan->rating ? 'filled' : '' }}">★</span>
+                                <div class="star-rating mb-2" style="direction: rtl; display: block; text-align: left;">
+                                    @for ($i = 5; $i >= 1; $i--)
+                                        <span class="star"
+                                            style="color: {{ $i <= $ulasan->rating ? 'gold' : 'lightgray' }}; font-size: 1.5rem;">
+                                            ★
+                                        </span>
                                     @endfor
                                 </div>
                                 <p>{{ $ulasan->description }}</p>
@@ -151,5 +155,5 @@
                 @endif
             </div>
         </div>
-    </div>
-@endsection
+
+    @endsection
