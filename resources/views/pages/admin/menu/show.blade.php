@@ -67,7 +67,7 @@
         }
 
         .card-review:hover {
-            transform: scale(1.05);
+            transform: scale(1.01);
         }
 
         .star {
@@ -111,7 +111,7 @@
 
                         <!-- Rata-rata Rating -->
                         <h5 class="mb-3"><strong>Rata-rata Rating:</strong></h5>
-                        <div class="star-rating mb-3">
+                        <div class="star-ratting mb-3">
                             @for ($i = 1; $i <= 5; $i++)
                                 <span class="star {{ $i <= round($averageRating) ? 'filled' : '' }}">★</span>
                             @endfor
@@ -136,7 +136,7 @@
                                     <div class="card-body">
                                         <h6><strong>{{ $ulasan->user->name }}</strong></h6>
                                         <!-- Rating bintang di bawah nama pengguna -->
-                                        <div class="star-rating mb-3">
+                                        <div class="star-ratting mb-3">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 <span class="star {{ $i <= $ulasan->rating ? 'filled' : '' }}">★</span>
                                             @endfor

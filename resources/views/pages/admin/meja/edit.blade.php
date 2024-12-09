@@ -50,6 +50,26 @@
                     @enderror
                 </div>
 
+                <!-- Dropdown Lokasi -->
+                <div class="mb-3">
+                    <label for="location_id" class="form-label">Lokasi</label>
+                    <select id="location_id" name="location_id" class="form-select @error('location_id') is-invalid @enderror" onchange="updateFloor()">
+                        <option value="">Pilih Lokasi</option>
+                        @foreach($locations as $location)
+                            <option value="{{ $location->id }}" {{ old('location_id', $meja->location_id) == $location->id ? 'selected' : '' }}>{{ $location->name }} | Lantai {{ $location->floor }}</option>
+                        @endforeach
+                    </select>
+                    @error('location_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Menampilkan Lantai -->
+                <div class="mb-3" id="floor_display" style="display: none;">
+                    <label class="form-label">Lantai</label>
+                    <input type="text" class="form-control" id="floor" value="{{ old('floor', $meja->location->floor ?? '') }}" readonly>
+                </div>
+
                 <!-- Tombol Update -->
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-primary px-4 rounded-pill">Update</button>
@@ -58,4 +78,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Fungsi untuk memperbarui tampilan lantai berdasarkan lokasi yang dipilih
+    function updateFloor() {
+        const locationSelect = document.getElementById('location_id');
+        const floorInput = document.getElementById('floor const floorDisplay = document.getElementById('floor_display');
+        const selectedLocation = locationSelect.options[locationSelect.selectedIndex];
+
+        if (selectedLocation.value) {
+            // Misalkan kita memiliki data lantai dalam atribut data
+            floorInput.value = selectedLocation.getAttribute('data-floor') || '';
+            floorDisplay.style.display = 'block';
+        } else {
+            floorInput.value = '';
+            floorDisplay.style.display = 'none';
+        }
+    }
+</script>
 @endsection

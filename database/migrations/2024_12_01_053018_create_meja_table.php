@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('meja', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('location_id')->constrained('locations')->onDelete('restrict');
             $table->integer('nomor_meja')->unique();
             $table->integer('kapasitas');
             $table->timestamps();

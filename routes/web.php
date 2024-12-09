@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MejaController;
 use App\Http\Controllers\ReservasiController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -44,6 +46,14 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
     Route::get('/admin/meja/{id}/edit', [MejaController::class, 'edit'])->name('admin.meja.edit');
     Route::put('/admin/meja/{id}', [MejaController::class, 'update'])->name('admin.meja.update');
     Route::delete('/admin/meja/{id}/destroy', [MejaController::class, 'destroy'])->name('admin.meja.destroy');
+
+    Route::get('/admin/location', [LocationController::class, 'index'])->name('admin.location.index');
+    Route::get('/admin/location/create', [LocationController::class, 'create'])->name('admin.location.create');
+    Route::post('/admin/location', [LocationController::class, 'store'])->name('admin.location.store');
+    Route::get('/admin/location/{id}/edit', [LocationController::class, 'edit'])->name('admin.location.edit');
+    Route::put('/admin/location/{id}', [LocationController::class, 'update'])->name('admin.location.update');
+    Route::delete('/admin/location/{id}', [LocationController::class, 'destroy'])->name('admin.location.destroy');
+
 });
 
 

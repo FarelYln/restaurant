@@ -36,6 +36,26 @@
                     @enderror
                 </div>
 
+                <!-- Dropdown Lokasi -->
+                <div class="mb-3">
+                    <label for="location_id" class="form-label">Lokasi</label>
+                    <select id="location_id" name="location_id" class="form-select @error('location_id') is-invalid @enderror" onchange="updateFloor()">
+                        <option value="">Pilih Lokasi</option>
+                        @foreach($locations as $location)
+                            <option value="{{ $location->id }}">{{ $location->name }} | Lantai {{ $location->floor }}</option>
+                        @endforeach
+                    </select>
+                    @error('location_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Menampilkan Lantai -->
+                <div class="mb-3" id="floor_display" style="display: none;">
+                    <label class="form-label">Lantai</label>
+                    <input type="text" class="form-control" id="floor" readonly>
+                </div>
+
                 <!-- Input Status (Hidden) -->
                 <input type="hidden" name="status" value="tersedia">
 
@@ -47,4 +67,26 @@
         </div>
     </div>
 </div>
+
+<script>
+    function updateFloor() {
+        const locationSelect = document.getElementById('location_id');
+        const floorInput = document.getElementById('floor_display');
+        const floorField = document.getElementById('floor');
+
+        const selectedLocationId = locationSelect.value;
+
+        if (selectedLocationId) {
+            // Mengambil data lokasi dari server (misalnya, menggunakan AJAX)
+            fetch(`/locations/${selectedLocationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    floorField.value = data.floor; // Mengisi field lantai dengan data dari server
+                    floorInput.style.display = 'block'; // Menampilkan field lantai
+                });
+        } else {
+            floorInput.style.display = 'none'; // Menyembunyikan field lantai jika tidak ada lokasi yang dipilih
+        }
+    }
+</script>
 @endsection

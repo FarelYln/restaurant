@@ -13,7 +13,14 @@ class meja extends Model
 
     protected $fillable = [
         'nomor_meja',
+        'location_id', // Tambahkan location_id
         'kapasitas',
         'status'
     ];
+
+    // Relasi Many to One ke Location
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
 }
