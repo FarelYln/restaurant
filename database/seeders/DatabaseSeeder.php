@@ -27,5 +27,8 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
         ]);
         
+        $this->call([
+            MejaSeeder::class,
+        ]);
     }
 }

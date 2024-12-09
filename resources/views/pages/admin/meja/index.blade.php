@@ -6,6 +6,34 @@
         <div class="container">
             <h1 class="mt-5">List Meja</h1>
 
+            <!-- Form Pencarian dan Filter -->
+            <form method="GET" class="mb-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control" placeholder="Cari Meja" value="{{ request('search') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="status" class="form-control">
+                            <option value="">Semua Status</option>
+                            <option value="tersedia" {{ request('status') == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
+                            <option value="tidak tersedia" {{ request('status') == 'tidak tersedia' ? 'selected' : '' }}>Tidak Tersedia</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="sort_by" class="form-control">
+                            <option value="">Urutkan Berdasarkan</option>
+                            <option value="nomor_meja" {{ request('sort_by') == 'nomor_meja' ? 'selected' : '' }}>Nomor Meja</option>
+                            <option value="kapasitas" {{ request('sort_by') == 'kapasitas' ? 'selected' : '' }}>Kapasitas</option>
+                        </select>
+                        <select name="sort_order" class="form-control mt-2">
+                            <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Ascending</option>
+                            <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>Descending</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Cari</button>
+            </form>
+
             <!-- Tombol Tambah Meja -->
             <div class="d-flex justify-content-end mb-4">
                 <button class="btn btn-primary btn-md" onclick="location.href='{{ route('admin.meja.create') }}'">
@@ -65,6 +93,11 @@
                 <div class="col-12 text-center text-muted">Tidak ada meja ditemukan.</div>
             @endforelse
         </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-4">
+        {{ $meja->links() }}
     </div>
 </div>
 

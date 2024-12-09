@@ -13,6 +13,7 @@ class LocationSeeder extends Seeder
             ['name' => 'indoor', 'floor' => 1],
             ['name' => 'outdoor', 'floor' => 1],
             ['name' => 'indoor', 'floor' => 2],
+            ['name' => 'outdoor', 'floor' => 2],
         ]);
     }
 }

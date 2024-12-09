@@ -9,28 +9,28 @@ use Illuminate\Http\Request;
 class MejaController extends Controller
 {
     public function adminIndex(Request $request)
-    {
+{
+    $query = Meja::query();
 
-        
-        // Mengambil semua data meja dengan fitur pencarian dan pengurutan
-        $query = Meja::with('location'); // Mengambil lokasi terkait
-        
-
-        // Pencarian
-        if ($request->has('search')) {
-            $query->where('nomor_meja', 'like', '%' . $request->search . '%')
-                  ->orWhere('kapasitas', 'like', '%' . $request->search . '%');
-        }
-
-        // Pengurutan
-        if ($request->has('sort_by')) {
-            $query->orderBy($request->sort_by, 'asc');
-        }
-
-        $meja = $query->get();
-        return view('pages.admin.meja.index', compact('meja'));
+    // Pencarian
+    if ($request->has('search') && $request->search != '') {
+        $query->where('nomor_meja', 'like', '%' . $request->search . '%');
     }
 
+    // Penyaringan berdasarkan status
+    if ($request->has('status') && $request->status != '') {
+        $query->where('status', $request->status);
+    }
+
+    // Pengurutan
+    if ($request->has('sort_by') && $request->sort_by != '') {
+        $query->orderBy($request->sort_by, $request->sort_order ?? 'asc');
+    }
+
+    $meja = $query->with('location')->paginate(10); // Menggunakan pagination
+
+    return view('pages.admin.meja.index', compact('meja'));
+}
     public function create()
     {
         $locations = Location::all();
