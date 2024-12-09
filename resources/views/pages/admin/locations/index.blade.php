@@ -19,6 +19,29 @@
                 </div>
             @endif
 
+            <!-- Form Pencarian dan Sort -->
+            <form method="GET" class="mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" name="search" class="form-control" placeholder="Cari Lokasi" value="{{ request('search') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="sort_by" class="form-control">
+                            <option value="">Urutkan Berdasarkan</option>
+                            <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>Nama Lokasi</option>
+                            <option value="floor" {{ request('sort_by') == 'floor' ? 'selected' : '' }}>Lantai</option>
+                        </select>
+                        <select name="sort_order" class="form-control mt-2">
+                            <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Ascending</option>
+                            <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>Descending</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary mt-3">Cari</button>
+                    </div>
+                </div>
+            </form>
+
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
@@ -48,7 +71,7 @@
                                             @method('DELETE')
                                             <button type="submit" 
                                                     class="btn btn-danger btn-sm delete-btn">
-                                                <i class="fas fa-trash"></i> Hapus
+                                                <i class ="fas fa-trash"></i> Hapus
                                             </button>
                                         </form>
                                     </div>
@@ -60,6 +83,11 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Pagination -->
+<div class="mt-4">
+    {{ $locations->links() }}
 </div>
 @endsection
 

@@ -9,9 +9,23 @@ use Illuminate\Validation\Rule;
 
 class LocationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $locations = Location::all();
+        $query = Location::query();
+    
+        // Pencarian
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'like', '%' . $request->search . '%')
+            ->orWhere('floor', 'like', '%' . $request->search . '%');
+        }
+    
+        // Pengurutan
+        if ($request->has('sort_by') && $request->sort_by != '') {
+            $query->orderBy($request->sort_by, $request->sort_order ?? 'asc');
+        }
+    
+        $locations = $query->paginate(10); // Menggunakan pagination
+    
         return view('pages.admin.locations.index', compact('locations'));
     }
 
