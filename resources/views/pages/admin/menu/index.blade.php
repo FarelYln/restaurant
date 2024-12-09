@@ -133,34 +133,6 @@
             gap: 10px;
         }
 
-        .btn-edit {
-            color: #ffc107;
-            background: none;
-            font-weight: bold;
-            border: 1px solid #ffc107;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-
-        .btn-edit:hover {
-            background-color: #ffc107;
-            color: #fff;
-        }
-
-        .btn-delete {
-            color: #dc3545;
-            background: none;
-            font-weight: bold;
-            border: 1px solid #dc3545;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-
-        .btn-delete:hover {
-            background-color: #dc3545;
-            color: #ff0000;
-        }
-
         .no-menu {
             text-align: center;
             font-size: 1.2rem;
@@ -221,12 +193,12 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-edit">Edit</a>
+                        <a href="{{ route('admin.menu.edit', $menu->id) }}" class="btn btn-warning"> <i class="bi bi-pencil-square"></i> </a>
                         <form action="{{ route('admin.menu.destroy', $menu->id) }}" method="POST"
                             onsubmit="return confirm('Are you sure?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-delete">Delete</button>
+                            <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
                         </form>
                     </div>
                 </div>
