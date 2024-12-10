@@ -123,7 +123,9 @@
                         <textarea name="description" id="description" class="form-control" rows="4"
                             placeholder="Tulis ulasan Anda di sini..."></textarea>
                     </div>
-
+                    <a href="/admin/menu" class="btn btn-warning text-white">
+                        <i class="bi bi-arrow-left"></i> Kembali
+                    </a>  
                     <button type="submit" class="btn btn-primary">Kirim Ulasan</button>
                 </form>
             </div>

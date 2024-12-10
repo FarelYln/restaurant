@@ -210,7 +210,7 @@
         </div>
         <div class="mt-3">
             <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
+                <ul class="pagination justify-content">
                     <!-- Previous Button -->
                     <li class="page-item {{ $menus->onFirstPage() ? 'disabled' : '' }}">
                         <a class="page-link" href="{{ $menus->previousPageUrl() }}" aria-label="Previous">
@@ -261,11 +261,7 @@
     </script>
 
     <style>
-        .pagination {
-            border-radius: 5px;
-            background-color: #b9ddf9;
-            box-shadow: 0 2px 4px #ddd;
-        }
+       
 
         .pagination .page-item {
             margin: 0 2px;
