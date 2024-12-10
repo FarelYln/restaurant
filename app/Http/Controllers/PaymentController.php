@@ -6,94 +6,63 @@ use App\Models\Reservasi;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-    public function showPaymentPage(Reservasi $reservasi)
+    public function showPaymentPage()
     {
-        // Pastikan reservasi milik user yang sedang login
-        if ($reservasi->id_user !== Auth::id()) {
-            abort(403, 'Unauthorized access');
-        }
+        $reservasiData = session('reservasi_data');
 
-        // Cek apakah sudah ada pembayaran
-        $existingPayment = Payment::where('reservasi_id', $reservasi->id)->first();
-        
-        if ($existingPayment) {
-            return redirect()->route('pages.user.reservasi.index')
-                ->with('error', 'Reservasi sudah memiliki pembayaran');
+        if (!$reservasiData) {
+            return redirect()->route('user.reservasi.create')->with('error', 'Data reservasi tidak ditemukan.');
         }
-
-        $paymentMethods = [
-            'transfer_bank' => 'Transfer Bank',
-            'e_wallet' => 'E-Wallet',
-            'kartu_kredit' => 'Kartu Kredit'
-        ];
 
         return view('pages.user.reservasi.payment', [
-            'reservasi' => $reservasi,
-            'paymentMethods' => $paymentMethods
+            'reservasiData' => $reservasiData,
         ]);
     }
 
-    public function processPayment(Request $request, Reservasi $reservasi)
+    public function processPayment(Request $request)
     {
-        // Validasi dasar
-        $request->validate([
-            'payment_method' => 'required|in:transfer_bank,e_wallet,kartu_kredit',
-            'total_bayar' => 'required|numeric|min:' . $reservasi->total_harga
-        ]);
+        $reservasiData = session('reservasi_data');
 
-        // Cek pembayaran yang sudah ada
-        $existingPayment = Payment::where('reservasi_id', $reservasi->id)->first();
-        if ($existingPayment) {
-            return redirect()->route('user.reservasi.index')
-                ->with('error', 'Reservasi sudah memiliki pembayaran');
+        if (!$reservasiData) {
+            return redirect()->route('user.reservasi.create')->with('error', 'Data reservasi tidak ditemukan.');
         }
 
-        // Buat pembayaran
-        $payment = Payment::create([
-            'reservasi_id' => $reservasi->id,
-            'payment_method' => $request->payment_method,
-            'total_bayar' => $request->total_bayar,
-            'status' => 'success',
-            'nomor_referensi' => 'REF-' . uniqid()
-        ]);
+        DB::beginTransaction();
 
-        // Update status reservasi
-        $reservasi->update([
-            'status_reservasi' => 'completed'
-        ]);
+        try {
+            // Simpan reservasi ke database
+            $reservasi = Reservasi::create([
+                'id_user' => $reservasiData['id_user'],
+                'tanggal_reservasi' => $reservasiData['tanggal_reservasi'],
+                'status_reservasi' => 'confirmed', // Status awal setelah pembayaran
+            ]);
 
-        // Redirect ke halaman nota
-        return redirect()->route('payment.nota', $payment->id);
-    }
+            // Proses menu yang dipesan
+            $menuToAttach = collect($reservasiData['menu'])
+                ->filter(fn($quantity) => $quantity > 0)
+                ->mapWithKeys(fn($quantity, $menuId) => [$menuId => ['jumlah_pesanan' => $quantity]]);
 
-    public function showNota(Payment $payment)
-    {
-        // Pastikan pembayaran milik user yang sedang login
-        if ($payment->reservasi->id_user !== Auth::id()) {
-            abort(403, 'Unauthorized access');
+            if ($menuToAttach->isNotEmpty()) {
+                $reservasi->menus()->attach($menuToAttach);
+            }
+
+            // Update status meja dan attach ke reservasi
+            Meja::whereIn('id', $reservasiData['id_meja'])->update(['status' => 'tidak tersedia']);
+            $reservasi->meja()->attach($reservasiData['id_meja']);
+
+            // Hapus data reservasi dari session
+            session()->forget('reservasi_data');
+
+            DB::commit();
+            return redirect()->route('user .reservasi.index')->with('success', 'Reservasi berhasil dibuat dan pembayaran diterima.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal memproses pembayaran: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memproses pembayaran. Silakan coba lagi.');
         }
-
-        return view('pages.user.reservasi.nota', [
-            'payment' => $payment,
-            'reservasi' => $payment->reservasi
-        ]);
-    }
-
-    public function cetakNota(Payment $payment)
-    {
-        // Pastikan pembayaran milik user yang sedang login
-        if ($payment->reservasi->id_user !== Auth::id()) {
-            abort(403, 'Unauthorized access');
-        }
-
-        // Anda bisa menggunakan library PDF seperti FPDF atau Laravel Dompdf
-        // Contoh sederhana menggunakan view
-        return view('pages.user.reservasi.nota_cetak', [
-            'payment' => $payment,
-            'reservasi' => $payment->reservasi
-        ]);
     }
 }

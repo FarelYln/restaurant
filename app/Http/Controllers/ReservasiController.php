@@ -12,50 +12,18 @@ use Illuminate\Support\Facades\Log;
 
 class ReservasiController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        // Input untuk filter
-        $minPrice = $request->input('min_price');
-        $maxPrice = $request->input('max_price');
-    
-        // Ambil data reservasi dengan filter
-        $reservasis = Reservasi::where('id_user', auth()->id())
-            ->with(['meja', 'menus'])
-            ->when($minPrice, function ($query, $minPrice) {
-                return $query->whereHas('menus', function ($q) use ($minPrice) {
-                    $q->where('harga', '>=', $minPrice); // Filter harga minimal
-                });
-            })
-            ->when($maxPrice, function ($query, $maxPrice) {
-                return $query->whereHas('menus', function ($q) use ($maxPrice) {
-                    $q->where('harga', '<=', $maxPrice); // Filter harga maksimal
-                });
-            })
-            ->latest()
-            ->paginate(6);
-    
-        // Statistik reservasi
-        $totalReservasi = Reservasi::where('id_user', auth()->id())->count();
-        $reservasiHariIni = Reservasi::where('id_user', auth()->id())
-            ->whereDate('created_at', Carbon::today())
-            ->count();
-        $reservasiMingguIni = Reservasi::where('id_user', auth()->id())
-            ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->count();
-        $reservasiBulanIni = Reservasi::where('id_user', auth()->id())
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)
-            ->count();
-    
-        // Return view dengan data
-        return view('pages.user.reservasi.index', compact(
-            'reservasis',
-            'totalReservasi',
-            'reservasiHariIni',
-            'reservasiMingguIni',
-            'reservasiBulanIni'
-        ));
+        // Ambil reservasi yang memiliki status 'confirmed' atau 'completed' milik user yang sedang login
+        $reservasiData = Reservasi::whereIn('status_reservasi', ['confirmed', 'completed'])
+                                  ->where('id_user', auth()->user()->id) // Membatasi hanya yang milik user yang sedang login
+                                  ->with('menus', 'meja') // Mengambil relasi menus dan meja
+                                  ->get();
+        
+        return view('pages.user.reservasi.index', compact('reservasiData'));
     }
+    
+    
     
 
     public function create()
@@ -72,44 +40,79 @@ class ReservasiController extends Controller
             'jam_reservasi' => 'required|date_format:H:i',
             'id_meja' => 'required|array|min:1',
             'id_meja.*' => 'exists:meja,id',
+            'status_reservasi' => 'required|in:pending,confirmed,completed,canceled',
             'menu' => 'required|array|min:1',
-            'menu.*' => 'integer|min:1',
+            'menu.*.id' => 'required|integer|exists:menus,id',
+            'menu.*.jumlah_pesanan' => 'required|integer|min:1',
         ]);
-
-        DB::beginTransaction();
-
-        try {
-            $reservasi = Reservasi::create([
-                'id_user' => auth()->id(),
-                'tanggal_reservasi' => Carbon::parse($validated['tanggal_reservasi'] . ' ' . $validated['jam_reservasi']),
-                'status_reservasi' => 'pending',
-            ]);
-
-            // Proses menu yang dipesan
-            $menuToAttach = collect($validated['menu'])
-                ->filter(fn($quantity) => $quantity > 0)
-                ->mapWithKeys(fn($quantity, $menuId) => [$menuId => ['jumlah_pesanan' => $quantity]]);
-
-            if ($menuToAttach->isNotEmpty()) {
-                $reservasi->menus()->attach($menuToAttach);
-            }
-
-            // Update status meja dan attach ke reservasi
-            Meja::whereIn('id', $validated['id_meja'])->update(['status' => 'tidak tersedia']);
-            $reservasi->meja()->attach($validated['id_meja']);
-
-            DB::commit();
-            return redirect()->route('user.reservasi.index')->with('success', 'Reservasi berhasil dibuat. Silakan lakukan pembayaran.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Gagal membuat reservasi: ' . $e->getMessage());
-            return back()->withInput()->with('error', 'Gagal membuat reservasi. Silakan coba lagi.');
+    
+        // Simpan data reservasi ke database
+        $reservasi = Reservasi::create([
+            'id_user' => auth()->id(),
+            'tanggal_reservasi' => Carbon::parse($validated['tanggal_reservasi'] . ' ' . $validated['jam_reservasi']),
+            'status_reservasi' => $validated['status_reservasi'],
+        ]);
+    
+        // Menyimpan data meja ke pivot table dan mengubah status meja menjadi 'tidak tersedia'
+        $mejaIds = $validated['id_meja']; // Mendapatkan ID meja yang dipilih
+        $reservasi->meja()->attach($mejaIds);
+    
+        // Ubah status meja menjadi tidak tersedia
+        Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
+    
+        // Simpan menu pesanan
+        foreach ($validated['menu'] as $menu) {
+            $reservasi->menus()->attach($menu['id'], ['jumlah_pesanan' => $menu['jumlah_pesanan']]);
         }
+    
+        // Simpan ID reservasi ke session
+        session(['reservasi_id' => $reservasi->id]);
+    
+        // Arahkan ke halaman pembayaran dengan ID reservasi
+        return redirect()->route('user.reservasi.payment', ['id' => $reservasi->id]);
     }
-
+    
+    public function payment($id)
+    {
+        // Ambil data reservasi berdasarkan ID yang diteruskan
+        $reservasiData = Reservasi::with('menus')->find($id);
+    
+        if (!$reservasiData) {
+            return redirect()->route('user.reservasi.create')->withErrors('Reservasi tidak ditemukan.');
+        }
+    
+        // Hitung total harga
+        $totalPrice = $reservasiData->menus->sum(function ($menu) {
+            return $menu->pivot->jumlah_pesanan * $menu->harga;
+        });
+    
+        // Menampilkan halaman pembayaran dengan data reservasi dan total harga
+        return view('pages.user.reservasi.payment', compact('reservasiData', 'totalPrice'));
+    }
+    
+    
+    public function confirmPayment($id, Request $request)
+    {
+        // Ambil data reservasi berdasarkan ID
+        $reservasi = Reservasi::find($id);
+    
+        if (!$reservasi) {
+            return redirect()->route('user.reservasi.create')->withErrors('Reservasi tidak ditemukan.');
+        }
+    
+        // Perbarui status reservasi menjadi confirmed
+        $reservasi->status_reservasi = 'confirmed';
+        $reservasi->save();
+    
+        // Lakukan sesuatu jika perlu, seperti mengurangi stok menu atau lainnya
+    
+        return redirect()->route('user.reservasi.index', ['id' => $id])->with('success', 'Pembayaran berhasil dikonfirmasi!');
+    }
+    
+    
     public function show($id)
     {
-        $menu = Menu::with(['ulasans.user', 'categories'])->findOrFail($id);
+        $menu = menu::with(['ulasans.user', 'categories'])->findOrFail($id);
         return view('pages.user.menu.show', compact('menu'));
     }
 
@@ -136,17 +139,36 @@ class ReservasiController extends Controller
         }
     }
 
-    public function payment($id)
-    {
+
+
+    public function checkout($id)
+{
+    DB::beginTransaction();
+
+    try {
         $reservasi = Reservasi::findOrFail($id);
 
-        if ($reservasi->id_user !== auth()->id()) {
-            return back()->with('error', 'Anda tidak memiliki izin untuk melihat pembayaran ini.');
+        // Pastikan reservasi sudah dalam status confirmed
+        if ($reservasi->status_reservasi !== 'confirmed') {
+            return back()->with('error', 'Reservasi tidak dalam status yang dapat di-checkout.');
         }
 
-        return view('pages.user.reservasi.payment', compact('reservasi'));
-    }
+        // Ubah status reservasi menjadi completed
+        $reservasi->update(['status_reservasi' => 'completed']);
 
+        // Kembalikan status meja menjadi tersedia
+        foreach ($reservasi->meja as $meja) {
+            $meja->update(['status' => 'tersedia']);
+        }
+
+        DB::commit();
+        return redirect()->route('user.reservasi.index')->with('success', 'Checkout berhasil dilakukan.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Gagal melakukan checkout: ' . $e->getMessage());
+        return back()->with('error', 'Gagal melakukan checkout. Silakan coba lagi.');
+    }
+}
     public function chart()
     {
         $reservasiPerBulan = Reservasi::selectRaw('MONTH(created_at) as bulan, COUNT(*) as jumlah')
