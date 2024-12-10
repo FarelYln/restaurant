@@ -3,6 +3,28 @@
 @section('content')
 
     <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Header Card */
+        .header-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .header-card .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .table-card.selected {
             border: 2px solid blue;
             /* Ganti dengan warna yang diinginkan */
@@ -70,106 +92,162 @@
                 @enderror
             </div>
 
-            <!-- Section Pemilihan Meja -->
-            <div class="container mt-4">
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                    <div class="form-group mt-3">
-                        <label for="id_meja">Pilih Meja</label>
-                        <input type="text" id="search-table" class="form-control" placeholder="Cari meja...">
-                    </div>
 
-                    <div class="d-flex flex-wrap" id="table-list">
-                        @foreach ($meja as $m)
-                            <div class="col">
-                                <div class="card table-card h-100" style="cursor: pointer;"
-                                    id="table-card-{{ $m->id }}" onclick="toggleCheckbox({{ $m->id }})">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h5 class="card-title">Meja {{ $m->nomor_meja }}</h5>
-                                            <span class="badge"
-                                                style="background-color: {{ $m->status == 'tersedia' ? 'green' : 'red' }}; color: white;">
-                                                {{ ucfirst($m->status) }}
-                                            </span>
-                                        </div>
+            <div class="container mt-4">
+                <!-- Header Card -->
+                <div class="header">
+                    <h1 class="title">Daftar Meja</h1>
+                </div>
+                <div class="header-card d-flex align-items-center">
+                    <form method="GET" action="{{ route('admin.menu.index') }}" class="d-flex align-items-center">
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Cari Berdasarkan Nama..." class="form-control me-2" style="width: 150px;">
+                        <select name="category_id" class="form-control me-2" style="width: 150px;">
+                            <option value="">Pilih Lokasi</option>
+                            <!-- Options for categories can be added here if needed -->
+                        </select>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </form>
+                </div>
+
+
+                <!-- Meja Grid -->
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach ($meja as $m)
+                        <div class="col">
+                            <div class="card meja-card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <h5 class="card-title">Meja {{ $m->nomor_meja }}</h5>
                                         <p class="card-text text-muted">Lokasi: {{ $m->lokasi }}</p>
-                                        <div class="d-flex justify-content-between">
-                                            <p class="card-text">Kapasitas: {{ $m->kapasitas }}</p>
-                                            <p class="card-text text-muted">Lantai: {{ $m->lantai }}</p>
-                                        </div>
                                     </div>
-                                    <input type="checkbox" name="id_meja[]" value="{{ $m->id }}"
-                                        id="meja-{{ $m->id }}" style="display: none;">
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-text">Kapasitas: {{ $m->kapasitas }}</p>
+                                        <p class="card-text text-muted">Lantai: {{ $m->lantai }}</p>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge {{ $m->status == 'tersedia' ? 'bg-success' : 'bg-danger' }}">
+                                            {{ ucfirst($m->status) }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            <!-- Paginasi -->
+            <div class="mt-3">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content">
+                        <!-- Previous Button -->
+                        <li class="page-item {{ $meja->onFirstPage() ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $meja->previousPageUrl() }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <!-- Page Numbers -->
+                        @foreach ($meja->getUrlRange(1, $meja->lastPage()) as $page => $url)
+                            <li class="page-item {{ $meja->currentPage() == $page ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
                         @endforeach
-                    </div>
+                        <!-- Next Button -->
+                        <li class="page-item {{ $meja->hasMorePages() ? '' : 'disabled' }}">
+                            <a class="page-link" href="{{ $meja->nextPageUrl() }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <style>
+                .pagination .page-item {
+                    margin: 0 2px;
+                }
+
+                .pagination .page-link {
+                    border: 1px solid #ddd;
+                    color: #495057;
+                    border-radius: 5px;
+                }
+
+                .pagination .page-link:hover {
+                    background-color: #e28d38;
+                    color: white;
+                }
+
+                .pagination .page-item.active .page-link {
+                    background-color: #e28d38;
+                    border-color: #007bff;
+                    color: white;
+                }
+
+                .pagination .page-item.disabled .page-link {
+                    color: #6c757d;
+                    pointer-events: none;
+                }
+            </style>
 
 
-                    <!-- Section Pemilihan Menu -->
-                    <div class="form-group mt-3">
-                        <label for="menu">Pilih Menu (Opsional)</label>
-                        <input type="text " id="search-menu" class="form-control" placeholder="Cari menu...">
-                        <div class="d-flex flex-wrap overflow-auto" style="max-width: 100%; padding: 10px;" id="menu-list">
-                        <form id="filterForm" action="{{ route('user.reservasi.index') }}" method="GET" class="row g-3 mb-4">
-    <div class="col-md-4">
-        <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Harga Minimal" class="form-control">
-    </div>
-    <div class="col-md-4">
-        <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Harga Maksimal" class="form-control">
-    </div>
-    <div class="col-md-4">
-        <button type="button" class="btn btn-primary w-100" id="filterButton">Filter</button>
-    </div>
-</form>
 
-<script>
-    document.getElementById('filterButton').addEventListener('click', function () {
-        // Ambil elemen form
-        const form = document.getElementById('filterForm');
-        // Kirimkan form secara manual
-        form.submit();
-    });
-</script>
-
-
-
-                            @foreach ($menus as $menu)
-                                <div class="card menu-card" style="width: 150px; margin: 10px; cursor: pointer;"
-                                    id="menu-card-{{ $menu->id }}"
-                                    onclick="toggleMenuSelection(event, {{ $menu->id }})">
-                                    <button type="button" class="btn btn-danger btn-sm" id="close-{{ $menu->id }}"
-                                        style="position: absolute; top: 10px; left: 10px; z-index: 2;"
-                                        onclick="closeMenu({{ $menu->id }}); event.stopPropagation();">-</button>
-                                    <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top"
-                                        alt="{{ $menu->name }}" style="height: 120px; object-fit: cover;">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-center">{{ $menu->name }}</h5>
-                                        <p class="card-text text-center">Rp {{ number_format($menu->harga, 0, ',', '.') }}
-                                        </p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <button type="button" class="btn btn-secondary btn-sm"
-                                                id="decrease-{{ $menu->id }}" style="display: none;"
-                                                onclick="adjustQuantity({{ $menu->id }}, -1)">-</button>
-                                            <input type="number" class="form-control form-control-sm text-center"
-                                                id="quantity-{{ $menu->id }}" value="0"
-                                                style="width: 50px; display: none;"
-                                                onchange="updateQuantity({{ $menu->id }})">
-                                            <button type="button" class="btn btn-primary btn-sm"
-                                                id="increase-{{ $menu->id }}" style="display: none;"
-                                                onclick="adjustQuantity({{ $menu->id }}, 1)">+</button>
-                                        </div>
+            <div class="container mt-4">
+                <!-- Header Card -->
+                <div class="header">
+                    <h1 class="title">Daftar Menu</h1>
+                </div>
+                <div class="header-card ">
+                   
+                    <form method="GET" action="{{ route('admin.menu.index') }}" class="d-flex align-items-center">
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Cari Berdasarkan Nama..." class="form-control me-2" style="width: 150px;">
+                        <select name="category_id" class="form-control me-2" style="width: 150px;">
+                            <option value="">Pilih Menu</option>
+                            <!-- Options for categories can be added here if needed -->
+                        </select>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </form>
+                </div>
+                <!-- Section Pemilihan Menu -->
+                <div class="form-group mt-3">
+                    <div class="d-flex flex-wrap overflow-auto" style="max-width: 100%; padding: 10px;" id="menu-list">
+                        @foreach ($menus as $menu)
+                            <div class="card menu-card" style="width: 150px; margin: 10px; cursor: pointer;"
+                                id="menu-card-{{ $menu->id }}"
+                                onclick="toggleMenuSelection(event, {{ $menu->id }})">
+                                <button type="button" class="btn btn-danger btn-sm" id="close-{{ $menu->id }}"
+                                    style="position: absolute; top: 10px; left: 10px; z-index: 2;"
+                                    onclick="closeMenu({{ $menu->id }}); event.stopPropagation();">-</button>
+                                <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top"
+                                    alt="{{ $menu->name }}" style="height: 120px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">{{ $menu->name }}</h5>
+                                    <p class="card-text text-center">Rp {{ number_format($menu->harga, 0, ',', '.') }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                            id="decrease-{{ $menu->id }}" style="display: none;"
+                                            onclick="adjustQuantity({{ $menu->id }}, -1)">-</button>
+                                        <input type="number" class="form-control form-control-sm text-center"
+                                            id="quantity-{{ $menu->id }}" value="0"
+                                            style="width: 50px; display: none;"
+                                            onchange="updateQuantity({{ $menu->id }})">
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                            id="increase-{{ $menu->id }}" style="display: none;"
+                                            onclick="adjustQuantity({{ $menu->id }}, 1)">+</button>
                                     </div>
                                 </div>
-                                <input type="hidden" name="menu[{{ $menu->id }}]" value="0"
-                                    id="menu-input-{{ $menu->id }}">
-                            @endforeach
-                        </div>
+                            </div>
+                            <input type="hidden" name="menu[{{ $menu->id }}]" value="0"
+                                id="menu-input-{{ $menu->id }}">
+                        @endforeach
                     </div>
-                    
+                </div>
 
-                    <div class="form-group mt-3">
-                        <button type="button" class="btn btn-primary" onclick="showConfirmationModal()">Bayar</button>
-                    </div>
+                <div class="form-group mt-3">
+                    <button type="button" class="btn btn-primary" onclick="showConfirmationModal()">Bayar</button>
+                </div>
 
         </form>
 
@@ -197,69 +275,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Paginasi -->
-    <div class="mt-3">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <!-- Previous Button -->
-                <li class="page-item {{ $meja->onFirstPage() ? 'disabled' : '' }}">
-                    <a class="page-link" href="{{ $meja->previousPageUrl() }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                <!-- Page Numbers -->
-                @foreach ($meja->getUrlRange(1, $meja->lastPage()) as $page => $url)
-                    <li class="page-item {{ $meja->currentPage() == $page ? 'active' : '' }}">
-                        <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                    </li>
-                @endforeach
-                <!-- Next Button -->
-                <li class="page-item {{ $meja->hasMorePages() ? '' : 'disabled' }}">
-                    <a class="page-link" href="{{ $meja->nextPageUrl() }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-
-    <style>
-        .pagination {
-            border-radius: 5px;
-            background-color: #f9deb9;
-            box-shadow: 0 2px 4px #ddd;
-        }
-
-        .pagination .page-item {
-            margin: 0 2px;
-        }
-
-        .pagination .page-link {
-            border: 1px solid #ddd;
-            color: #495057;
-            border-radius: 5px;
-        }
-
-        .pagination .page-link:hover {
-            background-color: #e28d38;
-            color: white;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #e28d38;
-            border-color: #007bff;
-            color: white;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d;
-            pointer-events: none;
-        }
-    </style>
-
-
-
 
     <script>
         let selectedMenu = {};
@@ -414,10 +429,6 @@
         }
     `;
         document.head.appendChild(style);
-
-
-
-        
     </script>
 
 @endsection
