@@ -7,7 +7,7 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="fa fa-bars"></span>
         </button>
-        
+
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0 pe-4">
                 <a href="/" class="nav-item nav-link {{ request()->is('/') ? 'active' : '' }}">Beranda</a>
@@ -16,8 +16,9 @@
 
                 @auth
                     <!-- Menampilkan menu reservasi jika sudah login -->
-                    <a href="/reservasi" class="nav-item nav-link {{ request()->is('reservasi') ? 'active' : '' }}">Reservasi</a>
-                
+                    <a href="/reservasi"
+                        class="nav-item nav-link {{ request()->is('reservasi') ? 'active' : '' }}">Reservasi</a>
+
                 @endauth
 
                 <a href="/contact" class="nav-item nav-link {{ request()->is('contact') ? 'active' : '' }}">Contact</a>
@@ -28,30 +29,45 @@
                 <div class="navbar-nav ms-auto">
                     <!-- Dropdown untuk menampilkan username dan menu -->
                     <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ auth()->user()->name }} <!-- Menampilkan nama pengguna -->
+                        <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="userMenu"
+                            data-bs-toggle="dropdown" aria-expanded="false"
+                            style="background-color: transparent; border: none; color: #fff;">
+                            <!-- Nama Pengguna -->
+                            <span>{{ auth()->user()->name }}</span>
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="userMenu">
-                            <!-- Menu Profile -->
-                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
-                            <!-- Menu Logout -->
-                            <li><a class="dropdown-item" href="{{ route('logout') }}" 
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                            <!-- Profil -->
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
+                                    <i class="bi bi-person me-2"></i> Profile
+                                </a>
+                            </li>
+                            <!-- Logout -->
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
-                
+
                 <!-- Form Logout -->
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                 </form>
-                
-                
+
+
+                <!-- Form Logout -->
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
             @else
                 <!-- Menampilkan tombol daftar jika belum login -->
                 <a href="/register" class="btn btn-primary py-2 px-4">Daftar</a>
             @endauth
-        </div>                
+        </div>
     </nav>
 </div>
 <!-- Navbar & Hero End -->
