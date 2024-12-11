@@ -4,7 +4,7 @@
         <div class="container my-5 py-5 text-center">
             <h1 class="display-3 text-white mb-3 animated slideInDown">Profil</h1>
             <p class="text-white-50 mb-4">
-                Kelola informasi profil Anda untuk pengalaman yang lebih personal.
+            Profil restoran kami 
             </p>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb justify-content-center text-uppercase">
