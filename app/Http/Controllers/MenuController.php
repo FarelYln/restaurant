@@ -13,18 +13,26 @@ class MenuController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $categoryId = $request->input('category');
         
         // Ambil semua kategori
         $categories = Category::all();
     
+        // Query untuk menampilkan menu
         $menus = Menu::with('categories')
             ->when($search, function ($query, $search) {
                 return $query->where('nama_menu', 'like', '%' . $search . '%');
+            })
+            ->when($categoryId, function ($query, $categoryId) {
+                return $query->whereHas('categories', function ($query) use ($categoryId) {
+                    $query->where('category_id', $categoryId);
+                });
             })
             ->paginate(10); // Paginasi 10 item per halaman
     
         return view('pages.user.menu.index', compact('menus', 'categories'));
     }
+    
     /**
      * Display a listing of the menus.
      */
