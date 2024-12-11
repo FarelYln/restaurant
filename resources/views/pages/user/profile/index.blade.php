@@ -68,9 +68,28 @@
                         </div>
                     </div>
                     <a class="btn btn-primary py-3 px-5 mt-2" href="">Lihat Selengkapnya</a>
-
+                </div>
+            </div>
+            <!-- Bagian Sejarah Restoran -->
+            <div class="row g-5 align-items-center mt-5">
+                <div class="col-lg-6">
+                    <h5 class="section-title ff-secondary text-start text-primary fw-normal">Sejarah Kami</h5>
+                    <h1 class="mb-4">Bagaimana Semua Dimulai</h1>
+                    <p class="mb-4">
+                        Restoran kami didirikan pada tahun 2008 oleh seorang chef berbakat dengan mimpi besar untuk membawa
+                        pengalaman kuliner terbaik ke kota ini. Dimulai dengan restoran kecil, kami telah berkembang
+                        menjadi salah satu destinasi kuliner paling populer di kota, berkat dedikasi kami terhadap kualitas
+                        dan layanan.
+                    </p>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img class="img-fluid rounded-circle" style="width: 200px; height: 200px; object-fit: cover;"
+                        src="{{ asset('asset_landing/img/alok.jpg') }}" alt="Foto Pemilik Restoran">
+                    <h5 class="mt-3">John Doe</h5>
+                    <p class="text-muted">Pendiri dan Pemilik</p>
                 </div>
             </div>
         </div>
-        <!-- About End -->
-    @endsection
+    </div>
+    <!-- About End -->
+@endsection
