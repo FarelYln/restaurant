@@ -41,10 +41,37 @@ class ReservasiController extends Controller
             'id_meja' => 'required|array|min:1',
             'id_meja.*' => 'exists:meja,id',
             'status_reservasi' => 'required|in:pending,confirmed,completed,canceled',
-            'menu' => 'required|array|min:1',
-            'menu.*.id' => 'required|integer|exists:menus,id',
-            'menu.*.jumlah_pesanan' => 'required|integer|min:1',
+            'menu' => 'array', 
         ]);
+    
+        // Validasi khusus untuk menu
+        $menuValidation = [];
+        
+        // Cek apakah ada menu yang diisi
+        $hasMenuOrder = false;
+        
+        if (!empty($request->input('menu'))) {
+            foreach ($request->input('menu') as $menuId => $menuData) {
+                // Jika jumlah pesanan lebih dari 0
+                if (!empty($menuData['jumlah_pesanan']) && $menuData['jumlah_pesanan'] > 0) {
+                    $hasMenuOrder = true;
+                    
+                    // Validasi spesifik untuk menu yang diisi
+                    $menuValidation['menu.'.$menuId.'.id'] = 'required|integer|exists:menus,id';
+                    $menuValidation['menu.'.$menuId.'.jumlah_pesanan'] = 'required|integer|min:1';
+                }
+            }
+        }
+    
+        // Jika tidak ada menu yang dipesan
+        if (!$hasMenuOrder) {
+            return redirect()->back()->withErrors(['menu' => 'Minimal satu menu harus dipilih dengan jumlah pesanan.']);
+        }
+    
+        // Jalankan validasi tambahan jika ada menu yang diisi
+        if (!empty($menuValidation)) {
+            $request->validate($menuValidation);
+        }
     
         // Simpan data reservasi ke database
         $reservasi = Reservasi::create([
@@ -53,16 +80,14 @@ class ReservasiController extends Controller
             'status_reservasi' => $validated['status_reservasi'],
         ]);
     
-        // Menyimpan data meja ke pivot table dan mengubah status meja menjadi 'tidak tersedia'
-        $mejaIds = $validated['id_meja']; // Mendapatkan ID meja yang dipilih
-        $reservasi->meja()->attach($mejaIds);
-    
-        // Ubah status meja menjadi tidak tersedia
-        Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
+        // Menyimpan data meja ke pivot table
+        $reservasi->meja()->attach($validated['id_meja']);
     
         // Simpan menu pesanan
-        foreach ($validated['menu'] as $menu) {
-            $reservasi->menus()->attach($menu['id'], ['jumlah_pesanan' => $menu['jumlah_pesanan']]);
+        foreach ($request->input('menu') as $menuId => $menuData) {
+            if (!empty($menuData['jumlah_pesanan']) && $menuData['jumlah_pesanan'] > 0) {
+                $reservasi->menus()->attach($menuData['id'], ['jumlah_pesanan' => $menuData['jumlah_pesanan']]);
+            }
         }
     
         // Simpan ID reservasi ke session
@@ -71,6 +96,7 @@ class ReservasiController extends Controller
         // Arahkan ke halaman pembayaran dengan ID reservasi
         return redirect()->route('user.reservasi.payment', ['id' => $reservasi->id]);
     }
+    
     
     public function payment($id)
     {
@@ -104,10 +130,15 @@ class ReservasiController extends Controller
         $reservasi->status_reservasi = 'confirmed';
         $reservasi->save();
     
+        // Ubah status meja menjadi tidak tersedia
+        $mejaIds = $reservasi->meja->pluck('id')->toArray(); // Ambil ID meja terkait
+        Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
+    
         // Lakukan sesuatu jika perlu, seperti mengurangi stok menu atau lainnya
     
         return redirect()->route('user.reservasi.index', ['id' => $id])->with('success', 'Pembayaran berhasil dikonfirmasi!');
     }
+    
     
     
     public function show($id)
