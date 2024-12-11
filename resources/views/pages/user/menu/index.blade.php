@@ -24,17 +24,31 @@
                 <h1 class="mb-5">Semua Menu yang ada di restoran kami</h1>
             </div>
             <div class="row">
-  <!-- Sidebar untuk kategori -->
-<div class="col-lg-2 wow fadeInUp" data-wow-delay="0.1s">
-    <div class="mb-4">
-        <div class="input-group">
-            <form method="GET" action="{{ route('user.menu.index') }}">
-                <input type="search" name="search" class="form-control p-2" placeholder="Cari menu..." aria-label="Search" style="border-radius: 4px 0 0 4px;" value="{{ request('search') }}">
-                <button class="btn btn-outline-primary" type="submit" style="border-radius: 0 4px 4px 0; border: 1px solid #c5baa9; background-color: #ecd8c3; color: #be9662;">
-                    <i class="fa fa-search"></i>
-                </button>
-            </form>
-        </div>
+               <!-- Sidebar untuk kategori -->
+<div class="col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="mb-2">
+        <form method="GET" action="{{ route('user.menu.index') }}">
+            <div class="input-group">
+                <input 
+                    type="search" 
+                    name="search" 
+                    class="form-control p-2" 
+                    placeholder="Cari menu..." 
+                    aria-label="Search" 
+                    style="border-radius: 4px;" 
+                    value="{{ request('search') }}"
+                >
+                <span class="input-group-text" 
+                      style="background-color: #ecd8c3; border: 1px solid #c5baa9; color: #be9662; border-radius: 4px;">
+                    <button 
+                        class="btn p-0" 
+                        type="submit" 
+                        style="background: transparent; border: none; padding: 0; margin: 0;">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </form>
     </div>
 
     <div class="mb-3">
@@ -60,6 +74,7 @@
         </ul>
     </div>
 </div>
+
 
                 <!-- Menu items -->
                 <div class="col-lg-9 wow fadeInUp" data-wow-delay="0.1s">
@@ -96,25 +111,30 @@
                             <ul class="pagination">
                                 <!-- Previous Button -->
                                 <li class="page-item {{ $menus->onFirstPage() ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ $menus->previousPageUrl() }}&search={{ request('search') }}&category={{ request('category') }}" aria-label="Previous">
+                                    <a class="page-link"
+                                        href="{{ $menus->previousPageUrl() }}&search={{ request('search') }}&category={{ request('category') }}"
+                                        aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
                                 <!-- Page Numbers -->
                                 @foreach ($menus->getUrlRange(1, $menus->lastPage()) as $page => $url)
                                     <li class="page-item {{ $menus->currentPage() == $page ? 'active' : '' }}">
-                                        <a class="page-link" href="{{ $url }}&search={{ request('search') }}&category={{ request('category') }}">{{ $page }}</a>
+                                        <a class="page-link"
+                                            href="{{ $url }}&search={{ request('search') }}&category={{ request('category') }}">{{ $page }}</a>
                                     </li>
                                 @endforeach
                                 <!-- Next Button -->
                                 <li class="page-item {{ $menus->hasMorePages() ? '' : 'disabled' }}">
-                                    <a class="page-link" href="{{ $menus->nextPageUrl() }}&search={{ request('search') }}&category={{ request('category') }}" aria-label="Next">
+                                    <a class="page-link"
+                                        href="{{ $menus->nextPageUrl() }}&search={{ request('search') }}&category={{ request('category') }}"
+                                        aria-label="Next">
                                         <span aria-hidden="true">&raquo;</span>
                                     </a>
                                 </li>
                             </ul>
                         </nav>
-                        
+
                     </div>
                 </div>
             </div>
@@ -122,7 +142,6 @@
     </div>
 
     <style>
-
         .pagination .page-item {
             margin: 0 2px;
         }
