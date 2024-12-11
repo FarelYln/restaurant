@@ -92,6 +92,7 @@ Route::get('/profil', function () {
 });
 
 Route::get('/menu', [MenuController::class, 'index'])->name('user.menu.index');
+Route::get('/', [MenuController::class, 'landing'])->name('user.menu.landing');
 
 Route::get('/contact', function () {
     return view('pages.user.contact.index');
