@@ -29,13 +29,12 @@ class MenuController extends Controller
      * Display a listing of the menus.
      */
     public function adminIndex(Request $request)
-
     {
         $search = $request->input('search');
         $categoryFilter = $request->input('category_id');
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
-
+    
         $menus = Menu::with('categories')
             ->when($search, function ($query, $search) {
                 return $query->where('nama_menu', 'like', '%' . $search . '%');
@@ -51,12 +50,14 @@ class MenuController extends Controller
             ->when($maxPrice, function ($query, $maxPrice) {
                 return $query->where('harga', '<=', $maxPrice);
             })
-            ->paginate(6); // Paginasi 10 item per halaman
-
+            ->orderBy('created_at', 'desc') // Urutkan berdasarkan created_at secara descending
+            ->paginate(6); // Paginasi 6 item per halaman
+    
         $categories = Category::all(); // Ambil semua kategori untuk filter
-
+    
         return view('pages.admin.menu.index', compact('menus', 'categories', 'search', 'categoryFilter', 'minPrice', 'maxPrice'));
     }
+    
 
     public function create()
     {

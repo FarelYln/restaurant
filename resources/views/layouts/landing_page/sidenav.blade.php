@@ -26,11 +26,26 @@
             @auth
                 <!-- Menampilkan profil pengguna jika sudah login -->
                 <div class="navbar-nav ms-auto">
-                    <a href="{{ route('profile.edit') }}" class="nav-item nav-link">
-                        <img src="{{ asset('asset/img/tes.jpeg') }}" alt="User Photo" class="rounded-circle" width="30" height="30">
-                        {{ auth()->user()->name }}
-                    </a>
+                    <!-- Dropdown untuk menampilkan username dan menu -->
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ auth()->user()->name }} <!-- Menampilkan nama pengguna -->
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="userMenu">
+                            <!-- Menu Profile -->
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
+                            <!-- Menu Logout -->
+                            <li><a class="dropdown-item" href="{{ route('logout') }}" 
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
+                
+                <!-- Form Logout -->
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+                
                 
             @else
                 <!-- Menampilkan tombol daftar jika belum login -->
