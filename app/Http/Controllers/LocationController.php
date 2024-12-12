@@ -109,9 +109,13 @@ class LocationController extends Controller
     public function destroy($id)
     {
         $location = Location::findOrFail($id);
-        $location->delete();
-
-        return redirect()->route('admin.location.index')
-            ->with('success', 'Lokasi berhasil dihapus.');
+        
+        try {
+            $location->delete();
+            return redirect()->route('admin.location.index')->with('success', 'Lokasi berhasil dihapus.');
+        } catch (\Exception $e) {
+            // Jika terjadi kesalahan, misalnya karena foreign key constraint
+            return redirect()->route('admin.location.index')->with('error', 'Lokasi tidak dapat dihapus karena masih digunakan.');
+        }
     }
 }
