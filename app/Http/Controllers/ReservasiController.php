@@ -300,30 +300,44 @@ public function sortMenu(Request $request)
     {
         // Ambil data reservasi berdasarkan ID
         $reservasi = Reservasi::find($id);
-    
+        
         if (!$reservasi) {
             return redirect()->route('user.reservasi.create')->withErrors('Reservasi tidak ditemukan.');
         }
-    
-        // Perbarui status reservasi menjadi confirmed
+        
+        // Validasi input
+        $request->validate([
+            'payment_method' => 'required|in:scan,kartu_kredit,e_wallet',
+            'total_price' => 'required|numeric',
+        ]);
+        
+        // Ambil total harga dari request
+        $totalPrice = $request->input('total_price');
+        
+        // Perbarui reservasi dengan metode pembayaran dan total bayar
+        $reservasi->metode_pembayaran = $request->input('payment_method');
+        $reservasi->total_bayar = $totalPrice; // Otomatis menyamakan dengan total price
         $reservasi->status_reservasi = 'confirmed';
         $reservasi->save();
-    
+        
         // Ubah status meja menjadi tidak tersedia
         $mejaIds = $reservasi->meja->pluck('id')->toArray(); // Ambil ID meja terkait
         Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
-    
-        // Lakukan sesuatu jika perlu, seperti mengurangi stok menu atau lainnya
-    
-        return redirect()->route('user.reservasi.index', ['id' => $id])->with('success', 'Pembayaran berhasil dikonfirmasi!');
+        
+        // Tampilkan nota pembayaran
+        return redirect()->route('user.reservasi.nota', $id)->with('success', 'Pembayaran berhasil dikonfirmasi');
     }
-    
-    
+    // Di ReservasiController.php
+    public function nota($id)
+    {
+        $reservasi = Reservasi::where('id', $id)->with('menus', 'meja')->first();
+        return view('pages.user.reservasi.nota', compact('reservasi'));
+    }
     
     public function show($id)
     {
         $menu = menu::with(['ulasans.user', 'categories'])->findOrFail($id);
-        return view('pages.user.menu.show', compact('menu'));
+        return view('pages.user.menu.nota', compact('menu'));
     }
 
     public function destroy($id)

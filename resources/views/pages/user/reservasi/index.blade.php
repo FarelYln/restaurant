@@ -22,6 +22,7 @@
                     <th>Meja</th>
                     <th>Menu Pesanan</th>
                     <th>Total Harga</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,6 +44,9 @@
                         <td>Rp {{ number_format($reservasi->menus->sum(function ($menu) {
                             return $menu->pivot->jumlah_pesanan * $menu->harga;
                         }), 0, ',', '.') }}</td>
+                         <td>
+                            <a href="{{ route('user.reservasi.nota', $reservasi->id) }}" class="btn btn-info">Lihat Nota</a>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

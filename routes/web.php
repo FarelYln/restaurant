@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reservasi/{id}', [ReservasiController::class, 'show'])->name('user.reservasi.show');
     Route::get('/reservasi/{id}/payment', [ReservasiController::class, 'payment'])->name('user.reservasi.payment');
     Route::post('/reservasi/{id}/confirm', [ReservasiController::class, 'confirmPayment'])->name('user.reservasi.confirm');
-
+    Route::get('/user/reservasi/nota/{id}', [ReservasiController::class, 'nota'])->name('user.reservasi.nota');
     Route::delete('/reservasi/{id}', [ReservasiController::class, 'destroy'])->name('user.reservasi.destroy');
 });
 
