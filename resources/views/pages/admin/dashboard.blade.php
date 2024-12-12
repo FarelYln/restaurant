@@ -3,86 +3,133 @@
     <!-- Sale & Revenue Start -->
     <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
-        <div class="col-sm-6 col-xl-3">
-            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                <i class="fa fa-chart-line fa-3x text-primary"></i>
-                <div class="ms-3">
-                    <p class="mb-2">Jumlah User</p>
-                    <h6 class="mb-0">{{ $totalReservasi ?? 0 }}</h6>
-                </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+            <i class="fa fa-chart-line fa-3x text-primary"></i>
+            <div class="ms-3">
+                <p class="mb-2">Jumlah User</p>
+                <h6 class="mb-0">{{ \App\Models\User::count() }}</h6> <!-- Mengambil jumlah User -->
             </div>
         </div>
-        <div class="col-sm-6 col-xl-3">
-            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                <i class="fa fa-chart-bar fa-3x text-primary"></i>
-                <div class="ms-3">
-                    <p class="mb-2">Jumlah Menu</p>
-                    <h6 class="mb-0">{{ $reservasiHariIni ?? 0 }}</h6>
-                </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+            <i class="fa fa-chart-bar fa-3x text-primary"></i>
+            <div class="ms-3">
+                <p class="mb-2">Jumlah Menu</p>
+                <h6 class="mb-0">{{ \App\Models\Menu::count() }}</h6> <!-- Mengambil jumlah Menu -->
             </div>
         </div>
-        <div class="col-sm-6 col-xl-3">
-            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                <i class="fa fa-chart-area fa-3x text-primary"></i>
-                <div class="ms-3">
-                    <p class="mb-2">Jumlah Reservasi</p>
-                    <h6 class="mb-0">{{ $totalReservasi ?? 0 }}</h6>
-                </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+            <i class="fa fa-chart-area fa-3x text-primary"></i>
+            <div class="ms-3">
+                <p class="mb-2">Jumlah Reservasi</p>
+                <h6 class="mb-0">{{ \App\Models\Reservasi::count() }}</h6> <!-- Mengambil jumlah Reservasi -->
             </div>
         </div>
-        <div class="col-sm-6 col-xl-3">
-            <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-                <i class="fa fa-chart-pie fa-3x text-primary"></i>
-                <div class="ms-3">
-                    <p class="mb-2">Jumlah Meja</p>
-                    <h6 class="mb-0">{{ $jumlahMeja ?? 0 }}</h6>
-                </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+            <i class="fa fa-chart-pie fa-3x text-primary"></i>
+            <div class="ms-3">
+                <p class="mb-2">Jumlah Meja</p>
+                <h6 class="mb-0">{{ \App\Models\Meja::count() }}</h6> <!-- Mengambil jumlah Meja -->
             </div>
         </div>
     </div>
 </div>
 
+</div>
+
     <!-- Sale & Revenue End -->
-    @php
-    $dataKosong = $dataKosong ?? true; // Default true jika tidak ada
-@endphp
-    <div class="mt-4" style="width: 80%; margin: auto; text-align: center;">
-        @if ($dataKosong)
-            <h3>Data reservasi belum tersedia</h3>
-        @else
-            <canvas id="reservasiChart"></canvas>
-        @endif
+     <!-- chart -->
+     <form method="GET" action="{{ route('dashboard') }}">
+    <div class="mb-3">
+        <label for="month" class="form-label">Pilih Bulan</label>
+        <select name="month" id="month" class="form-select" onchange="this.form.submit()">
+            <option value="1" {{ $month == 1 ? 'selected' : '' }}>Januari</option>
+            <option value="2" {{ $month == 2 ? 'selected' : '' }}>Februari</option>
+            <option value="3" {{ $month == 3 ? 'selected' : '' }}>Maret</option>
+            <option value="4" {{ $month == 4 ? 'selected' : '' }}>April</option>
+            <option value="5" {{ $month == 5 ? 'selected' : '' }}>Mei</option>
+            <option value="6" {{ $month == 6 ? 'selected' : '' }}>Juni</option>
+            <option value="7" {{ $month == 7 ? 'selected' : '' }}>Juli</option>
+            <option value="8" {{ $month == 8 ? 'selected' : '' }}>Agustus</option>
+            <option value="9" {{ $month == 9 ? 'selected' : '' }}>September</option>
+            <option value="10" {{ $month == 10 ? 'selected' : '' }}>Oktober</option>
+            <option value="11" {{ $month == 11 ? 'selected' : '' }}>November</option>
+            <option value="12" {{ $month == 12 ? 'selected' : '' }}>Desember</option>
+        </select>
     </div>
+</form>
 
-    @if (!$dataKosong)
-        <script>
-            const labels = @json($labels); // Ambil data label dari controller
-            const data = @json($data); // Ambil data jumlah reservasi dari controller
+<!-- Cek apakah ada data untuk menampilkan grafik -->
+@if($reservations->isEmpty())
+    <p>Data reservasi tidak tersedia untuk bulan ini.</p>
+@else
+    <!-- Chart Container -->
+    <canvas id="myLineChart" width="400" height="200"></canvas>
 
-            const ctx = document.getElementById('reservasiChart').getContext('2d');
-            const reservasiChart = new Chart(ctx, {
-                type: 'bar', // Jenis chart (bar chart)
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Jumlah Reservasi',
-                        data: data,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data yang dikirim dari controller ke view
+        var labels = [];
+        var data = [];
+
+        // Looping data untuk mengisi labels dan data
+        @foreach($reservations as $reservation)
+            labels.push('Week {{ $reservation->week }}');
+            data.push({{ $reservation->count }});
+        @endforeach
+
+        // Mengonfigurasi Chart.js
+        var ctx = document.getElementById('myLineChart').getContext('2d');
+        var myLineChart = new Chart(ctx, {
+            type: 'line', // Jenis chart
+            data: {
+                labels: labels, // Label minggu
+                datasets: [{
+                    label: 'Jumlah Reservasi', // Label chart
+                    data: data, // Data jumlah reservasi
+                    borderColor: 'rgb(75, 192, 192)', // Warna garis
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Warna area bawah garis
+                    fill: true, // Mengisi area bawah garis
+                    tension: 0.4 // Kelengkungan garis
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Minggu'
                         }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Jumlah Reservasi'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
                     }
                 }
-            });
-        </script>
-    @endif
+            }
+        });
+    </script>
+@endif
+x`x 
+
+      <!-- end chart -->
+    
     <!-- Sales Chart Start -->
     <!-- Sales Chart End -->
 

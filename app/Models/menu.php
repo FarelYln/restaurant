@@ -9,6 +9,7 @@ class menu extends Model
 {
     use HasFactory;
 
+    
     protected $fillable = [
         'image',
         'nama_menu',

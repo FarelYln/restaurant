@@ -23,10 +23,10 @@ Route::get('/', function () {
 
 // Rute untuk admin
 Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index']);
-    Route::get('/dashboard', function () {
-        return view('pages.admin.dashboard'); // Halaman Dashboard
-    })->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('pages.admin.dashboard'); // Halaman Dashboard
+    // })->name('dashboard');
 
     Route::get('/admin/profile', [ProfileController::class, 'editadmin'])->name('admin/profile.edit');
     Route::patch('/admin/profile', [ProfileController::class, 'updateadmin'])->name('admin.profile.update');
@@ -67,6 +67,9 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
     Route::get('/admin/reservasi', [ReservasiController::class, 'adminIndex'])->name('admin.reservasi.index');
     Route::get('/admin/reservasi/checkout/{id}', [ReservasiController::class, 'checkout'])->name('admin.reservasi.checkout');
     Route::get('/admin/reservasi/history', [ReservasiController::class, 'history'])->name('admin.reservasi.history');
+
+    Route::get('/admin/user/{type?}', [UserController::class, 'showAccount'])->name('account.show');
+
 });
 
 

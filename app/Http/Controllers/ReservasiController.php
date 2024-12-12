@@ -427,4 +427,6 @@ public function sortMenu(Request $request)
 
         return view('pages.admin.dashboard', compact('labels', 'data'));
     }
+
+    
 }

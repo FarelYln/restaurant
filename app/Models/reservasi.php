@@ -26,6 +26,7 @@ class reservasi extends Model
 
     protected $casts = [
         'tanggal_reservasi' => 'datetime', // This ensures it's treated as a Carbon instance
+        'expired_at' => 'datetime',
     ];
 
     
