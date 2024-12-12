@@ -21,7 +21,7 @@ class AdminController extends Controller
         ->get();
 
     // Kirim data ke view, termasuk bulan yang dipilih
-    return view('dashboard', compact('reservations', 'month'));
+    return view('pages.admin.dashboard', compact('reservations', 'month'));
 }
 
 

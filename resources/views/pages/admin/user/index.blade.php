@@ -85,10 +85,12 @@
                         <tr>
                             <th  style="text-align: center;">Nama</th>
                             <th  style="text-align: center;">Email</th>
+                            <th  style="text-align: center;">Aksi</th>
                         </tr>
                         <tr>
                             <td  style="text-align: center;">{{ $user->name }}</td>
                             <td  style="text-align: center;">{{ $user->email }}</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>

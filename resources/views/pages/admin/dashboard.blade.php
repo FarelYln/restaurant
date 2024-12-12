@@ -126,8 +126,6 @@
         });
     </script>
 @endif
-x`x 
-
       <!-- end chart -->
     
     <!-- Sales Chart Start -->
