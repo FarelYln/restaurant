@@ -74,6 +74,8 @@
                             <div class="col-md-6">
                                 <p><strong>Total Harga:</strong> Rp {{ number_format($totalHarga, 0, ',', '.') }}</p>
                                 <p><strong>Jumlah Pembayaran:</strong> Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</p>
+                                <p><strong>Metode Pembayaran:</strong>{{ str_replace('_', ' ', $reservasi->metode_pembayaran) }}</p>
+
                                 <p><strong>Media Pembayaran:</strong> 
                                     @if($reservasi->media_pembayaran)
                                         {{ strtoupper($reservasi->media_pembayaran) }} 
