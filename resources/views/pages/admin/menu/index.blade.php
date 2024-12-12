@@ -152,7 +152,7 @@
             border-radius: 5px;
         }
     </style>
-    
+
     <div class="container">
         <!-- Header Card -->
         <div class="header-card">
@@ -243,7 +243,7 @@
         document.querySelectorAll('.btn-danger').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault(); // Mencegah form submit otomatis
-                const form      = this.closest('form');
+                const form = this.closest('form');
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
@@ -263,7 +263,9 @@
     </script>
 
     <style>
-       
+        .pagination {
+            justify-content: center;
+        }
 
         .pagination .page-item {
             margin: 0 2px;

@@ -24,7 +24,7 @@ class LocationController extends Controller
             $query->orderBy($request->sort_by, $request->sort_order ?? 'asc');
         }
     
-        $locations = $query->paginate(2); // Menggunakan pagination
+        $locations = $query->paginate(10); // Menggunakan pagination
     
         return view('pages.admin.locations.index', compact('locations'));
     }

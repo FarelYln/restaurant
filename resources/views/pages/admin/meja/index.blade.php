@@ -8,18 +8,18 @@
 
             <!-- Form Pencarian dan Filter -->
             <form method="GET" class="mb-4">
-                <div class="row">
-                    <div class="col-md-4">
+                <div class="d-flex justify-content-between">
+                    <div class="col-md-2">
                         <input type="text" name="search" class="form-control" placeholder="Cari Meja" value="{{ request('search') }}">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <select name="status" class="form-control">
                             <option value="">Semua Status</option>
                             <option value="tersedia" {{ request('status') == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
                             <option value="tidak tersedia" {{ request('status') == 'tidak tersedia' ? 'selected' : '' }}>Tidak Tersedia</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select name="sort_by" class="form-control">
                             <option value="">Urutkan Berdasarkan</option>
                             <option value="nomor_meja" {{ request('sort_by') == 'nomor_meja' ? 'selected' : '' }}>Nomor Meja</option>
@@ -30,8 +30,10 @@
                             <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>Descending</option>
                         </select>
                     </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary mt-2">Cari</button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Cari</button>
             </form>
 
             <!-- Tombol Tambah Meja -->
@@ -95,10 +97,62 @@
         </div>
     </div>
 
-    <!-- Pagination -->
-    <div class="mt-4">
-        {{ $meja->links() }}
-    </div>
+    <style>
+       
+        .pagination {
+     justify-content: center;
+ }
+     .pagination .page-item {
+         margin: 0 2px;
+     }
+ 
+     .pagination .page-link {
+         border: 1px solid #ddd;
+         color: #495057;
+         border-radius: 5px;
+     }
+ 
+     .pagination .page-link:hover {
+         background-color: #389ee2;
+         color: white;
+     }
+ 
+     .pagination .page-item.active .page-link {
+         background-color: #386ee2;
+         border-color: #007bff;
+         color: white;
+     }
+ 
+     .pagination .page-item.disabled .page-link {
+         color: #6c757d;
+         pointer-events: none;
+     }
+ </style>
+ 
+ <div class="mt-3">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content">
+            <!-- Previous Button -->
+            <li class="page-item {{ $meja->onFirstPage() ? 'disabled' : '' }}">
+                <a class="page-link" href="{{ $meja->previousPageUrl() }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <!-- Page Numbers -->
+            @foreach ($meja->getUrlRange(1, $meja->lastPage()) as $page => $url)
+                <li class="page-item {{ $meja->currentPage() == $page ? 'active' : '' }}">
+                    <a class="page-link" href="{{ $url }}{{ request()->getQueryString() ? '?' . request()->getQueryString() : '' }}">{{ $page }}</a>
+                </li>
+            @endforeach
+            <!-- Next Button -->
+            <li class="page-item {{ $meja->hasMorePages() ? '' : 'disabled' }}">
+                <a class="page-link" href="{{ $meja->nextPageUrl() }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
 </div>
 
 <style>

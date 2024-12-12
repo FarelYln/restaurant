@@ -27,7 +27,7 @@ class MejaController extends Controller
         $query->orderBy($request->sort_by, $request->sort_order ?? 'asc');
     }
 
-    $meja = $query->with('location')->paginate(10); // Menggunakan pagination
+    $meja = $query->with('location')->paginate(9); // Menggunakan pagination
 
     return view('pages.admin.meja.index', compact('meja'));
 }
