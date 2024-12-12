@@ -1,4 +1,42 @@
-<!-- Navbar & Hero Start -->
+<style>
+    .navbar-dark.bg-dark {
+        background-color: #000 !important; /* Warna hitam solid */
+        color: #fff; /* Warna teks putih */
+    }
+
+    .navbar-dark.bg-dark .nav-link,
+    .navbar-dark.bg-dark .dropdown-toggle {
+        color: #fff !important; /* Teks tetap putih */
+    }
+
+    .navbar-dark.bg-dark .nav-link.active {
+        color: #ffc107 !important; /* Teks menu aktif berwarna kuning */
+    }
+
+    .dropdown-menu {
+        background-color: #333 !important; /* Dropdown tetap gelap */
+        color: #fff;
+    }
+
+    .dropdown-menu .dropdown-item {
+        color: #fff;
+    }
+
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #555 !important; /* Warna hover untuk dropdown */
+        color: #fff;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+</style>
+
 <div class="container-xxl position-relative p-0">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
         <a href="" class="navbar-brand p-0">
@@ -15,34 +53,27 @@
                 <a href="/profil" class="nav-item nav-link {{ request()->is('profil') ? 'active' : '' }}">Profil</a>
 
                 @auth
-                    <!-- Menampilkan menu reservasi jika sudah login -->
                     <a href="/reservasi"
                         class="nav-item nav-link {{ request()->is('reservasi') ? 'active' : '' }}">Reservasi</a>
-
                 @endauth
 
                 <a href="/contact" class="nav-item nav-link {{ request()->is('contact') ? 'active' : '' }}">Contact</a>
             </div>
 
             @auth
-                <!-- Menampilkan profil pengguna jika sudah login -->
                 <div class="navbar-nav ms-auto">
-                    <!-- Dropdown untuk menampilkan username dan menu -->
                     <div class="dropdown">
                         <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="userMenu"
                             data-bs-toggle="dropdown" aria-expanded="false"
                             style="background-color: transparent; border: none; color: #fff;">
-                            <!-- Nama Pengguna -->
                             <span>{{ auth()->user()->name }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                            <!-- Profil -->
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
                                     <i class="bi bi-person me-2"></i> Profile
                                 </a>
                             </li>
-                            <!-- Logout -->
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -53,21 +84,12 @@
                     </div>
                 </div>
 
-                <!-- Form Logout -->
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-
-
-                <!-- Form Logout -->
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                 </form>
             @else
-                <!-- Menampilkan tombol daftar jika belum login -->
                 <a href="/register" class="btn btn-primary py-2 px-4">Daftar</a>
             @endauth
         </div>
     </nav>
 </div>
-<!-- Navbar & Hero End -->

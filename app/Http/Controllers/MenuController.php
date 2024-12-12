@@ -9,15 +9,33 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
-
+    public function landing(Request $request) {
+        // Ambil semua kategori
+        $categories = Category::all();
+        
+        // Ambil data menu beserta kategori dan rating rata-rata
+        $menus = Menu::with(['categories', 'ulasans'])
+            ->get()
+            ->map(function ($menu) {
+                // Menghitung rata-rata rating untuk setiap menu
+                $menu->averageRating = $menu->ulasans->avg('rating');
+                return $menu;
+            })
+            ->sortByDesc('averageRating') // Urutkan berdasarkan rating tertinggi
+            ->take(4); // Ambil hanya 4 menu dengan rating terbaik
+    
+        return view('welcome', compact('menus', 'categories'));
+    }
+    
+    
     public function index(Request $request)
     {
         $search = $request->input('search');
         $categoryId = $request->input('category');
-        
+
         // Ambil semua kategori
         $categories = Category::all();
-    
+
         // Query untuk menampilkan menu
         $menus = Menu::with('categories')
             ->when($search, function ($query, $search) {
@@ -29,10 +47,10 @@ class MenuController extends Controller
                 });
             })
             ->paginate(10); // Paginasi 10 item per halaman
-    
+
         return view('pages.user.menu.index', compact('menus', 'categories'));
     }
-    
+
     /**
      * Display a listing of the menus.
      */
@@ -42,7 +60,7 @@ class MenuController extends Controller
         $categoryFilter = $request->input('category_id');
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
-    
+
         $menus = Menu::with('categories')
             ->when($search, function ($query, $search) {
                 return $query->where('nama_menu', 'like', '%' . $search . '%');
@@ -60,12 +78,12 @@ class MenuController extends Controller
             })
             ->orderBy('created_at', 'desc') // Urutkan berdasarkan created_at secara descending
             ->paginate(6); // Paginasi 6 item per halaman
-    
+
         $categories = Category::all(); // Ambil semua kategori untuk filter
-    
+
         return view('pages.admin.menu.index', compact('menus', 'categories', 'search', 'categoryFilter', 'minPrice', 'maxPrice'));
     }
-    
+
 
     public function create()
     {
@@ -107,27 +125,27 @@ class MenuController extends Controller
         return redirect()->route('admin.menu.index')->with('success', 'Menu berhasil ditambahkan!');
     }
 
-   /**
- * Display the specified menu.
- */
-public function show($id)
-{
-    // Memuat menu beserta kategori dan ulasan (termasuk pengguna yang memberikan ulasan)
-    $menu = Menu::with(['categories', 'ulasans.user'])->findOrFail($id);
+    /**
+     * Display the specified menu.
+     */
+    public function show($id)
+    {
+        // Memuat menu beserta kategori dan ulasan (termasuk pengguna yang memberikan ulasan)
+        $menu = Menu::with(['categories', 'ulasans.user'])->findOrFail($id);
 
-    // Menghitung rata-rata rating
-    $averageRating = $menu->ulasans->avg('rating');
+        // Menghitung rata-rata rating
+        $averageRating = $menu->ulasans->avg('rating');
 
-    return view('pages.admin.menu.show', compact('menu', 'averageRating'));
-}
-public function usershow($id)
-{
-    $menu = Menu::with(['categories', 'ulasans.user'])->findOrFail($id);
-    $averageRating = $menu->ulasans->avg('rating');
+        return view('pages.admin.menu.show', compact('menu', 'averageRating'));
+    }
+    public function usershow($id)
+    {
+        $menu = Menu::with(['categories', 'ulasans.user'])->findOrFail($id);
+        $averageRating = $menu->ulasans->avg('rating');
 
-    // Pastikan Anda mengembalikan tampilan pengguna
-    return view('pages.user.menu.show', compact('menu', 'averageRating'));
-}
+        // Pastikan Anda mengembalikan tampilan pengguna
+        return view('pages.user.menu.show', compact('menu', 'averageRating'));
+    }
     /**
      * Show the form for editing the specified menu.
      */

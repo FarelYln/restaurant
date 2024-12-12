@@ -152,13 +152,15 @@
             border-radius: 5px;
         }
     </style>
-    
+
     <div class="container">
         <!-- Header Card -->
         <div class="header-card">
             <div class="header">
                 <h1 class="title">List Menu</h1>
-                <a href="{{ route('admin.menu.create') }}" class="btn btn-primary">Tambah Menu</a>
+                <a href="{{ route('admin.menu.create') }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> Tambah Lokasi
+                </a>
             </div>
             <form method="GET" action="{{ route('admin.menu.index') }}" class="form-inline">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Berdasarkan Nama..."
@@ -241,7 +243,7 @@
         document.querySelectorAll('.btn-danger').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault(); // Mencegah form submit otomatis
-                const form      = this.closest('form');
+                const form = this.closest('form');
 
                 Swal.fire({
                     title: 'Apakah Anda yakin?',
@@ -261,7 +263,9 @@
     </script>
 
     <style>
-       
+        .pagination {
+            justify-content: center;
+        }
 
         .pagination .page-item {
             margin: 0 2px;

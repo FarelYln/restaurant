@@ -12,6 +12,54 @@ use Illuminate\Support\Facades\Log;
 
 class ReservasiController extends Controller
 {
+    public function history(Request $request)
+    {
+        $status = $request->input('status');
+        $search = $request->input('search');
+        
+        $reservasiData = Reservasi::whereIn('status_reservasi', ['completed'])
+                                  ->with('menus', 'meja', 'user') // Mengambil relasi menus, meja, dan user
+                                
+                                  ->when($search, function ($query, $search) {
+                                      $query->where(function ($query) use ($search) {
+                                          $query->where('tanggal_reservasi', 'like', '%' . $search . '%')
+                                                ->orWhere('status_reservasi', 'like', '%' . $search . '%')
+                                                ->orWhereHas('user', function ($query) use ($search) {
+                                                    $query->where('name', 'like', '%' . $search . '%');
+                                                })
+                                                ->orWhereHas('meja', function ($query) use ($search) {
+                                                    $query->where('nomor_meja', 'like', '%' . $search . '%');
+                                                });
+                                      });
+                                  })
+                                  ->paginate(9); // Menambahkan paginate dengan 10 item per halaman
+            
+        return view('pages.admin.reservasi.history', compact('reservasiData'));
+    }
+    public function adminIndex(Request $request)
+{
+    $status = $request->input('status');
+    $search = $request->input('search');
+    
+    $reservasiData = Reservasi::whereIn('status_reservasi', ['confirmed'])
+                              ->with('menus', 'meja', 'user') // Mengambil relasi menus, meja, dan user
+                            
+                              ->when($search, function ($query, $search) {
+                                  $query->where(function ($query) use ($search) {
+                                      $query->where('tanggal_reservasi', 'like', '%' . $search . '%')
+                                            ->orWhere('status_reservasi', 'like', '%' . $search . '%')
+                                            ->orWhereHas('user', function ($query) use ($search) {
+                                                $query->where('name', 'like', '%' . $search . '%');
+                                            })
+                                            ->orWhereHas('meja', function ($query) use ($search) {
+                                                $query->where('nomor_meja', 'like', '%' . $search . '%');
+                                            });
+                                  });
+                              })
+                              ->paginate(10); // Menambahkan paginate dengan 10 item per halaman
+        
+    return view('pages.admin.reservasi.index', compact('reservasiData'));
+}
     public function index()
     {
         // Ambil reservasi yang memiliki status 'confirmed' atau 'completed' milik user yang sedang login
@@ -25,13 +73,144 @@ class ReservasiController extends Controller
     
     
     
+// Controller
+public function create(Request $request)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'kapasitas' => 'nullable|integer',
+        'location' => 'nullable|string',
+    ]);
 
-    public function create()
-    {
-        $meja = Meja::where('status', 'tersedia')->paginate(6);
-        $menus = Menu::all();
-        return view('pages.user.reservasi.create', compact('meja', 'menus'));
+    // Query untuk meja dengan eager loading dan filtering
+    $query = Meja::with('location')  // Eager loading relasi lokasi
+        ->where('status', 'tersedia');
+
+    // Filtering berdasarkan kapasitas
+    if ($request->filled('kapasitas')) {
+        $query->where('kapasitas', $validated['kapasitas']);
     }
+
+    // Filtering berdasarkan lokasi
+    if ($request->filled('location')) {
+        $query->whereHas('location', function ($q) use ($validated) {
+            $q->where('name', 'like', '%' . $validated['location'] . '%');
+        });
+    }
+
+    // Pagination dengan parameter query string
+    $meja = $query->paginate(9)->appends($request->only(['kapasitas', 'location']));
+
+    // Ambil semua menu
+    $menus = Menu::all();
+
+    return view('pages.user.reservasi.create', [
+        'meja' => $meja,
+        'menus' => $menus,
+        'kapasitas' => $request->input('kapasitas'),
+        'location' => $request->input('location')
+    ]);
+}
+
+public function searchMeja(Request $request)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'search' => 'nullable|string|max:255'
+    ]);
+
+    // Query dengan multiple kondisi pencarian dan pagination
+    $meja = Meja::with('location')
+        ->where('status', 'tersedia')
+        ->where(function($query) use ($validated) {
+            $query->where('nomor_meja', 'like', '%' . $validated['search'] . '%')
+                  ->orWhereHas('location', function($q) use ($validated) {
+                      $q->where('name', 'like', '%' . $validated['search'] . '%');
+                  });
+        })
+        ->paginate(9);
+
+    return response()->json([
+        'data' => $meja->items(),
+        'current_page' => $meja->currentPage(),
+        'total_pages' => $meja->lastPage(),
+        'total_items' => $meja->total()
+    ]);
+}
+
+public function sortMeja(Request $request)
+{
+    // Validasi input sort
+    $validated = $request->validate([
+        'sort_by' => 'in:asc,desc'
+    ]);
+
+    // Query sorting meja
+    $meja = Meja::with('location')
+        ->where('status', 'tersedia')
+        ->orderBy('nomor_meja', $validated['sort_by'] ?? 'asc')
+        ->get();
+
+    return response()->json($meja);
+}
+
+public function filterMeja(Request $request)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'kapasitas' => 'nullable|integer',
+        'location' => 'nullable|string'
+    ]);
+
+    // Query filter meja dengan kondisi dinamis
+    $query = Meja::with('location')
+        ->where('status', 'tersedia');
+
+    // Filter kapasitas
+    if ($request->filled('kapasitas')) {
+        $query->where('kapasitas', $validated['kapasitas']);
+    }
+
+    // Filter lokasi
+    if ($request->filled('location')) {
+        $query->whereHas('location', function ($q) use ($validated) {
+            $q->where('name', 'like', '%' . $validated['location'] . '%');
+        });
+    }
+
+    $meja = $query->get();
+
+    return response()->json($meja);
+}
+
+public function searchMenu(Request $request)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'search' => 'nullable|string|max:255'
+    ]);
+
+    // Query pencarian menu dengan multiple kondisi
+    $menu = Menu::where('nama_menu', 'like', '%' . $validated['search'] . '%')
+        ->orWhere('harga', 'like', '%' . $validated['search'] . '%')
+        ->get();
+
+    return response()->json($menu);
+}
+
+public function sortMenu(Request $request)
+{
+    // Validasi input sort
+    $validated = $request->validate([
+        'sort_by' => 'in:asc,desc'
+    ]);
+
+    // Query sorting menu
+    $menu = Menu::orderBy('nama_menu', $validated['sort_by'] ?? 'asc')
+        ->get();
+
+    return response()->json($menu);
+}
 
     public function store(Request $request)
     {
@@ -118,33 +297,66 @@ class ReservasiController extends Controller
     
     
     public function confirmPayment($id, Request $request)
-    {
-        // Ambil data reservasi berdasarkan ID
-        $reservasi = Reservasi::find($id);
-    
-        if (!$reservasi) {
-            return redirect()->route('user.reservasi.create')->withErrors('Reservasi tidak ditemukan.');
-        }
-    
-        // Perbarui status reservasi menjadi confirmed
-        $reservasi->status_reservasi = 'confirmed';
-        $reservasi->save();
-    
-        // Ubah status meja menjadi tidak tersedia
-        $mejaIds = $reservasi->meja->pluck('id')->toArray(); // Ambil ID meja terkait
-        Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
-    
-        // Lakukan sesuatu jika perlu, seperti mengurangi stok menu atau lainnya
-    
-        return redirect()->route('user.reservasi.index', ['id' => $id])->with('success', 'Pembayaran berhasil dikonfirmasi!');
+{
+    // Validasi berdasarkan metode pembayaran
+    $request->validate([
+        'payment_method' => 'required|in:scan,kartu_kredit,e_wallet',
+        'total_price' => 'required|numeric',
+    ]);
+
+    $reservasi = Reservasi::findOrFail($id);
+
+    // Validasi tambahan berdasarkan metode pembayaran
+    switch ($request->input('payment_method')) {
+        case 'e_wallet':
+            $request->validate([
+                'e_wallet_provider' => 'required|in:ovo,gopay,dana,shopeepay',
+                'e_wallet_number' => 'required|string'
+            ]);
+            $mediaProvider = $request->input('e_wallet_provider');
+            $nomorMedia = $request->input('e_wallet_number');
+            break;
+
+        case 'kartu_kredit':
+            $request->validate([
+                'credit_card_type' => 'required|in:visa,mastercard,american_express',
+                'credit_card_number' => 'required|numeric|digits_between:12,19'
+            ]);
+            $mediaProvider = $request->input('credit_card_type');
+            $nomorMedia = $request->input('credit_card_number');
+            break;
+
+        default:
+            $mediaProvider = null;
+            $nomorMedia = null;
     }
-    
-    
+
+    // Update reservasi
+    $reservasi->update([
+        'metode_pembayaran' => $request->input('payment_method'),
+        'media_pembayaran' => $mediaProvider,
+        'nomor_media' => $nomorMedia,
+        'total_bayar' => $request->input('total_price'),
+        'status_reservasi' => 'confirmed'
+    ]);
+
+    // Proses lanjutan (ubah status meja, dll)
+    $mejaIds = $reservasi->meja->pluck('id')->toArray();
+    Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
+
+    return redirect()->route('user.reservasi.nota', $id);
+}
+    // Di ReservasiController.php
+    public function nota($id)
+    {
+        $reservasi = Reservasi::where('id', $id)->with('menus', 'meja')->first();
+        return view('pages.user.reservasi.nota', compact('reservasi'));
+    }
     
     public function show($id)
     {
         $menu = menu::with(['ulasans.user', 'categories'])->findOrFail($id);
-        return view('pages.user.menu.show', compact('menu'));
+        return view('pages.user.menu.nota', compact('menu'));
     }
 
     public function destroy($id)
@@ -173,33 +385,33 @@ class ReservasiController extends Controller
 
 
     public function checkout($id)
-{
-    DB::beginTransaction();
-
-    try {
-        $reservasi = Reservasi::findOrFail($id);
-
-        // Pastikan reservasi sudah dalam status confirmed
-        if ($reservasi->status_reservasi !== 'confirmed') {
-            return back()->with('error', 'Reservasi tidak dalam status yang dapat di-checkout.');
+    {
+        DB::beginTransaction();
+    
+        try {
+            $reservasi = Reservasi::findOrFail($id);
+    
+            // Pastikan reservasi sudah dalam status confirmed
+            if ($reservasi->status_reservasi !== 'confirmed') {
+                return back()->with('error', 'Reservasi tidak dalam status yang dapat di-checkout.');
+            }
+    
+            // Ubah status reservasi menjadi completed
+            $reservasi->update(['status_reservasi' => 'completed']);
+    
+            // Kembalikan status meja menjadi tersedia
+            foreach ($reservasi->meja as $meja) {
+                $meja->update(['status' => 'tersedia']);
+            }
+    
+            DB::commit();
+            return redirect()->route('admin.reservasi.index')->with('success', 'Checkout berhasil dilakukan dan data akan masuk ke history.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal melakukan checkout: ' . $e->getMessage());
+            return back()->with('error', 'Gagal melakukan checkout. Silakan coba lagi.');
         }
-
-        // Ubah status reservasi menjadi completed
-        $reservasi->update(['status_reservasi' => 'completed']);
-
-        // Kembalikan status meja menjadi tersedia
-        foreach ($reservasi->meja as $meja) {
-            $meja->update(['status' => 'tersedia']);
-        }
-
-        DB::commit();
-        return redirect()->route('user.reservasi.index')->with('success', 'Checkout berhasil dilakukan.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('Gagal melakukan checkout: ' . $e->getMessage());
-        return back()->with('error', 'Gagal melakukan checkout. Silakan coba lagi.');
     }
-}
     public function chart()
     {
         $reservasiPerBulan = Reservasi::selectRaw('MONTH(created_at) as bulan, COUNT(*) as jumlah')

@@ -1,59 +1,161 @@
 @extends('layouts.admin_landing.app')
 
 @section('content')
-<div class="container mt-5">
-    <div class="card list-meja-card">
-        <div class="container">
-            <h1 class="mt-5">List Meja</h1>
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
 
-            <!-- Form Pencarian dan Filter -->
-            <form method="GET" class="mb-4">
+        .header-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .header-card .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .form-inline {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .form-control {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .meja-card {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: -10px;
+        }
+
+        .meja-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination .page-link {
+            border-radius: 50%;
+            padding: 10px 15px;
+            margin: 0 5px;
+            color: #007bff;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .pagination .active .page-link {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .pagination .page-item {
+            margin: 0 2px;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.875rem;
+            line-height: 1.25;
+        }
+    </style>
+
+    <div class="container">
+        <div class="header-card">
+            <div class="header">
+                <h1 class="title">List Meja</h1>
+                <a href="{{ route('admin.meja.create') }}" class="btn btn-primary ">
+                    <i class="bi bi-plus"></i> Tambah Meja
+                </a>
+            </div>
+
+            <form method="GET" action="{{ route('admin.meja.index') }}" class="mb-4 mt-3">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <input type="text" name="search" class="form-control" placeholder="Cari Meja" value="{{ request('search') }}">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <select name="status" class="form-control">
                             <option value="">Semua Status</option>
                             <option value="tersedia" {{ request('status') == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
                             <option value="tidak tersedia" {{ request('status') == 'tidak tersedia' ? 'selected' : '' }}>Tidak Tersedia</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <select name="sort_by" class="form-control">
                             <option value="">Urutkan Berdasarkan</option>
                             <option value="nomor_meja" {{ request('sort_by') == 'nomor_meja' ? 'selected' : '' }}>Nomor Meja</option>
                             <option value="kapasitas" {{ request('sort_by') == 'kapasitas' ? 'selected' : '' }}>Kapasitas</option>
                         </select>
-                        <select name="sort_order" class="form-control mt-2">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="sort_order" class="form-control">
                             <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Ascending</option>
                             <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>Descending</option>
                         </select>
                     </div>
+                    <div class="col-md-2 d-flex">
+                        <button type="submit" class="btn btn-primary ">Filter</button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Cari</button>
             </form>
-
-            <!-- Tombol Tambah Meja -->
-            <div class="d-flex justify-content-end mb-4">
-                <button class="btn btn-primary btn-md" onclick="location.href='{{ route('admin.meja.create') }}'">
-                    <i class="bi bi-plus"></i> Tambah Meja
-                </button>
-            </div>
+                      
         </div>
-    </div>
 
-    <!-- Menampilkan Pesan -->
-    @if (session('success'))
-        <div class="alert alert-success mt-3">{{ session('success') }}</div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger mt-3">{{ session('error') }}</div>
-    @endif
-
-    <!-- Menampilkan Meja dalam Format Grid -->
-    <div class="container mt-4">
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             @forelse($meja as $item)
                 <div class="col">
@@ -68,22 +170,18 @@
                                 <p class="card-text text-muted">Lantai: {{ $item->location->floor }}</p>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge {{ $item->status == 'tersedia' ? 'bg-success' : 'bg-danger' }}">
-                                    {{ ucfirst($item->status) }}
-                                </span>
+                                <span class="badge {{ $item->status == 'tersedia' ? 'bg-success' : 'bg-danger' }} ">{{ ucfirst($item->status) }}</span>
                                 <div>
-                                    <a href="{{ route('admin.meja.edit', $item->id) }}" 
-                                       class="btn btn-sm btn-outline-warning">
-                                        <i class="bi bi-pencil"></i> Edit
+                                    <a href="{{ route('admin.meja.edit', $item->id) }}" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <form action="{{ route('admin.meja.destroy', $item->id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('admin.meja.destroy', $item->id) }}" method="POST" class="d-inline delete-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                onclick="return confirm('Yakin ingin menghapus?')">
-                                            <i class="bi bi-trash"></i> Hapus
+                                        <button type="button" class="btn btn-danger btn-sm delete-btn" data-name="Meja {{ $item->nomor_meja }}">
+                                            <i class="bi bi-trash"></i>
                                         </button>
-                                    </form>
+                                    </form>                                    
                                 </div>
                             </div>
                         </div>
@@ -93,46 +191,53 @@
                 <div class="col-12 text-center text-muted">Tidak ada meja ditemukan.</div>
             @endforelse
         </div>
+
+        <!-- Pagination -->
+        <div class="mt-3">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {{ $meja->onFirstPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $meja->previousPageUrl() }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    @foreach ($meja->getUrlRange(1, $meja->lastPage()) as $page => $url)
+                        <li class="page-item {{ $meja->currentPage() == $page ? 'active' : '' }}">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
+                    @endforeach
+                    <li class="page-item {{ $meja->hasMorePages() ? '' : 'disabled' }}">
+                        <a class="page-link" href="{{ $meja->nextPageUrl() }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = this.closest('.delete-form');
+            const name = this.getAttribute('data-name');
+            
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: `Anda akan menghapus ${name}`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
 
-    <!-- Pagination -->
-    <div class="mt-4">
-        {{ $meja->links() }}
-    </div>
-</div>
-
-<style>
-    /* Styling khusus untuk kartu utama */
-    .list-meja-card {
-        border-radius: 25px 25px 10px 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
-        padding: 20px;
-        margin-bottom: 20px;
-        transform: none !important; /* Pastikan tidak terpengaruh transform */
-        transition: none !important; /* Hindari efek hover */
-    }
-
-    /* Styling untuk kartu dalam grid */
-    .meja-card {
-        border-radius: 10px;
-        border: 1px solid #ddd;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        background-color: #f9f9f9; /* Warna latar untuk kartu grid */
-    }
-
-    .meja-card:hover {
-        transform: scale(1.02);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Styling tambahan untuk tata letak grid */
-    .row-cols-1 {
-        margin: 0 -15px;
-    }
-    .col {
-        padding: 15px;
-    }
-</style>
 @endsection

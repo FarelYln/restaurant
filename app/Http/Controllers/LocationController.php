@@ -24,7 +24,7 @@ class LocationController extends Controller
             $query->orderBy($request->sort_by, $request->sort_order ?? 'asc');
         }
     
-        $locations = $query->paginate(2); // Menggunakan pagination
+        $locations = $query->paginate(10); // Menggunakan pagination
     
         return view('pages.admin.locations.index', compact('locations'));
     }
@@ -109,9 +109,13 @@ class LocationController extends Controller
     public function destroy($id)
     {
         $location = Location::findOrFail($id);
-        $location->delete();
-
-        return redirect()->route('admin.location.index')
-            ->with('success', 'Lokasi berhasil dihapus.');
+        
+        try {
+            $location->delete();
+            return redirect()->route('admin.location.index')->with('success', 'Lokasi berhasil dihapus.');
+        } catch (\Exception $e) {
+            // Jika terjadi kesalahan, misalnya karena foreign key constraint
+            return redirect()->route('admin.location.index')->with('error', 'Lokasi tidak dapat dihapus karena masih digunakan.');
+        }
     }
 }

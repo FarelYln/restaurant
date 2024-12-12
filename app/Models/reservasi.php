@@ -17,6 +17,10 @@ class reservasi extends Model
         'id_user',
         'tanggal_reservasi',
         'status_reservasi',
+        'metode_pembayaran', 
+        'media_pembayaran', 
+        'nomor_media', 
+        'total_bayar', 
         'expired_at',
     ];
 
