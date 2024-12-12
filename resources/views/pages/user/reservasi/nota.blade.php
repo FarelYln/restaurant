@@ -1,6 +1,9 @@
 @extends('layouts.landing_page.app')
 
 @section('content')
+<br>
+<br>
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -71,20 +74,13 @@
                             <div class="col-md-6">
                                 <p><strong>Total Harga:</strong> Rp {{ number_format($totalHarga, 0, ',', '.') }}</p>
                                 <p><strong>Jumlah Pembayaran:</strong> Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</p>
-                                <p><strong>Metode Pembayaran:</strong> 
-                                    @switch($reservasi->metode_pembayaran)
-                                        @case('scan')
-                                            <span class="badge bg-primary">Scan</span>
-                                            @break
-                                        @case('kartu_kredit')
-                                            <span class="badge bg-info">Kartu Kredit</span>
-                                            @break
-                                        @case('e_wallet')
-                                            <span class="badge bg-success">E-Wallet</span>
-                                            @break
-                                        @default
-                                            <span class="badge bg-secondary">Tidak Diketahui</span>
-                                    @endswitch
+                                <p><strong>Media Pembayaran:</strong> 
+                                    @if($reservasi->media_pembayaran)
+                                        {{ strtoupper($reservasi->media_pembayaran) }} 
+                                        ({{ $reservasi->nomor_media }})
+                                    @else
+                                        Tidak Ada
+                                    @endif
                                 </p>
                             </div>
                         </div>

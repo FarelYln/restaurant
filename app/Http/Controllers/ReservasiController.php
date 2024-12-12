@@ -297,36 +297,55 @@ public function sortMenu(Request $request)
     
     
     public function confirmPayment($id, Request $request)
-    {
-        // Ambil data reservasi berdasarkan ID
-        $reservasi = Reservasi::find($id);
-        
-        if (!$reservasi) {
-            return redirect()->route('user.reservasi.create')->withErrors('Reservasi tidak ditemukan.');
-        }
-        
-        // Validasi input
-        $request->validate([
-            'payment_method' => 'required|in:scan,kartu_kredit,e_wallet',
-            'total_price' => 'required|numeric',
-        ]);
-        
-        // Ambil total harga dari request
-        $totalPrice = $request->input('total_price');
-        
-        // Perbarui reservasi dengan metode pembayaran dan total bayar
-        $reservasi->metode_pembayaran = $request->input('payment_method');
-        $reservasi->total_bayar = $totalPrice; // Otomatis menyamakan dengan total price
-        $reservasi->status_reservasi = 'confirmed';
-        $reservasi->save();
-        
-        // Ubah status meja menjadi tidak tersedia
-        $mejaIds = $reservasi->meja->pluck('id')->toArray(); // Ambil ID meja terkait
-        Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
-        
-        // Tampilkan nota pembayaran
-        return redirect()->route('user.reservasi.nota', $id)->with('success', 'Pembayaran berhasil dikonfirmasi');
+{
+    // Validasi berdasarkan metode pembayaran
+    $request->validate([
+        'payment_method' => 'required|in:scan,kartu_kredit,e_wallet',
+        'total_price' => 'required|numeric',
+    ]);
+
+    $reservasi = Reservasi::findOrFail($id);
+
+    // Validasi tambahan berdasarkan metode pembayaran
+    switch ($request->input('payment_method')) {
+        case 'e_wallet':
+            $request->validate([
+                'e_wallet_provider' => 'required|in:ovo,gopay,dana,shopeepay',
+                'e_wallet_number' => 'required|string'
+            ]);
+            $mediaProvider = $request->input('e_wallet_provider');
+            $nomorMedia = $request->input('e_wallet_number');
+            break;
+
+        case 'kartu_kredit':
+            $request->validate([
+                'credit_card_type' => 'required|in:visa,mastercard,american_express',
+                'credit_card_number' => 'required|numeric|digits_between:12,19'
+            ]);
+            $mediaProvider = $request->input('credit_card_type');
+            $nomorMedia = $request->input('credit_card_number');
+            break;
+
+        default:
+            $mediaProvider = null;
+            $nomorMedia = null;
     }
+
+    // Update reservasi
+    $reservasi->update([
+        'metode_pembayaran' => $request->input('payment_method'),
+        'media_pembayaran' => $mediaProvider,
+        'nomor_media' => $nomorMedia,
+        'total_bayar' => $request->input('total_price'),
+        'status_reservasi' => 'confirmed'
+    ]);
+
+    // Proses lanjutan (ubah status meja, dll)
+    $mejaIds = $reservasi->meja->pluck('id')->toArray();
+    Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
+
+    return redirect()->route('user.reservasi.nota', $id);
+}
     // Di ReservasiController.php
     public function nota($id)
     {

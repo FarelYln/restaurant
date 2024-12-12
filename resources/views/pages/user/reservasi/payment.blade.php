@@ -73,41 +73,61 @@
                         @endif
                     </div>
 
-                    {{-- Form Pembayaran --}}
                     @if(!$reservasiData->menus->isEmpty())
-                        <form action="{{ route('user.reservasi.confirm', ['id' => $reservasiData->id]) }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="total_price" value="{{ $totalPrice }}">
-                            
-                            <div class="mb-3">
-                                <label for="payment_method" class="form-label">Pilih Metode Pembayaran</label>
-                                <select name="payment_method" class="form-control @error('payment_method') is-invalid @enderror" required>
-                                    <option value="">Pilih Metode Pembayaran</option>
-                                    <option value="scan">Scan</option>
-                                    <option value="kartu_kredit">Kartu Kredit</option>
-                                    <option value="e_wallet">E-Wallet</option>
-                                </select>
-                                @error('payment_method')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="payment_amount" class="form-label">Jumlah Pembayaran</label>
-                                <input type="text" name="payment_amount" class="form-control" 
-                                       value="Rp {{ number_format($totalPrice, 0, ',', '.') }}" readonly>
-                            </div>
-                            
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    Konfirmasi Pembayaran
-                                </button>
-                            </div>
-                        </form>
-                    @else
-                        <div class="alert alert-warning text-center">
-                            Silakan pilih menu sebelum melanjutkan ke pembayaran.
+                    <form action="{{ route('user.reservasi.confirm', ['id' => $reservasiData->id]) }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="total_price" value="{{ $totalPrice }}">
+                        
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Pilih Metode Pembayaran</label>
+                            <select name="payment_method" id="payment_method" class="form-control" required>
+                                <option value="">Pilih Metode</option>
+                                <option value="scan">Scan</option>
+                                <option value="kartu_kredit">Kartu Kredit</option>
+                                <option value="e_wallet">E-Wallet</option>
+                            </select>
                         </div>
+                    
+                        {{-- Kontainer untuk metode pembayaran spesifik --}}
+                        <div id="payment_details" style="display:none;">
+                            {{-- E-Wallet --}}
+                            <div id="e_wallet_section" style="display:none;">
+                                <div class="mb-3">
+                                    <label>Pilih Provider E-Wallet</label>
+                                    <select name="e_wallet_provider" class="form-control">
+                                        <option value="ovo">OVO</option>
+                                        <option value="gopay">GoPay</option>
+                                        <option value="dana">Dana</option>
+                                        <option value="shopeepay">ShopeePay</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Nomor E-Wallet</label>
+                                    <input type="text" name="e_wallet_number" class="form-control" 
+                                           placeholder="Masukkan nomor E-Wallet">
+                                </div>
+                            </div>
+                    
+                            {{-- Kartu Kredit --}}
+                            <div id="credit_card_section" style="display:none;">
+                                <div class="mb-3">
+                                    <label>Tipe Kartu Kredit</label>
+                                    <select name="credit_card_type" class="form-control">
+                                        <option value="visa">Visa</option>
+                                        <option value="mastercard">Mastercard</option>
+                                        <option value="american_express">American Express</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Nomor Kartu Kredit</label>
+                                    <input type="text" name="credit_card_number" class="form-control" 
+                                           placeholder="Masukkan nomor kartu kredit">
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <button type="submit" class="btn btn-primary">Konfirmasi Pembayaran</button>
+                    </form>
                     @endif
                 </div>
             </div>
@@ -118,6 +138,14 @@
 
 @push('scripts')
 <script>
-    // Optional: Tambahkan validasi atau interaksi tambahan di sini
+document.getElementById('payment_method').addEventListener('change', function() {
+    const paymentDetails = document.getElementById('payment_details');
+    const eWalletSection = document.getElementById('e_wallet_section');
+    const creditCardSection = document.getElementById('credit_card_section');
+
+    paymentDetails.style.display = this.value !== '' ? 'block' : 'none';
+    eWalletSection.style.display = this.value === 'e_wallet' ? 'block' : 'none';
+    creditCardSection.style.display = this.value === 'kartu_kredit' ? 'block' : 'none';
+});
 </script>
 @endpush

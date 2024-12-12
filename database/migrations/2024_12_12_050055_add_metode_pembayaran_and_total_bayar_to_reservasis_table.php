@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::table('reservasis', function (Blueprint $table) {
             $table->enum('metode_pembayaran', ['scan', 'kartu_kredit', 'e_wallet'])->nullable();
+            $table->string('media_pembayaran')->nullable();
+            $table->string('nomor_media')->nullable(); 
             $table->integer('total_bayar')->nullable();
         });
     }
