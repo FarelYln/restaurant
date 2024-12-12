@@ -28,6 +28,9 @@
                     <a href="/admin/pembayaran" class="nav-item nav-link {{ Request::is('admin/pembayaran') ? 'active' : '' }}">
                         <i class="fa fa-credit-card me-2"></i>Pembayaran
                     </a>
+                    <a href="/admin/user" class="nav-item nav-link {{ Request::is('admin/user') ? 'active' : '' }}">
+                        <i class="fa fa-credit-card me-2"></i>User
+                    </a>
                     
                 </div>
             </nav>

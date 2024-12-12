@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\MejaController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UlasanController;
 use App\Http\Controllers\PaymentController;
@@ -57,6 +58,10 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
     Route::get('/admin/location/{id}/edit', [LocationController::class, 'edit'])->name('admin.location.edit');
     Route::put('/admin/location/{id}', [LocationController::class, 'update'])->name('admin.location.update');
     Route::delete('/admin/location/{id}', [LocationController::class, 'destroy'])->name('admin.location.destroy');
+
+
+    Route::get('/admin/user', [UserController::class, 'index'])->middleware('auth')->name('user');
+
 });
 
 
