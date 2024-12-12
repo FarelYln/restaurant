@@ -1,13 +1,12 @@
 @extends('layouts.landing_page.app')
 
 @section('content')
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="text-center mb-0">Halaman Pembayaran</h2>
-                </div>
+<div class="container">
+    <h1 class="mb-4 text-center">Pembayaran</h1>
+        <div class="card mb-4 shadow mt-5"> <!-- Menambahkan margin-top hanya pada card ini -->
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Pembayaran</h4>
+            </div>
                 
                 <div class="card-body">
                     {{-- Menampilkan error jika ada --}}
