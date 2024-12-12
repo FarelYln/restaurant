@@ -66,7 +66,7 @@
                                     @foreach ($reservasi->menus as $menu)
                                         <div>
                                             {{ $menu->nama_menu }}
-                                            <span class="badge bg-primary">Jumlah: {{ $menu->pivot->jumlah_pesanan }}</span>
+                                            <span class="badge bg-success">Jumlah: {{ $menu->pivot->jumlah_pesanan }}</span>
                                         </div>
                                     @endforeach
                                 </td>
