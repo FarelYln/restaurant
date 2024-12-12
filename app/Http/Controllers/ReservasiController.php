@@ -99,7 +99,7 @@ public function create(Request $request)
     }
 
     // Pagination dengan parameter query string
-    $meja = $query->paginate(6)->appends($request->only(['kapasitas', 'location']));
+    $meja = $query->paginate(9)->appends($request->only(['kapasitas', 'location']));
 
     // Ambil semua menu
     $menus = Menu::all();
@@ -119,7 +119,7 @@ public function searchMeja(Request $request)
         'search' => 'nullable|string|max:255'
     ]);
 
-    // Query dengan multiple kondisi pencarian
+    // Query dengan multiple kondisi pencarian dan pagination
     $meja = Meja::with('location')
         ->where('status', 'tersedia')
         ->where(function($query) use ($validated) {
@@ -128,9 +128,14 @@ public function searchMeja(Request $request)
                       $q->where('name', 'like', '%' . $validated['search'] . '%');
                   });
         })
-        ->get();
+        ->paginate(9);
 
-    return response()->json($meja);
+    return response()->json([
+        'data' => $meja->items(),
+        'current_page' => $meja->currentPage(),
+        'total_pages' => $meja->lastPage(),
+        'total_items' => $meja->total()
+    ]);
 }
 
 public function sortMeja(Request $request)

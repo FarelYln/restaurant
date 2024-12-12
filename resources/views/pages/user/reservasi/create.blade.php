@@ -96,6 +96,16 @@
                                 </div>
                             @endforeach
                         </div>
+                        
+                        {{-- Pagination Links --}}
+                        <div class="d-flex justify-content-center">
+                            {{ $meja->links() }}
+                        </div>
+                        
+                        {{-- Manual Pagination Container --}}
+                        <div id="meja_pagination" class="text-center mt-3">
+                            {{-- Pagination controls will be dynamically added via JavaScript --}}
+                        </div>
                     </div>
                 </div>
                 @error('id_meja')
@@ -174,43 +184,114 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Fungsi Search Meja
+    // Meja Search and Pagination
+    let currentMejaSearchPage = 1;
+    let mejaSearchValue = '';
+
     document.getElementById('search_meja').addEventListener('input', function() {
-        const searchValue = this.value.toLowerCase();
-        const mejaItems = document.querySelectorAll('.meja-item');
-        
-        mejaItems.forEach(item => {
-            const nomor = item.dataset.nomor.toLowerCase();
-            const lokasi = item.dataset.lokasi.toLowerCase();
-            
-            item.style.display = (nomor.includes(searchValue) || lokasi.includes(searchValue)) 
-                ? 'block' 
-                : 'none';
-        });
+        mejaSearchValue = this.value.toLowerCase();
+        currentMejaSearchPage = 1;
+        searchMeja();
     });
 
-    // Fungsi Sort Meja
-    document.getElementById('sort_by_meja').addEventListener('change', function() {
-        const sortBy = this.value;
-        const mejaList = document.querySelector('#meja_list .row');
-        const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
+    function searchMeja() {
+        fetch(`/search-meja?search=${mejaSearchValue}&page=${currentMejaSearchPage}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            const mejaList = document.querySelector('#meja_list .row');
+            mejaList.innerHTML = ''; // Clear existing items
 
-        mejaItems.sort((a, b) => {
-            const nomorA = a.dataset.nomor;
-            const nomorB = b.dataset.nomor;
-            return sortBy === 'asc' 
-                ? nomorA.localeCompare(nomorB) 
-                : nomorB.localeCompare(nomorA);
+            // Render new items
+            result.data.forEach(meja => {
+                const mejaItem = createMejaItem(meja);
+                mejaList.appendChild(mejaItem);
+            });
+
+            // Update pagination
+            updateMejaPagination(result);
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
+    }
 
-        // Hapus item lama
-        mejaList.innerHTML = '';
+    function createMejaItem(meja) {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-3 meja-item';
+        col.dataset.nomor = meja.nomor_meja;
+        col.dataset.lokasi = meja.location.name;
 
-        // Tambahkan item yang sudah diurutkan
-        mejaItems.forEach(item => mejaList.appendChild(item));
-    });
+        col.innerHTML = `
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" 
+                               type="checkbox" 
+                               name="id_meja[]" 
+                               value="${meja.id}"
+                               id="meja-${meja.id}">
+                        <label class="form-check-label" for="meja-${meja.id}">
+                            Meja ${meja.nomor_meja} 
+                            (${meja.location.name})
+                        </label>
+                    </div>
+                </div>
+            </div>
+        `;
 
-    // Fungsi Search Menu
+        return col;
+    }
+
+    function updateMejaPagination(result) {
+        const paginationContainer = document.getElementById('meja_pagination');
+        paginationContainer.innerHTML = ''; // Clear existing pagination
+
+        if (result.total_pages > 1) {
+            // Previous button
+            if (result.current_page > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = 'Previous';
+                prevButton.className = 'btn btn-secondary mr-2';
+                prevButton.addEventListener('click', () => {
+                    currentMejaSearchPage--;
+                    searchMeja();
+                });
+                paginationContainer.appendChild(prevButton);
+            }
+
+            // Page numbers
+            for (let i = 1; i <= result.total_pages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = `btn ${i === result.current_page ? 'btn-primary' : 'btn-secondary'} mr-1`;
+                pageButton.addEventListener('click', () => {
+                    currentMejaSearchPage = i;
+                    searchMeja();
+                });
+                paginationContainer.appendChild(pageButton);
+            }
+
+            // Next button
+            if (result.current_page < result.total_pages) {
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Next';
+                nextButton.className = 'btn btn-secondary';
+                nextButton.addEventListener('click', () => {
+                    currentMejaSearchPage++;
+                    searchMeja();
+                });
+                paginationContainer.appendChild(nextButton);
+            }
+        }
+    }
+
+    // Menu Search and Sorting
     document.getElementById('search_menu').addEventListener('input', function() {
         const searchValue = this.value.toLowerCase();
         const menuItems = document.querySelectorAll('.menu-item');
@@ -224,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Fungsi Sort Menu
+    // Sorting Menu
     document.getElementById('sort_by_menu').addEventListener('change', function() {
         const sortBy = this.value;
         const menuList = document.getElementById('menu_list');
