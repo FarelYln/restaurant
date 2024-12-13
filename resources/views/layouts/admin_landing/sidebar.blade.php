@@ -27,7 +27,7 @@
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-calendar-alt me-2"></i>Reservasi
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-3 ">
+                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-3 shadow-lg m-0">
                             <a href="/admin/reservasi" class="dropdown-item {{ Request::is('admin/reservasi') ? 'active' : '' }} py-2">
                                 <i class="fa fa-calendar me-2"></i>Reservasi
                             </a>
