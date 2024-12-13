@@ -37,7 +37,7 @@
                         </div>
                     </div>
                     <a href="/admin/user" class="nav-item nav-link {{ Request::is('admin/user') ? 'active' : '' }}">
-                        <i class="fa fa-users me-2"></i>User
+                        <i class="fa fa-user me-2"></i>User
                     </a>
                     
                 </div>
