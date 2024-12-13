@@ -68,7 +68,7 @@
 
 <!-- Cek apakah ada data untuk menampilkan grafik -->
 @if($reservations->isEmpty())
-    <p>Data reservasi tidak tersedia untuk bulan ini.</p>
+<p class="mt-2 text-center">Data reservasi tidak tersedia untuk bulan ini.</p>
 @else
     <!-- Chart Container -->
     <canvas id="myLineChart" width="400" height="200"></canvas>
