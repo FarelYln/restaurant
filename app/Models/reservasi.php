@@ -22,6 +22,7 @@ class reservasi extends Model
         'nomor_media', 
         'total_bayar', 
         'expired_at',
+        'card_holder_name',
     ];
 
     protected $casts = [

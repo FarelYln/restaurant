@@ -207,12 +207,153 @@
                     Lanjutkan ke Pembayaran
                 </button>
             </div>
+<!-- Modal Keranjang -->
+<div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel" aria-hidden="true">
+    <div class="modal-dialog left-align-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="keranjangItems"></div>
+                <div class="mt-3">
+                    <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-warning text-white" form="reservasiForm">Bayar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS -->
+<style>
+    .modal-dialog {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 300px; /* Atur lebar modal sesuai kebutuhan */
+        height: 100%; /* Full height */
+        margin: 0;
+        max-width: none; /* Hapus batasan lebar */
+    }
+
+    .modal-content {
+        height: 100%; /* Mengisi seluruh tinggi modal */
+        border-radius: 0;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px;
+    }
+
+    .modal-body {
+        overflow-y: auto;
+        height: calc(100% - 120px); /* Menyesuaikan tinggi modal */
+    }
+
+    .modal-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        border-top: 1px solid #dee2e6;
+        padding: 10px;
+    }
+</style>
+
+
         </form>
     </div>
 @endsection
 
 @push('scripts')
     <script>
+       document.addEventListener('DOMContentLoaded', function() {
+    const keranjang = {};
+    const keranjangCountElement = document.getElementById('keranjangCount');
+    const keranjangItemsElement = document.getElementById('keranjangItems');
+    const totalHargaElement = document.getElementById('totalHarga');
+
+    // Update keranjang (cart)
+    function updateKeranjang() {
+        keranjangItemsElement.innerHTML = '';
+        let totalHarga = 0;
+        let itemCount = 0;
+
+        for (const [id, item] of Object.entries(keranjang)) {
+            if (item.jumlah > 0) {
+                const itemHarga = item.jumlah * item.harga;
+                totalHarga += itemHarga;
+                itemCount += item.jumlah;
+
+                keranjangItemsElement.innerHTML += `
+                    <div class="d-flex justify-content-between">
+                        <span>${item.nama} (${item.jumlah})</span>
+                        <span>Rp. ${itemHarga.toLocaleString()}</span>
+                    </div>
+                `;
+            }
+        }
+
+        keranjangCountElement.textContent = itemCount;
+        totalHargaElement.textContent = totalHarga.toLocaleString();
+    }
+
+    // Increment and Decrement Quantity
+    document.querySelectorAll('.increment-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const menuId = this.dataset.target.split('-')[2];
+            const input = document.getElementById(`menu-quantity-${menuId}`);
+            let jumlah = parseInt(input.value) + 1;
+            input.value = jumlah;
+
+            // Update keranjang (cart)
+            const menuItem = {
+                id: menuId,
+                nama: this.closest('.menu-item').dataset.nama,
+                harga: parseInt(this.closest('.card-body').querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
+                jumlah: jumlah
+            };
+            keranjang[menuId] = menuItem;
+            updateKeranjang();
+        });
+    });
+
+    // Decrement Quantity
+    document.querySelectorAll('.decrement-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const menuId = this.dataset.target.split('-')[2];
+            const input = document.getElementById(`menu-quantity-${menuId}`);
+            let jumlah = Math.max(0, parseInt(input.value) - 1); // Prevent negative numbers
+            input.value = jumlah;
+
+            // Update keranjang (cart)
+            const menuItem = {
+                id: menuId,
+                nama: this.closest('.menu-item').dataset.nama,
+                harga: parseInt(this.closest('.card-body').querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
+                jumlah: jumlah
+            };
+            keranjang[menuId] = menuItem;
+            updateKeranjang();
+        });
+    });
+
+    // Show/Hide input quantity when the circle button is clicked
+    document.querySelectorAll('.circle-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const menuId = this.dataset.target.split('-')[2];
+            const input = document.getElementById(`menu-quantity-${menuId}`);
+            input.style.display = input.style.display === 'none' ? 'inline-block' : 'none';
+        });
+    });
+});
+
         document.addEventListener('DOMContentLoaded', function() {
             // Meja Search
             document.getElementById('search_meja').addEventListener('input', function() {
