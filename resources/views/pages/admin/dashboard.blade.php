@@ -83,25 +83,28 @@
         <canvas id="reservasiChart" width="400" height="200"></canvas>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-    const labels = @json($reservations->pluck('week')->map(fn($w) => 'Minggu ' . $w));
-    const data = @json($reservations->pluck('count'));
+    const allWeeks = Array.from({ length: 4 }, (_, i) => i + 1); // Daftar minggu dari 1 hingga 5 (atau sesuai kebutuhan)
+    const dataWeeks = @json($reservations->pluck('week'));
+    const dataCounts = @json($reservations->pluck('count'));
 
-    // Pastikan jika tidak ada data untuk minggu tertentu, set data ke 1 bukan 0
-    const weekData = labels.map((label, index) => {
-        return data[index] > 0 ? data[index] : 1;  // Jika data 0, ganti dengan 1
-    });
+    // Buat objek data berbasis minggu yang tersedia
+    const dataMap = Object.fromEntries(dataWeeks.map((week, index) => [week, dataCounts[index]]));
+
+    // Lengkapi data untuk semua minggu
+    const labels = allWeeks.map(week => `Minggu ${week}`);
+    const weekData = allWeeks.map(week => dataMap[week] || 0); // Isi 0 jika data tidak tersedia
 
     const ctx = document.getElementById('reservasiChart').getContext('2d');
     new Chart(ctx, {
-        type: 'bar',  // Menggunakan chart batang
+        type: 'bar', // Menggunakan chart batang
         data: {
-            labels: labels,  // Menggunakan labels yang sudah ada
+            labels: labels, // Semua minggu dari minggu 1 hingga 5
             datasets: [{
                 label: 'Jumlah Reservasi',
-                data: weekData,  // Data yang sudah diubah
+                data: weekData, // Data termasuk minggu tanpa reservasi
                 backgroundColor: 'rgba(75, 192, 192, 0.2)', // Warna latar belakang batang
-                borderColor: 'rgb(75, 192, 192)',  // Warna border batang
-                borderWidth: 1,  // Ketebalan border batang
+                borderColor: 'rgb(75, 192, 192)', // Warna border batang
+                borderWidth: 1, // Ketebalan border batang
             }]
         },
         options: {
@@ -130,6 +133,7 @@
         }
     });
 </script>
+
 
 
 
