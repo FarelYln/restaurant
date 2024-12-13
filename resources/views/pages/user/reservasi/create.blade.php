@@ -97,6 +97,16 @@
                 <div class="card-header bg-primary text-white">
                     <h4>Pilih Menu</h4>
                 </div>
+
+                <!-- Button for Keranjang -->
+                <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
+                    <!-- Other content can go here -->
+
+                    <button type="button" class="btn btn-info d-flex align-items-center ms-auto" data-bs-toggle="modal"
+                        data-bs-target="#keranjangModal">
+                        <i class="bi bi-cart-fill me-2"></i> Keranjang (<span id="keranjangCount">0</span>)
+                    </button>
+                </div>
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -112,10 +122,7 @@
                                 <option value="desc" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga
                                     Tertinggi</option>
                             </select>
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
-                                data-bs-target="#keranjangModal">
-                                Keranjang (<span id="keranjangCount">0</span>)
-                            </button>
+
                         </div>
                     </div>
 
@@ -149,7 +156,9 @@
                                                 class="form-control form-control-sm text-center w-25"
                                                 value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}"
                                                 min="0">
-                                                <button type="button" class="btn btn-outline-primary btn-sm me-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm me-2 increment-btn"
+                                                data-target="#menu-quantity-{{ $menu->id }}">+</button>
                                             <input type="hidden" name="menu[{{ $menu->id }}][id]"
                                                 value="{{ $menu->id }}">
                                         </div>
@@ -176,74 +185,105 @@
                     Lanjutkan ke Pembayaran
                 </button>
             </div>
-            <!-- Modal Keranjang -->
-            <div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <ul id="keranjangItems" class="list-group">
-                                <!-- Item keranjang akan diisi melalui JavaScript -->
-                            </ul>
-                            <div class="mt-3">
-                                <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-
-                        </div>
-                    </div>
+        <!-- Modal Keranjang -->
+<div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Ubah class menjadi modal-lg untuk memperlebar modal -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="keranjangItems" class="list-group">
+                    <!-- Cart items will be dynamically inserted by JavaScript -->
+                </ul>
+                <div class="mt-3">
+                    <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- CSS -->
+<style>
+    .modal-dialog {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 600px; /* Lebar modal ditingkatkan */
+        height: 100%;
+        margin: 0;
+        max-width: none;
+    }
 
-            <!-- CSS -->
-            <style>
-                .modal-dialog {
-                    position: fixed;
-                    top: 0;
-                    right: 0;
-                    width: 300px;
-                    /* Atur lebar modal sesuai kebutuhan */
-                    height: 100%;
-                    /* Full height */
-                    margin: 0;
-                    max-width: none;
-                    /* Hapus batasan lebar */
-                }
+    .modal-content {
+        height: 100%;
+        border-radius: 0;
+        padding: 20px; /* Menambahkan padding agar lebih rapi */
+    }
 
-                .modal-content {
-                    height: 100%;
-                    /* Mengisi seluruh tinggi modal */
-                    border-radius: 0;
-                }
+    .modal-header {
+        border-bottom: 1px solid #dee2e6;
+        padding: 15px;
+        background-color: #f8f9fa; /* Menambahkan latar belakang untuk header modal */
+    }
 
-                .modal-header {
-                    border-bottom: 1px solid #dee2e6;
-                    padding: 10px;
-                }
+    .modal-body {
+        overflow-y: auto;
+        height: calc(100% - 160px); /* Menyesuaikan tinggi modal setelah header dan footer */
+    }
 
-                .modal-body {
-                    overflow-y: auto;
-                    height: calc(100% - 120px);
-                    /* Menyesuaikan tinggi modal */
-                }
+    .modal-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        border-top: 1px solid #dee2e6;
+        padding: 10px;
+        background-color: #f8f9fa; /* Menambahkan latar belakang untuk footer modal */
+    }
 
-                .modal-footer {
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 100%;
-                    border-top: 1px solid #dee2e6;
-                    padding: 10px;
-                }
-            </style>
+    .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px; /* Menambahkan padding agar lebih luas */
+        border: 1px solid #dee2e6; /* Memberikan batas pada item keranjang */
+        margin-bottom: 10px; /* Memberikan jarak antar item */
+    }
+
+    .list-group-item img {
+        width: 70px; /* Mengatur ukuran gambar */
+        height: 70px;
+        object-fit: cover;
+    }
+
+    .list-group-item .d-flex {
+        align-items: center;
+    }
+
+    .list-group-item .d-flex div {
+        margin-right: 10px;
+    }
+
+    .modal-body strong {
+        font-size: 1.2em;
+        margin-top: 20px;
+    }
+
+    .btn-close {
+        font-size: 1.5rem;
+    }
+
+    /* Styling tombol tambah / kurangi */
+    .cart-decrement-btn, .cart-increment-btn {
+        padding: 5px 10px;
+    }
+</style>
 
 
         </form>
@@ -252,24 +292,24 @@
 
 @push('scripts')
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    const keranjang = {};
-    const keranjangCountElement = document.getElementById('keranjangCount');
-    const keranjangItemsElement = document.getElementById('keranjangItems');
-    const totalHargaElement = document.getElementById('totalHarga');
+        document.addEventListener('DOMContentLoaded', function() {
+            const keranjang = {};
+            const keranjangCountElement = document.getElementById('keranjangCount');
+            const keranjangItemsElement = document.getElementById('keranjangItems');
+            const totalHargaElement = document.getElementById('totalHarga');
 
-    function updateKeranjang() {
-        keranjangItemsElement.innerHTML = '';
-        let totalHarga = 0;
-        let totalItems = 0;
+            function updateKeranjang() {
+                keranjangItemsElement.innerHTML = '';
+                let totalHarga = 0;
+                let totalItems = 0;
 
-        Object.keys(keranjang).forEach(id => {
-            const item = keranjang[id];
-            if (item.jumlah > 0) {
-                totalHarga += item.harga * item.jumlah;
-                totalItems += item.jumlah;
+                Object.keys(keranjang).forEach(id => {
+                    const item = keranjang[id];
+                    if (item.jumlah > 0) {
+                        totalHarga += item.harga * item.jumlah;
+                        totalItems += item.jumlah;
 
-                const itemHtml = `
+                        const itemHtml = `
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
                             <img src="${item.image}" alt="${item.nama}" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
@@ -288,103 +328,36 @@
                         </div>
                     </li>
                 `;
-                keranjangItemsElement.insertAdjacentHTML('beforeend', itemHtml);
-            }
-        });
+                        keranjangItemsElement.insertAdjacentHTML('beforeend', itemHtml);
+                    }
+                });
 
-        totalHargaElement.textContent = totalHarga.toLocaleString('id-ID');
-        keranjangCountElement.textContent = totalItems;
+                totalHargaElement.textContent = totalHarga.toLocaleString('id-ID');
+                keranjangCountElement.textContent = totalItems;
 
-        // Add event listeners for cart increment/decrement buttons
-        document.querySelectorAll('.cart-increment-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const menuId = this.dataset.id;
-                incrementItemInCart(menuId);
-            });
-        });
+                // Add event listeners for cart increment/decrement buttons
+                document.querySelectorAll('.cart-increment-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const menuId = this.dataset.id;
+                        incrementItemInCart(menuId);
+                    });
+                });
 
-        document.querySelectorAll('.cart-decrement-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const menuId = this.dataset.id;
-                decrementItemInCart(menuId);
-            });
-        });
-    }
-
-    function incrementItemInCart(menuId) {
-        const input = document.getElementById(`menu-quantity-${menuId}`);
-        let jumlah = parseInt(input.value) + 1;
-        input.value = jumlah;
-
-        // Ambil informasi menu dari card
-        const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
-        const menuItem = {
-            id: menuId,
-            nama: menuCard.querySelector('.card-title').textContent,
-            harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
-            jumlah: jumlah,
-            image: menuCard.querySelector('.card-img-top').src
-        };
-        keranjang[menuId] = menuItem;
-        updateKeranjang();
-    }
-
-    function decrementItemInCart(menuId) {
-        const input = document.getElementById(`menu-quantity-${menuId}`);
-        let jumlah = Math.max(0, parseInt(input.value) - 1);
-        input.value = jumlah;
-
-        if (jumlah > 0) {
-            // Ambil informasi menu dari card
-            const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
-            const menuItem = {
-                id: menuId,
-                nama: menuCard.querySelector('.card-title').textContent,
-                harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
-                jumlah: jumlah,
-                image: menuCard.querySelector('.card-img-top').src
-            };
-            keranjang[menuId] = menuItem;
-        } else {
-            delete keranjang[menuId];
-        }
-        updateKeranjang();
-    }
-
-    // Add data-id to menu items for easier selection
-    document.querySelectorAll('.menu-item').forEach(item => {
-        const menuId = item.querySelector('input[type="number"]').id.split('-')[2];
-        item.setAttribute('data-id', menuId);
-    });
-
-    // Increment and Decrement buttons on menu items
-    document.querySelectorAll('.increment-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const menuId = this.dataset.target.split('-')[2];
-            incrementItemInCart(menuId);
-        });
-    });
-
-    document.querySelectorAll('.decrement-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const menuId = this.dataset.target.split('-')[2];
-            decrementItemInCart(menuId);
-        });
-    });
-
-    // Initial setup for number inputs
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('change', function() {
-            const menuId = this.name.match(/\d+/)[0];
-            const jumlah = parseInt(this.value);
-            
-            if (jumlah < 0) {
-                this.value = 0;
+                document.querySelectorAll('.cart-decrement-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const menuId = this.dataset.id;
+                        decrementItemInCart(menuId);
+                    });
+                });
             }
 
-            if (jumlah > 0) {
+            function incrementItemInCart(menuId) {
+                const input = document.getElementById(`menu-quantity-${menuId}`);
+                let jumlah = parseInt(input.value) + 1;
+                input.value = jumlah;
+
                 // Ambil informasi menu dari card
-                const menuCard = this.closest('.menu-item');
+                const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
                 const menuItem = {
                     id: menuId,
                     nama: menuCard.querySelector('.card-title').textContent,
@@ -393,76 +366,148 @@
                     image: menuCard.querySelector('.card-img-top').src
                 };
                 keranjang[menuId] = menuItem;
-            } else {
-                delete keranjang[menuId];
+                updateKeranjang();
             }
 
-            updateKeranjang();
-        });
-    });
+            function decrementItemInCart(menuId) {
+                const input = document.getElementById(`menu-quantity-${menuId}`);
+                let jumlah = Math.max(0, parseInt(input.value) - 1);
+                input.value = jumlah;
 
-    // Search and Sorting functions (keeping the previous implementation)
-    document.getElementById('search_meja').addEventListener('input', function() {
-        const mejaSearchValue = this.value.toLowerCase();
-        const mejaItems = document.querySelectorAll('.meja-item');
-        mejaItems.forEach(item => {
-            const itemName = item.dataset.nomor.toLowerCase() + " " + item.dataset.lokasi.toLowerCase();
-            if (itemName.includes(mejaSearchValue)) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
+                if (jumlah > 0) {
+                    // Ambil informasi menu dari card
+                    const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
+                    const menuItem = {
+                        id: menuId,
+                        nama: menuCard.querySelector('.card-title').textContent,
+                        harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
+                        jumlah: jumlah,
+                        image: menuCard.querySelector('.card-img-top').src
+                    };
+                    keranjang[menuId] = menuItem;
+                } else {
+                    delete keranjang[menuId];
+                }
+                updateKeranjang();
             }
+
+            // Add data-id to menu items for easier selection
+            document.querySelectorAll('.menu-item').forEach(item => {
+                const menuId = item.querySelector('input[type="number"]').id.split('-')[2];
+                item.setAttribute('data-id', menuId);
+            });
+
+            // Increment and Decrement buttons on menu items
+            document.querySelectorAll('.increment-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const menuId = this.dataset.target.split('-')[2];
+                    incrementItemInCart(menuId);
+                });
+            });
+
+            document.querySelectorAll('.decrement-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const menuId = this.dataset.target.split('-')[2];
+                    decrementItemInCart(menuId);
+                });
+            });
+
+            // Initial setup for number inputs
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const menuId = this.name.match(/\d+/)[0];
+                    const jumlah = parseInt(this.value);
+
+                    if (jumlah < 0) {
+                        this.value = 0;
+                    }
+
+                    if (jumlah > 0) {
+                        // Ambil informasi menu dari card
+                        const menuCard = this.closest('.menu-item');
+                        const menuItem = {
+                            id: menuId,
+                            nama: menuCard.querySelector('.card-title').textContent,
+                            harga: parseInt(menuCard.querySelector('.card-text').textContent
+                                .replace(/[^\d]/g, '')),
+                            jumlah: jumlah,
+                            image: menuCard.querySelector('.card-img-top').src
+                        };
+                        keranjang[menuId] = menuItem;
+                    } else {
+                        delete keranjang[menuId];
+                    }
+
+                    updateKeranjang();
+                });
+            });
+
+            // Search and Sorting functions (keeping the previous implementation)
+            document.getElementById('search_meja').addEventListener('input', function() {
+                const mejaSearchValue = this.value.toLowerCase();
+                const mejaItems = document.querySelectorAll('.meja-item');
+                mejaItems.forEach(item => {
+                    const itemName = item.dataset.nomor.toLowerCase() + " " + item.dataset.lokasi
+                        .toLowerCase();
+                    if (itemName.includes(mejaSearchValue)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            document.getElementById('search_menu').addEventListener('input', function() {
+                const menuSearchValue = this.value.toLowerCase();
+                const menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(item => {
+                    const itemName = item.dataset.nama.toLowerCase();
+                    if (itemName.includes(menuSearchValue)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            // Sorting functions
+            document.getElementById('sort_by_meja').addEventListener('change', function() {
+                const sortBy = this.value;
+                const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
+                mejaItems.sort((a, b) => {
+                    const nomorA = parseInt(a.dataset.nomor);
+                    const nomorB = parseInt(b.dataset.nomor);
+                    return sortBy === 'asc' ? nomorA - nomorB : nomorB - nomorA;
+                });
+                const mejaList = document.getElementById('meja_list');
+                mejaList.innerHTML = '';
+                mejaItems.forEach(item => mejaList.appendChild(item));
+            });
+
+            document.getElementById('sort_by_menu').addEventListener('change', function() {
+                const sortBy = this.value;
+                const menuItems = Array.from(document.querySelectorAll('.menu-item'));
+
+                menuItems.sort((a, b) => {
+                    if (sortBy === 'asc' || sortBy === 'desc') {
+                        const priceA = parseInt(a.querySelector('.card-text').textContent.replace(
+                            /[^\d]/g, ''));
+                        const priceB = parseInt(b.querySelector('.card-text').textContent.replace(
+                            /[^\d]/g, ''));
+
+                        return sortBy === 'asc' ? priceA - priceB : priceB - priceA;
+                    } else {
+                        const nameA = a.querySelector('.card-title').textContent;
+                        const nameB = b.querySelector('.card-title').textContent;
+                        return sortBy === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(
+                            nameA);
+                    }
+                });
+
+                const menuList = document.getElementById('menu_list');
+                menuList.innerHTML = '';
+                menuItems.forEach(item => menuList.appendChild(item));
+            });
         });
-    });
-
-    document.getElementById('search_menu').addEventListener('input', function() {
-        const menuSearchValue = this.value.toLowerCase();
-        const menuItems = document.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            const itemName = item.dataset.nama.toLowerCase();
-            if (itemName.includes(menuSearchValue)) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    });
-
-    // Sorting functions
-    document.getElementById('sort_by_meja').addEventListener('change', function() {
-        const sortBy = this.value;
-        const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
-        mejaItems.sort((a, b) => {
-            const nomorA = parseInt(a.dataset.nomor);
-            const nomorB = parseInt(b.dataset.nomor);
-            return sortBy === 'asc' ? nomorA - nomorB : nomorB - nomorA;
-        });
-        const mejaList = document.getElementById('meja_list');
-        mejaList.innerHTML = '';
-        mejaItems.forEach(item => mejaList.appendChild(item));
-    });
-
-    document.getElementById('sort_by_menu').addEventListener('change', function() {
-        const sortBy = this.value;
-        const menuItems = Array.from(document.querySelectorAll('.menu-item'));
-
-        menuItems.sort((a, b) => {
-            if (sortBy === 'asc' || sortBy === 'desc') {
-                const priceA = parseInt(a.querySelector('.card-text').textContent.replace(/[^\d]/g, ''));
-                const priceB = parseInt(b.querySelector('.card-text').textContent.replace(/[^\d]/g, ''));
-
-                return sortBy === 'asc' ? priceA - priceB : priceB - priceA;
-            } else {
-                const nameA = a.querySelector('.card-title').textContent;
-                const nameB = b.querySelector('.card-title').textContent;
-                return sortBy === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-            }
-        });
-
-        const menuList = document.getElementById('menu_list');
-        menuList.innerHTML = '';
-        menuItems.forEach(item => menuList.appendChild(item));
-    });
-});
     </script>
 @endpush
