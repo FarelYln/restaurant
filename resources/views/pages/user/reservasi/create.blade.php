@@ -1,6 +1,16 @@
 @extends('layouts.landing_page.app')
 
 @section('content')
+<style>
+    .star {
+    font-size: 1.2em;
+    color: #ddd;
+}
+.star.filled {
+    color: gold;
+}
+
+</style>
     <div class="container">
         <h1 class="mb-4 text-center">Reservasi</h1>
         <form action="{{ route('user.reservasi.store') }}" method="POST">
@@ -61,88 +71,132 @@
                     </div>
 
                     {{-- Daftar Meja --}}
-                    <div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
-                        @foreach ($meja as $m)
-                            <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}" data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}" data-lantai="{{ $m->location->floor }}">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="id_meja[]" value="{{ $m->id }}" id="meja-{{ $m->id }}" {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="meja-{{ $m->id }}">
-                                                <div>Nomor Meja: {{ $m->nomor_meja }}</div>
-                                                <div>Kapasitas: {{ $m->kapasitas }}</div>
-                                                <div>Status: <span class="badge {{ $m->status == 'Tersedia' ? 'bg-success' : 'bg-success' }}">{{ $m->status }}</span></div>
-                                                <div>Lokasi: {{ $m->location->name }}</div>
-                                                <div>Lantai: {{ $m->location->floor }}</div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+                    <!-- Dropdown for filtering tables by floor -->
+<div class="mb-3">
+    <label for="filter-lantai" class="form-label">Filter Berdasarkan Lantai</label>
+    <select id="filter-lantai" class="form-control">
+        <option value="">Pilih Lantai</option>
+        <!-- Loop through unique lantai values -->
+        @foreach ($meja->pluck('location.floor')->unique() as $floor)
+            <option value="{{ $floor }}">{{ $floor }}</option>
+        @endforeach
+    </select>
+</div>
+
+<!-- List of tables -->
+<div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
+    @foreach ($meja as $m)
+        <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}" data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}" data-lantai="{{ $m->location->floor }}">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="id_meja[]" value="{{ $m->id }}" id="meja-{{ $m->id }}" {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="meja-{{ $m->id }}">
+                            <div>Nomor Meja: {{ $m->nomor_meja }}</div>
+                            <div>Kapasitas: {{ $m->kapasitas }}</div>
+                            <div>Status: <span class="badge {{ $m->status == 'Tersedia' ? 'bg-success' : 'bg-success' }}">{{ $m->status }}</span></div>
+                            <div>Lokasi: {{ $m->location->name }}</div>
+                            <div>Lantai: {{ $m->location->floor }}</div>
+                        </label>
                     </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+</div>
+
+<script>
+    // Filter tables by selected floor
+    document.getElementById('filter-lantai').addEventListener('change', function() {
+        var selectedFloor = this.value;
+
+        document.querySelectorAll('.meja-item').forEach(function(item) {
+            var floor = item.getAttribute('data-lantai');
+            if (selectedFloor === "" || floor === selectedFloor) {
+                item.style.display = '';  // Show the table item
+            } else {
+                item.style.display = 'none';  // Hide the table item
+            }
+        });
+    });
+</script>
+
                 </div>
             </div>
 
             {{-- Pilih Menu --}}
             <div class="card mb-3">
-                <div class="card-header bg-primary text-white">
-                    <h4>Pilih Menu</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <input type="text" id="search_menu" class="form-control" placeholder="Cari menu...">
-                        </div>
-                        <div class="col-md-6">
-                            <select id="sort_by_menu" class="form-control">
-                                <option value="">Urutkan Menu</option>
-                                <option value="asc">Nama Menu (A-Z)</option>
-                                <option value="desc">Nama Menu (Z-A)</option>
-                                <option value="asc" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Harga Terendah</option>
-    <option value="desc" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga Tertinggi</option>
-                            </select>
-                            
-                        </div>
-                    </div>
-
-                    <div class="row" id="menu_list" style="max-height: 400px; overflow-y: auto;">
-                        @foreach ($menus as $menu)
-                            <div class="col-md-4 mb-4 menu-item" data-nama="{{ $menu->nama_menu }}">
-                                <div class="card h-100">
-                                    @if ($menu->image)
-                                        <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
-                                    @else
-                                        <img src="{{ asset('images/default-menu.jpg') }}" class="card-img-top" alt="Default Image">
-                                    @endif
-                                    <div class="card-body d-flex flex-column justify-content-between">
-                                        <h5 class="card-title">{{ $menu->nama_menu }}</h5>
-                                        <p class="card-text">Rp. {{ number_format($menu->harga, 0, ',', '.') }}</p>
-                                        <p class="card-text">
-                                            <small>Kategori:
-                                                @foreach ($menu->categories as $category)
-                                                    <span class="badge bg-primary">{{ $category->nama_kategori }}</span>
-                                                @endforeach
-                                            </small>
-                                        </p>
-                                        <div class="d-flex align-items-center">
-                                            <button type="button" class="btn btn-outline-primary btn-sm me-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
-                                            <input type="number" id="menu-quantity-{{ $menu->id }}" name="menu[{{ $menu->id }}][jumlah_pesanan]" class="form-control form-control-sm text-center w-25" value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}" min="0">
-                                            <input type="hidden" name="menu[{{ $menu->id }}][id]" value="{{ $menu->id }}">
-                                        </div>
-                                        @error('menu.' . $menu->id . '.jumlah_pesanan')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    @error('menu')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
+    <div class="card-header bg-primary text-white">
+        <h4>Pilih Menu</h4>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <input type="text" id="search_menu" class="form-control" placeholder="Cari menu...">
             </div>
+            <div class="col-md-6">
+                <select id="sort_by_menu" class="form-control">
+                    <option value="">Urutkan Menu</option>
+                    <option value="asc">Nama Menu (A-Z)</option>
+                    <option value="desc">Nama Menu (Z-A)</option>
+                    <option value="asc" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Harga Terendah</option>
+                    <option value="desc" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga Tertinggi</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row" id="menu_list" style="max-height: 400px; overflow-y: auto;">
+            @foreach ($menus as $menu)
+                <div class="col-md-4 mb-4 menu-item" data-nama="{{ $menu->nama_menu }}">
+                    <div class="card h-100">
+                        @if ($menu->image)
+                            <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
+                        @else
+                            <img src="{{ asset('images/default-menu.jpg') }}" class="card-img-top" alt="Default Image">
+                        @endif
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <h5 class="card-title">{{ $menu->nama_menu }}</h5>
+                            <p class="card-text">Rp. {{ number_format($menu->harga, 0, ',', '.') }}</p>
+
+                            <p class="card-text">
+                                <small>Kategori:
+                                    @foreach ($menu->categories as $category)
+                                        <span class="badge bg-primary">{{ $category->nama_kategori }}</span>
+                                    @endforeach
+                                </small>
+                            </p>
+
+                            <!-- Menambahkan Rating -->
+                            <div class="d-flex align-items-center">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <span class="star {{ $i <= $menu->rating ? 'filled' : '' }}" style="color: {{ $i <= $menu->rating ? 'gold' : 'lightgray' }};">&#9733;</span>
+                                @endfor
+                                <span class="ms-2">{{ number_format($menu->rating, 1) }} / 5</span>
+                            </div>
+
+                            <!-- Penambahan Quantity (Centered) -->
+                            <div class="d-flex justify-content-center align-items-center mt-3">
+                            <input type="number" id="menu-quantity-{{ $menu->id }}" name="menu[{{ $menu->id }}][jumlah_pesanan]" class="form-control form-control-sm text-center w-25 outline-none" value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}" min="0">
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
+                                <input type="hidden" name="menu[{{ $menu->id }}][id]" value="{{ $menu->id }}">
+                            </div>
+                            @error('menu.' . $menu->id . '.jumlah_pesanan')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        @error('menu')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+        @enderror
+    </div>
+</div>
+
+
+
 
             {{-- Hidden Input untuk Status --}}
             <input type="hidden" name="status_reservasi" value="pending">

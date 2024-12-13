@@ -135,6 +135,8 @@ public function create(Request $request)
                   ->orWhere('harga', 'like', '%' . $validated['search_menu'] . '%');
     }
 
+    
+
     // Menambahkan sorting berdasarkan harga jika parameter sort_price ada
     if ($request->filled('sort_price')) {
         $menuQuery->orderBy('harga', $validated['sort_price']);
@@ -272,6 +274,7 @@ public function sortMenu(Request $request)
             'id_meja.*' => 'exists:meja,id',
             'status_reservasi' => 'required|in:pending,confirmed,completed,canceled',
             'menu' => 'array', 
+            'jam_reservasi' => 'required|date_format:H:i|after_or_equal:10:00|before_or_equal:22:00',
         ]);
     
         // Validasi khusus untuk menu
