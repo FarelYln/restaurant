@@ -51,12 +51,29 @@
         <div class="col-md-3 mt-4">
             <label for="month" class="form-label">Pilih Bulan</label>
             <select name="month" id="month" class="form-select" onchange="this.form.submit()">
-                @for($i = 1; $i <= 12; $i++)
-                    <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>
-                        {{ DateTime::createFromFormat('!m', $i)->format('F') }}
-                    </option>
-                @endfor
-            </select>
+    @php
+        $bulanIndonesia = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
+        ];
+    @endphp
+    @for($i = 1; $i <= 12; $i++)
+        <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>
+            {{ $bulanIndonesia[$i] }}
+        </option>
+    @endfor
+</select>
+
         </div>
     </form>
 
