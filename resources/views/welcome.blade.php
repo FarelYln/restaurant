@@ -10,7 +10,7 @@
                         Jadikan setiap momen bersantap Anda lebih istimewa bersama kami.
                         Jelajahi menu terbaik kami dan nikmati pengalaman kuliner yang tak terlupakan.
                     </p>
-                    <a href="/reservasi/create" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Reservasi Sekarang</a>
+                    <a href="/reservasi/create" class="btn py-sm-3 px-sm-5 me-3 animated slideInLeft" style="background-color: orange; color: white; border: none; text-decoration: none;">Reservasi Sekarang</a>
                 </div>
                 <div class="col-lg-6 text-center text-lg-end overflow-hidden">
                     <img class="img-fluid" src="{{ asset('asset_landing/img/hero.png') }}" alt="Restoran Kami">
@@ -134,8 +134,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                        <a class="btn btn-primary py-3 px-5 mt-2" href="">Read More</a>
                     </div>
                 </div>
             </div>
@@ -186,86 +184,86 @@
        
 
 
-        <!-- Team Start -->
-        <div class="container-xxl pt-5 pb-3">
-            <div class="container">
-                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <h5 class="section-title ff-secondary text-center text-primary fw-normal">Team Members</h5>
-                    <h1 class="mb-5">Our Master Chefs</h1>
+      <!-- Team Start -->
+<div class="container-xxl pt-5 pb-3">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Team Members</h5>
+            <h1 class="mb-5">Our Master Chefs</h1>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="team-item text-center rounded overflow-hidden">
+                    <div class="rounded-circle overflow-hidden m-4">
+                        <img class="img-fluid" src="{{ asset('asset_landing/img/team-1.jpg') }}" alt="">
+                    </div>
+                    <h5 class="mb-0">Chef Asep</h5>
+                    <small>Executive Chef</small>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="team-item text-center rounded overflow-hidden">
-                            <div class="rounded-circle overflow-hidden m-4">
-                                <img class="img-fluid" src="{{ asset('asset_landing/img/team-1.jpg') }}" alt="">
-                            </div>
-                            <h5 class="mb-0">Chef Asep</h5>
-                            <small>Executive Chef</small>
-                            <div class="d-flex justify-content-center mt-3">
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="team-item text-center rounded overflow-hidden">
+                    <div class="rounded-circle overflow-hidden m-4">
+                        <img class="img-fluid" src="{{ asset('asset_landing/img/team-2.jpg') }}" alt="">
                     </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="team-item text-center rounded overflow-hidden">
-                            <div class="rounded-circle overflow-hidden m-4">
-                                <img class="img-fluid" src="{{ asset('asset_landing/img/team-2.jpg') }}" alt="">
-                            </div>
-                            <h5 class="mb-0">Chef Budi</h5>
-                            <small>Chef de Partie</small>
-                            <div class="d-flex justify-content-center mt-3">
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
+                    <h5 class="mb-0">Chef Budi</h5>
+                    <small>Chef de Partie</small>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-instagram"></i></a>
                     </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                        <div class="team-item text-center rounded overflow-hidden">
-                            <div class="rounded-circle overflow-hidden m-4">
-                                <img class="img-fluid" src="{{ asset('asset_landing/img/team-3.jpg') }}" alt="">
-                            </div>
-                            <h5 class="mb-0">Chef Agus</h5>
-                            <small>Sous Chef</small>
-                            <div class="d-flex justify-content-center mt-3">
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="team-item text-center rounded overflow-hidden">
+                    <div class="rounded-circle overflow-hidden m-4">
+                        <img class="img-fluid" src="{{ asset('asset_landing/img/team-3.jpg') }}" alt="">
                     </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                        <div class="team-item text-center rounded overflow-hidden">
-                            <div class="rounded-circle overflow-hidden m-4">
-                                <img class="img-fluid" src="{{ asset('asset_landing/img/team-4.jpg') }}" alt="">
-                            </div>
-                            <h5 class="mb-0">Chef Juna</h5>
-                            <small>Chef de Partie</small>
-                            <div class="d-flex justify-content-center mt-3">
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square btn-primary mx-1" href=""><i
-                                        class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
+                    <h5 class="mb-0">Chef Agus</h5>
+                    <small>Sous Chef</small>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
+                <div class="team-item text-center rounded overflow-hidden">
+                    <div class="rounded-circle overflow-hidden m-4">
+                        <img class="img-fluid" src="{{ asset('asset_landing/img/team-4.jpg') }}" alt="">
+                    </div>
+                    <h5 class="mb-0">Chef Juna</h5>
+                    <small>Chef de Partie</small>
+                    <div class="d-flex justify-content-center mt-3">
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square mx-1" href="" style="background-color: orange; color: white;"><i
+                                class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Team End -->
+    </div>
+</div>
+<!-- Team End -->
 
 
 <!-- Testimonial Start -->
@@ -331,6 +329,6 @@
 
 
         <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+        <a href="#" class="btn btn-lg btn-lg-square back-to-top" style="background-color: orange; color: white;"><i class="bi bi-arrow-up"></i></a>
     </div>
 @endsection

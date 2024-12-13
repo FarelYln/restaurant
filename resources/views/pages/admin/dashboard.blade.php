@@ -46,7 +46,7 @@
     <!-- Sale & Revenue End -->
      <!-- chart -->
      <form method="GET" action="{{ route('dashboard') }}">
-    <div class="mb-3">
+        <div class="col-md-3 mt-4">
         <label for="month" class="form-label">Pilih Bulan</label>
         <select name="month" id="month" class="form-select" onchange="this.form.submit()">
             <option value="1" {{ $month == 1 ? 'selected' : '' }}>Januari</option>

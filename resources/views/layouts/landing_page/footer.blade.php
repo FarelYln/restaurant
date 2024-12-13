@@ -34,7 +34,7 @@
                 <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
                 <div class="position-relative mx-auto" style="max-width: 400px;">
                     <input class="form-control border-primary w-100 py-3 ps-4 pe-5" type="text" placeholder="Email Anda">
-                    <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Daftar</button>
+                    <button type="button" class="btn py-2 position-absolute top-0 end-0 mt-2 me-2" style="background-color: orange; color: white; border: none;">Daftar</button>
                 </div>
             </div>
         </div>

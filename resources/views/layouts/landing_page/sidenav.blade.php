@@ -88,7 +88,8 @@
                     @csrf
                 </form>
             @else
-                <a href="/register" class="btn btn-primary py-2 px-4">Daftar</a>
+            <a href="/register" class="btn py-2 px-4" style="background-color: orange; color: white; border: none; text-decoration: none; display: inline-block;">Daftar</a>
+
             @endauth
         </div>
     </nav>
