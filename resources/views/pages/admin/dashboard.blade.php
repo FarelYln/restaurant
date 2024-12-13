@@ -44,9 +44,9 @@
 </div>
 
     <!-- Sale & Revenue End -->
-     <!-- chart -->
-     <form method="GET" action="{{ route('dashboard') }}">
-        <div class="col-md-3 mt-4">
+    <!-- chart -->
+<form method="GET" action="{{ route('dashboard') }}">
+    <div class="col-md-2 col-lg-2 mt-4" style="margin-left: 5%; margin-right: 10%;">
         <label for="month" class="form-label">Pilih Bulan</label>
         <select name="month" id="month" class="form-select" onchange="this.form.submit()">
             <option value="1" {{ $month == 1 ? 'selected' : '' }}>Januari</option>
@@ -64,6 +64,7 @@
         </select>
     </div>
 </form>
+
 
 <!-- Cek apakah ada data untuk menampilkan grafik -->
 @if($reservations->isEmpty())
