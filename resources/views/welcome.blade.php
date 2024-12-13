@@ -10,7 +10,7 @@
                         Jadikan setiap momen bersantap Anda lebih istimewa bersama kami.
                         Jelajahi menu terbaik kami dan nikmati pengalaman kuliner yang tak terlupakan.
                     </p>
-                    <a href="/reservasi/create" class="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft">Reservasi Sekarang</a>
+                    <a href="/reservasi/create" class="btn py-sm-3 px-sm-5 me-3 animated slideInLeft" style="background-color: orange; color: white; border: none; text-decoration: none;">Reservasi Sekarang</a>
                 </div>
                 <div class="col-lg-6 text-center text-lg-end overflow-hidden">
                     <img class="img-fluid" src="{{ asset('asset_landing/img/hero.png') }}" alt="Restoran Kami">

@@ -1,51 +1,50 @@
 @extends('layouts.landing_page.app')
 
 @section('content')
-
-<div class="container">
-    <h1 class="mb-4 text-center">Reservasi</h1>
-    <form action="{{ route('user.reservasi.store') }}" method="POST">
-        @csrf
-        <div class="card mb-4 shadow mt-5"> <!-- Menambahkan margin-top hanya pada card ini -->
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Informasi Reservasi</h4>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="tanggal_reservasi">Tanggal Reservasi</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
-                                <input type="date"
-                                    class="form-control @error('tanggal_reservasi') is-invalid @enderror"
-                                    name="tanggal_reservasi" value="{{ old('tanggal_reservasi') }}" required>
-                                @error('tanggal_reservasi')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+    <div class="container">
+        <h1 class="mb-4 text-center">Reservasi</h1>
+        <form action="{{ route('user.reservasi.store') }}" method="POST">
+            @csrf
+            <div class="card mb-4 shadow mt-5"> <!-- Menambahkan margin-top hanya pada card ini -->
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Informasi Reservasi</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tanggal_reservasi">Tanggal Reservasi</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                                    <input type="date"
+                                        class="form-control @error('tanggal_reservasi') is-invalid @enderror"
+                                        name="tanggal_reservasi" value="{{ old('tanggal_reservasi') }}" required>
+                                    @error('tanggal_reservasi')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="jam_reservasi">Jam Reservasi</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                <input type="time" class="form-control @error('jam_reservasi') is-invalid @enderror"
-                                    name="jam_reservasi" value="{{ old('jam_reservasi') }}" required>
-                                @error('jam_reservasi')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="jam_reservasi">Jam Reservasi</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                    <input type="time" class="form-control @error('jam_reservasi') is-invalid @enderror"
+                                        name="jam_reservasi" value="{{ old('jam_reservasi') }}" required>
+                                    @error('jam_reservasi')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
             {{-- Pilih Meja --}}
             <div class="card mb-3">
-                <div class="card-header">
+                <div class="card-header bg-primary text-white">
                     <h4>Pilih Meja</h4>
                 </div>
                 <div class="card-body">
@@ -93,19 +92,13 @@
                             <div class="d-flex justify-content-center">
                                 {{ $meja->links('pagination::bootstrap-4') }}
                             </div>
-
-                            {{-- Manual Pagination Container --}}
-                            <div id="meja_pagination" class="text-center mt-3">
-                                {{-- Pagination controls will be dynamically added via JavaScript --}}
-                            </div>
-
                             @error('id_meja')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
 
                             {{-- Pilih Menu --}}
                             <div class="card mb-3">
-                                <div class="card-header">
+                                <div class="card-header bg-primary text-white">
                                     <h4>Pilih Menu</h4>
                                 </div>
                                 <div class="card-body">
@@ -157,60 +150,61 @@
 
                             {{-- Tombol Submit --}}
                             <div class="form-group text-right">
-                         <button type="submit" class="btn btn-primary btn-lg">
-                     Lanjutkan ke Pembayaran
-                 </button>
-             </div>
+                                <button type="submit" class=""
+                                    style="background-color: orange; color: white; border: none;">
+                                    Lanjutkan ke Pembayaran
+                                </button>
+                </div>
         </form>
     </div>
 @endsection
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Meja Search and Pagination
-                let currentMejaSearchPage = 1;
-                let mejaSearchValue = '';
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Meja Search and Pagination
+            let currentMejaSearchPage = 1;
+            let mejaSearchValue = '';
 
-                document.getElementById('search_meja').addEventListener('input', function() {
-                    mejaSearchValue = this.value.toLowerCase();
-                    currentMejaSearchPage = 1;
-                    searchMeja();
-                });
+            document.getElementById('search_meja').addEventListener('input', function() {
+                mejaSearchValue = this.value.toLowerCase();
+                currentMejaSearchPage = 1;
+                searchMeja();
+            });
 
-                function searchMeja() {
-                    fetch(`/search-meja?search=${mejaSearchValue}&page=${currentMejaSearchPage}`, {
-                            method: 'GET',
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(result => {
-                            const mejaList = document.querySelector('#meja_list .row');
-                            mejaList.innerHTML = ''; // Clear existing items
+            function searchMeja() {
+                fetch(`/search-meja?search=${mejaSearchValue}&page=${currentMejaSearchPage}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        const mejaList = document.querySelector('#meja_list .row');
+                        mejaList.innerHTML = ''; // Clear existing items
 
-                            // Render new items
-                            result.data.forEach(meja => {
-                                const mejaItem = createMejaItem(meja);
-                                mejaList.appendChild(mejaItem);
-                            });
-
-                            // Update pagination
-                            updateMejaPagination(result);
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
+                        // Render new items
+                        result.data.forEach(meja => {
+                            const mejaItem = createMejaItem(meja);
+                            mejaList.appendChild(mejaItem);
                         });
-                }
 
-                function createMejaItem(meja) {
-                    const col = document.createElement('div');
-                    col.className = 'col-md-4 mb-3 meja-item';
-                    col.dataset.nomor = meja.nomor_meja;
-                    col.dataset.lokasi = meja.location.name;
+                        // Update pagination
+                        updateMejaPagination(result);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
 
-                    col.innerHTML = `
+            function createMejaItem(meja) {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-3 meja-item';
+                col.dataset.nomor = meja.nomor_meja;
+                col.dataset.lokasi = meja.location.name;
+
+                col.innerHTML = `
             <div class="card">
                 <div class="card-body">
                     <div class="form-check">
@@ -228,87 +222,87 @@
             </div>
         `;
 
-                    return col;
-                }
+                return col;
+            }
 
-                function updateMejaPagination(result) {
-                    const paginationContainer = document.getElementById('meja_pagination');
-                    paginationContainer.innerHTML = ''; // Clear existing pagination
+            function updateMejaPagination(result) {
+                const paginationContainer = document.getElementById('meja_pagination');
+                paginationContainer.innerHTML = ''; // Clear existing pagination
 
-                    if (result.total_pages > 1) {
-                        // Previous button
-                        if (result.current_page > 1) {
-                            const prevButton = document.createElement('button');
-                            prevButton.textContent = 'Previous';
-                            prevButton.className = 'btn btn-secondary mr-2';
-                            prevButton.addEventListener('click', () => {
-                                currentMejaSearchPage--;
-                                searchMeja();
-                            });
-                            paginationContainer.appendChild(prevButton);
-                        }
+                if (result.total_pages > 1) {
+                    // Previous button
+                    if (result.current_page > 1) {
+                        const prevButton = document.createElement('button');
+                        prevButton.textContent = 'Previous';
+                        prevButton.className = 'btn btn-secondary mr-2';
+                        prevButton.addEventListener('click', () => {
+                            currentMejaSearchPage--;
+                            searchMeja();
+                        });
+                        paginationContainer.appendChild(prevButton);
+                    }
 
-                        // Page numbers
-                        for (let i = 1; i <= result.total_pages; i++) {
-                            const pageButton = document.createElement('button');
-                            pageButton.textContent = i;
-                            pageButton.className =
-                                `btn ${i === result.current_page ? 'btn-primary' : 'btn-secondary'} mr-1`;
-                            pageButton.addEventListener('click', () => {
-                                currentMejaSearchPage = i;
-                                searchMeja();
-                            });
-                            paginationContainer.appendChild(pageButton);
-                        }
+                    // Page numbers
+                    for (let i = 1; i <= result.total_pages; i++) {
+                        const pageButton = document.createElement('button');
+                        pageButton.textContent = i;
+                        pageButton.className =
+                            `btn ${i === result.current_page ? 'btn-primary' : 'btn-secondary'} mr-1`;
+                        pageButton.addEventListener('click', () => {
+                            currentMejaSearchPage = i;
+                            searchMeja();
+                        });
+                        paginationContainer.appendChild(pageButton);
+                    }
 
-                        // Next button
-                        if (result.current_page < result.total_pages) {
-                            const nextButton = document.createElement('button');
-                            nextButton.textContent = 'Next';
-                            nextButton.className = 'btn btn-secondary';
-                            nextButton.addEventListener('click', () => {
-                                currentMejaSearchPage++;
-                                searchMeja();
-                            });
-                            paginationContainer.appendChild(nextButton);
-                        }
+                    // Next button
+                    if (result.current_page < result.total_pages) {
+                        const nextButton = document.createElement('button');
+                        nextButton.textContent = 'Next';
+                        nextButton.className = 'btn btn-secondary';
+                        nextButton.addEventListener('click', () => {
+                            currentMejaSearchPage++;
+                            searchMeja();
+                        });
+                        paginationContainer.appendChild(nextButton);
                     }
                 }
+            }
 
-                // Menu Search and Sorting
-                document.getElementById('search_menu').addEventListener('input', function() {
-                    const searchValue = this.value.toLowerCase();
-                    const menuItems = document.querySelectorAll('.menu-item');
+            // Menu Search and Sorting
+            document.getElementById('search_menu').addEventListener('input', function() {
+                const searchValue = this.value.toLowerCase();
+                const menuItems = document.querySelectorAll('.menu-item');
 
-                    menuItems.forEach(item => {
-                        const nama = item.dataset.nama.toLowerCase();
+                menuItems.forEach(item => {
+                    const nama = item.dataset.nama.toLowerCase();
 
-                        item.style.display = nama.includes(searchValue) ?
-                            'block' :
-                            'none';
-                    });
-                });
-
-                // Sorting Menu
-                document.getElementById('sort_by_menu').addEventListener('change', function() {
-                    const sortBy = this.value;
-                    const menuList = document.getElementById('menu_list');
-                    const menuItems = Array.from(document.querySelectorAll('.menu-item'));
-
-                    menuItems.sort((a, b) => {
-                        const namaA = a.dataset.nama;
-                        const namaB = b.dataset.nama;
-                        return sortBy === 'asc' ?
-                            namaA.localeCompare(namaB) :
-                            namaB.localeCompare(namaA);
-                    });
-
-                    // Hapus item lama
-                    menuList.innerHTML = '';
-
-                    // Tambahkan item yang sudah diurutkan
-                    menuItems.forEach(item => menuList.appendChild(item));
+                    item.style.display = nama.includes(searchValue) ?
+                        'block' :
+                        'none';
                 });
             });
-        </script>
-    @endpush
+
+            // Sorting Menu
+            document.getElementById('sort_by_menu').addEventListener('change', function() {
+                const sortBy = this.value;
+                const menuList = document.getElementById('menu_list');
+                const menuItems = Array.from(document.querySelectorAll('.menu-item'));
+
+                menuItems.sort((a, b) => {
+                    const namaA = a.dataset.nama;
+                    const namaB = b.dataset.nama;
+                    return sortBy === 'asc' ?
+                        namaA.localeCompare(namaB) :
+                        namaB.localeCompare(namaA);
+                });
+
+                // Hapus item lama
+                menuList.innerHTML = '';
+
+                // Tambahkan item yang sudah diurutkan
+                menuItems.forEach(item => menuList.appendChild(item));
+            });
+        });
+    </script>
+@endpush
