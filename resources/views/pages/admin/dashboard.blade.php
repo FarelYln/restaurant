@@ -83,49 +83,56 @@
         <canvas id="reservasiChart" width="400" height="200"></canvas>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            const labels = @json($reservations->pluck('week')->map(fn($w) => 'Minggu ' . $w));
-            const data = @json($reservations->pluck('count'));
+    const labels = @json($reservations->pluck('week')->map(fn($w) => 'Minggu ' . $w));
+    const data = @json($reservations->pluck('count'));
 
-            const ctx = document.getElementById('reservasiChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Jumlah Reservasi',
-                        data: data,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.4,
-                        fill: true,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Minggu'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Jumlah Reservasi'
-                            },
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
+    // Pastikan jika tidak ada data untuk minggu tertentu, set data ke 1 bukan 0
+    const weekData = labels.map((label, index) => {
+        return data[index] > 0 ? data[index] : 1;  // Jika data 0, ganti dengan 1
+    });
+
+    const ctx = document.getElementById('reservasiChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',  // Menggunakan chart batang
+        data: {
+            labels: labels,  // Menggunakan labels yang sudah ada
+            datasets: [{
+                label: 'Jumlah Reservasi',
+                data: weekData,  // Data yang sudah diubah
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Warna latar belakang batang
+                borderColor: 'rgb(75, 192, 192)',  // Warna border batang
+                borderWidth: 1,  // Ketebalan border batang
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Minggu'
                     }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Jumlah Reservasi'
+                    },
+                    beginAtZero: true
                 }
-            });
-        </script>
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+        }
+    });
+</script>
+
+
+
     @endif
 </div>
 
