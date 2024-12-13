@@ -29,18 +29,31 @@
                 Daftar Semua Akun
             </div>
             <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Dibuat Pada</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($users as $user)
+                @if ($users->isEmpty())
+                    <div class="alert alert-warning text-center">
+                        Tidak ada akun yang ditemukan.
+                    </div>
+                @else
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>{{ $user->name }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->created_at->format('d M Y') }}</td>
-                  
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Dibuat Pada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($users as $user)
+                                <tr>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>{{ $user->created_at->format('d M Y') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+        </div>
+    </div>
+@endsection
