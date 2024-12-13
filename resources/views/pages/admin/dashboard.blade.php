@@ -64,7 +64,6 @@
         <p class="text-center mt-5">Tidak ada data reservasi untuk bulan ini.</p>
     @else
         <canvas id="reservasiChart" width="400" height="200"></canvas>
-
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             const labels = @json($reservations->pluck('week')->map(fn($w) => 'Minggu ' . $w));

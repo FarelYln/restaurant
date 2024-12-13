@@ -61,8 +61,9 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
     Route::get('/admin/location/{id}/edit', [LocationController::class, 'edit'])->name('admin.location.edit');
     Route::put('/admin/location/{id}', [LocationController::class, 'update'])->name('admin.location.update');
     Route::delete('/admin/location/{id}', [LocationController::class, 'destroy'])->name('admin.location.destroy');
-    
-    Route::get('/admin/user', [UserController::class, 'index'])->name('account.index');
+    Route::get('/admin/user', [UserController::class, 'showAccount'])->name('account.show');
+Route::get('/admin', [UserController::class, 'index'])->name('account.index');
+
 
 
 

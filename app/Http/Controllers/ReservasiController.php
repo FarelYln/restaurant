@@ -74,15 +74,40 @@ class ReservasiController extends Controller
     
     
 // Controller
+public function searchMeja(Request $request)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'search' => 'nullable|string|max:255'
+    ]);
+
+    $meja = Meja::with('location')
+    ->where('status', 'tersedia')
+    ->where(function($query) use ($validated) {
+        $query->where('nomor_meja', 'like', '%' . $validated['search'] . '%')
+            ->orWhere('kapasitas', $validated['search']) // Menggunakan pencarian angka langsung
+            ->orWhereHas('location', function($q) use ($validated) {
+                $q->where('name', 'like', '%' . $validated['search'] . '%')
+                  ->where('floor', 'like', '%' . $validated['search'] . '%');
+            });
+    })
+    ->get();
+
+
+    return response()->json($meja);
+}
+
 public function create(Request $request)
 {
     // Validasi input
     $validated = $request->validate([
         'kapasitas' => 'nullable|integer',
         'location' => 'nullable|string',
+        'search_menu' => 'nullable|string',
+        'sort_price' => 'nullable|in:asc,desc', // Validasi untuk parameter sort_price
     ]);
 
-    // Query untuk meja dengan eager loading dan filtering
+    // Query untuk meja tanpa pagination
     $query = Meja::with('location')  // Eager loading relasi lokasi
         ->where('status', 'tersedia');
 
@@ -98,45 +123,37 @@ public function create(Request $request)
         });
     }
 
-    // Pagination dengan parameter query string
-    $meja = $query->paginate(9)->appends($request->only(['kapasitas', 'location']));
+    // Query untuk meja tanpa pagination
+    $meja = $query->get();
 
-    // Ambil semua menu
-    $menus = Menu::all();
+    // Query untuk menu dengan filtering tanpa pagination
+    $menuQuery = Menu::query();
+
+    // Filtering berdasarkan pencarian menu
+    if ($request->filled('search_menu')) {
+        $menuQuery->where('nama_menu', 'like', '%' . $validated['search_menu'] . '%')
+                  ->orWhere('harga', 'like', '%' . $validated['search_menu'] . '%');
+    }
+
+    // Menambahkan sorting berdasarkan harga jika parameter sort_price ada
+    if ($request->filled('sort_price')) {
+        $menuQuery->orderBy('harga', $validated['sort_price']);
+    }
+
+    $menus = $menuQuery->get(); // Menggunakan get() untuk mengambil semua data
 
     return view('pages.user.reservasi.create', [
         'meja' => $meja,
         'menus' => $menus,
         'kapasitas' => $request->input('kapasitas'),
-        'location' => $request->input('location')
+        'location' => $request->input('location'),
+        'search_menu' => $request->input('search_menu'),
+        'sort_price' => $request->input('sort_price'), // Menambahkan parameter sort_price ke view
     ]);
 }
 
-public function searchMeja(Request $request)
-{
-    // Validasi input
-    $validated = $request->validate([
-        'search' => 'nullable|string|max:255'
-    ]);
 
-    // Query dengan multiple kondisi pencarian dan pagination
-    $meja = Meja::with('location')
-        ->where('status', 'tersedia')
-        ->where(function($query) use ($validated) {
-            $query->where('nomor_meja', 'like', '%' . $validated['search'] . '%')
-                  ->orWhereHas('location', function($q) use ($validated) {
-                      $q->where('name', 'like', '%' . $validated['search'] . '%');
-                  });
-        })
-        ->paginate(9);
 
-    return response()->json([
-        'data' => $meja->items(),
-        'current_page' => $meja->currentPage(),
-        'total_pages' => $meja->lastPage(),
-        'total_items' => $meja->total()
-    ]);
-}
 
 public function sortMeja(Request $request)
 {
@@ -145,14 +162,15 @@ public function sortMeja(Request $request)
         'sort_by' => 'in:asc,desc'
     ]);
 
-    // Query sorting meja
+    // Query sorting meja tanpa pagination
     $meja = Meja::with('location')
         ->where('status', 'tersedia')
         ->orderBy('nomor_meja', $validated['sort_by'] ?? 'asc')
-        ->get();
+        ->get(); // Menggunakan get() untuk mengambil semua data
 
     return response()->json($meja);
 }
+
 
 public function filterMeja(Request $request)
 {
@@ -162,7 +180,7 @@ public function filterMeja(Request $request)
         'location' => 'nullable|string'
     ]);
 
-    // Query filter meja dengan kondisi dinamis
+    // Query filter meja dengan kondisi dinamis tanpa pagination
     $query = Meja::with('location')
         ->where('status', 'tersedia');
 
@@ -178,10 +196,11 @@ public function filterMeja(Request $request)
         });
     }
 
-    $meja = $query->get();
+    $meja = $query->get(); // Menggunakan get() untuk mengambil semua data
 
     return response()->json($meja);
 }
+
 
 public function searchMenu(Request $request)
 {
@@ -190,27 +209,59 @@ public function searchMenu(Request $request)
         'search' => 'nullable|string|max:255'
     ]);
 
-    // Query pencarian menu dengan multiple kondisi
-    $menu = Menu::where('nama_menu', 'like', '%' . $validated['search'] . '%')
-        ->orWhere('harga', 'like', '%' . $validated['search'] . '%')
-        ->get();
+    // Query pencarian menu dengan multiple kondisi tanpa pagination
+    $query = Menu::with('categories') // Eager load categories
+        ->when($request->filled('search'), function ($q) use ($validated) {
+            return $q->where(function ($subQuery) use ($validated) {
+                $subQuery->where('nama_menu', 'like', '%' . $validated['search'] . '%')
+                        ->orWhere('harga', 'like', '%' . $validated['search'] . '%')
+                        ->orWhereHas('categories', function ($catQuery) use ($validated) {
+                            $catQuery->where('nama_kategori', 'like', '%' . $validated['search'] . '%');
+                        });
+            });
+        });
 
-    return response()->json($menu);
+    // Query tanpa pagination
+    $menu = $query->get(); // Menggunakan get() untuk mengambil semua data
+
+    // Transform menu data untuk response
+    $transformedMenu = $menu->map(function ($item) {
+        return [
+            'id' => $item->id,
+            'nama_menu' => $item->nama_menu,
+            'harga' => $item->harga,
+            'image' => $item->image ? asset('storage/' . $item->image) : asset('images/default-menu.jpg'),
+            'categories' => $item->categories->pluck('nama_kategori')
+        ];
+    });
+
+    return response()->json($transformedMenu);
 }
+
 
 public function sortMenu(Request $request)
 {
     // Validasi input sort
     $validated = $request->validate([
-        'sort_by' => 'in:asc,desc'
+        'sort_by' => 'in:asc,desc,price_asc,price_desc'
     ]);
 
     // Query sorting menu
-    $menu = Menu::orderBy('nama_menu', $validated['sort_by'] ?? 'asc')
-        ->get();
+    $menu = Menu::query();
+
+    if ($validated['sort_by'] === 'price_asc') {
+        $menu = $menu->orderBy('harga', 'asc');
+    } elseif ($validated['sort_by'] === 'price_desc') {
+        $menu = $menu->orderBy('harga', 'desc');
+    } else {
+        $menu = $menu->orderBy('nama_menu', $validated['sort_by'] ?? 'asc');
+    }
+
+    $menu = $menu->get(); // Menggunakan get() untuk mengambil semua data
 
     return response()->json($menu);
 }
+
 
     public function store(Request $request)
     {

@@ -24,23 +24,20 @@
                         <i class="fa fa-table me-2"></i>Meja
                     </a>      
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa fa-calendar-alt me-2"></i>Reservasi
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="/admin/reservasi" class="dropdown-item {{ Request::is('admin/reservasi') ? 'active' : '' }}">
+                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-3" style="margin-left: 10%; margin-right: 10%;">
+                            <a href="/admin/reservasi" class="dropdown-item {{ Request::is('admin/reservasi') ? 'active' : '' }} py-2">
                                 <i class="fa fa-calendar me-2"></i>Reservasi
                             </a>
-                            <a href="/admin/reservasi/history" class="dropdown-item {{ Request::is('admin/reservasi/history') ? 'active' : '' }}">
+                            <a href="/admin/reservasi/history" class="dropdown-item {{ Request::is('admin/reservasi/history') ? 'active' : '' }} py-2">
                                 <i class="fa fa-history me-2"></i>History Reservasi
                             </a>
                         </div>
-                    </div>
-                    <a href="/admin/pembayaran" class="nav-item nav-link {{ Request::is('admin/pembayaran') ? 'active' : '' }}">
-                        <i class="fa fa-credit-card me-2"></i>Pembayaran
-                    </a>
+                    </div>                    
                     <a href="/admin/user" class="nav-item nav-link {{ Request::is('admin/user') ? 'active' : '' }}">
-                        <i class="fa fa-credit-card me-2"></i>User
+                        <i class="fa fa-user"></i>User
                     </a>
                     
                 </div>

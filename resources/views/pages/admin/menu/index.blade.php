@@ -159,7 +159,7 @@
             <div class="header">
                 <h1 class="title">List Menu</h1>
                 <a href="{{ route('admin.menu.create') }}" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus"></i> Tambah Lokasi
+                    <i class="bi bi-plus"></i> Tambah Menu
                 </a>
             </div>
             <form method="GET" action="{{ route('admin.menu.index') }}" class="form-inline">

@@ -61,33 +61,40 @@
             </div>
 
             @auth
-                <div class="navbar-nav ms-auto">
-                    <div class="dropdown">
-                        <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="userMenu"
-                            data-bs-toggle="dropdown" aria-expanded="false"
-                            style="background-color: transparent; border: none; color: #fff;">
-                            <span>{{ auth()->user()->name }}</span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
-                                    <i class="bi bi-person me-2"></i> Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="bi bi-box-arrow-right me-2"></i> Logout
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+    <div class="navbar-nav ms-auto">
+        <div class="dropdown">
+            <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="userMenu"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                style="background-color: transparent; border: none; color: #fff;">
+                <span>{{ auth()->user()->name }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                @if(auth()->user()->role == 'admin')
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('dashboard') }}">
+                            <i class="bi bi-house-door me-2"></i> Dashboard
+                        </a>
+                    </li>
+                @endif
+                <li>
+                    <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}">
+                        <i class="bi bi-person me-2"></i> Profile
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
-            @else
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
+@else
             <a href="/register" class="btn py-2 px-4" style="background-color: orange; color: white; border: none; text-decoration: none; display: inline-block;">Daftar</a>
 
             @endauth
