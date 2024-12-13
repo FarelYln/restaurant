@@ -45,87 +45,74 @@
 
     <!-- Sale & Revenue End -->
      <!-- chart -->
-     <form method="GET" action="{{ route('dashboard') }}">
+
+<div class="container mt-5">
+    <form method="GET" action="{{ route('dashboard') }}">
         <div class="col-md-3 mt-4">
-        <label for="month" class="form-label">Pilih Bulan</label>
-        <select name="month" id="month" class="form-select" onchange="this.form.submit()">
-            <option value="1" {{ $month == 1 ? 'selected' : '' }}>Januari</option>
-            <option value="2" {{ $month == 2 ? 'selected' : '' }}>Februari</option>
-            <option value="3" {{ $month == 3 ? 'selected' : '' }}>Maret</option>
-            <option value="4" {{ $month == 4 ? 'selected' : '' }}>April</option>
-            <option value="5" {{ $month == 5 ? 'selected' : '' }}>Mei</option>
-            <option value="6" {{ $month == 6 ? 'selected' : '' }}>Juni</option>
-            <option value="7" {{ $month == 7 ? 'selected' : '' }}>Juli</option>
-            <option value="8" {{ $month == 8 ? 'selected' : '' }}>Agustus</option>
-            <option value="9" {{ $month == 9 ? 'selected' : '' }}>September</option>
-            <option value="10" {{ $month == 10 ? 'selected' : '' }}>Oktober</option>
-            <option value="11" {{ $month == 11 ? 'selected' : '' }}>November</option>
-            <option value="12" {{ $month == 12 ? 'selected' : '' }}>Desember</option>
-        </select>
-    </div>
-</form>
+            <label for="month" class="form-label">Pilih Bulan</label>
+            <select name="month" id="month" class="form-select" onchange="this.form.submit()">
+                @for($i = 1; $i <= 12; $i++)
+                    <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>
+                        {{ DateTime::createFromFormat('!m', $i)->format('F') }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+    </form>
 
-<!-- Cek apakah ada data untuk menampilkan grafik -->
-@if($reservations->isEmpty())
-    <p>Data reservasi tidak tersedia untuk bulan ini.</p>
-@else
-    <!-- Chart Container -->
-    <canvas id="myLineChart" width="400" height="200"></canvas>
+    @if($reservations->isEmpty())
+        <p class="text-center mt-5">Tidak ada data reservasi untuk bulan ini.</p>
+    @else
+        <canvas id="reservasiChart" width="400" height="200"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Data yang dikirim dari controller ke view
-        var labels = [];
-        var data = [];
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const labels = @json($reservations->pluck('week')->map(fn($w) => 'Minggu ' . $w));
+            const data = @json($reservations->pluck('count'));
 
-        // Looping data untuk mengisi labels dan data
-        @foreach($reservations as $reservation)
-            labels.push('Week {{ $reservation->week }}');
-            data.push({{ $reservation->count }});
-        @endforeach
-
-        // Mengonfigurasi Chart.js
-        var ctx = document.getElementById('myLineChart').getContext('2d');
-        var myLineChart = new Chart(ctx, {
-            type: 'line', // Jenis chart
-            data: {
-                labels: labels, // Label minggu
-                datasets: [{
-                    label: 'Jumlah Reservasi', // Label chart
-                    data: data, // Data jumlah reservasi
-                    borderColor: 'rgb(75, 192, 192)', // Warna garis
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Warna area bawah garis
-                    fill: true, // Mengisi area bawah garis
-                    tension: 0.4 // Kelengkungan garis
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Minggu'
+            const ctx = document.getElementById('reservasiChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jumlah Reservasi',
+                        data: data,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.4,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Minggu'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Jumlah Reservasi'
+                            },
+                            beginAtZero: true
                         }
                     },
-                    y: {
-                        title: {
+                    plugins: {
+                        legend: {
                             display: true,
-                            text: 'Jumlah Reservasi'
-                        },
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
+                            position: 'top'
+                        }
                     }
                 }
-            }
-        });
-    </script>
-@endif
+            });
+        </script>
+    @endif
+</div>
+
       <!-- end chart -->
     
     <!-- Sales Chart Start -->
