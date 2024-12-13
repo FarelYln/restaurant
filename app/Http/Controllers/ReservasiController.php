@@ -405,6 +405,10 @@ public function sortMenu(Request $request)
             'status_reservasi' => 'confirmed',
             'card_holder_name' => $cardHolderName,
         ]);
+
+        // Proses lanjutan (ubah status meja, dll)
+    $mejaIds = $reservasi->meja->pluck('id')->toArray();
+    Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
         
         return redirect()->route('user.reservasi.nota', $id);
     }

@@ -1,16 +1,6 @@
 @extends('layouts.landing_page.app')
 
 @section('content')
-<style>
-    .star {
-    font-size: 1.2em;
-    color: #ddd;
-}
-.star.filled {
-    color: gold;
-}
-
-</style>
     <div class="container">
         <h1 class="mb-4 text-center">Reservasi</h1>
         <form action="{{ route('user.reservasi.store') }}" method="POST">
@@ -26,7 +16,8 @@
                                 <label for="tanggal_reservasi">Tanggal Reservasi</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
-                                    <input type="date" class="form-control @error('tanggal_reservasi') is-invalid @enderror"
+                                    <input type="date"
+                                        class="form-control @error('tanggal_reservasi') is-invalid @enderror"
                                         name="tanggal_reservasi" value="{{ old('tanggal_reservasi') }}" required>
                                     @error('tanggal_reservasi')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -59,7 +50,8 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <input type="text" id="search_meja" class="form-control" placeholder="Cari meja yang dibutuhkan">
+                            <input type="text" id="search_meja" class="form-control"
+                                placeholder="Cari meja yang dibutuhkan">
                         </div>
                         <div class="col-md-6">
                             <select id="sort_by_meja" class="form-control">
@@ -71,132 +63,109 @@
                     </div>
 
                     {{-- Daftar Meja --}}
-                    <!-- Dropdown for filtering tables by floor -->
-<div class="mb-3">
-    <label for="filter-lantai" class="form-label">Filter Berdasarkan Lantai</label>
-    <select id="filter-lantai" class="form-control">
-        <option value="">Pilih Lantai</option>
-        <!-- Loop through unique lantai values -->
-        @foreach ($meja->pluck('location.floor')->unique() as $floor)
-            <option value="{{ $floor }}">{{ $floor }}</option>
-        @endforeach
-    </select>
-</div>
-
-<!-- List of tables -->
-<div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
-    @foreach ($meja as $m)
-        <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}" data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}" data-lantai="{{ $m->location->floor }}">
-            <div class="card">
-                <div class="card-body">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="id_meja[]" value="{{ $m->id }}" id="meja-{{ $m->id }}" {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="meja-{{ $m->id }}">
-                            <div>Nomor Meja: {{ $m->nomor_meja }}</div>
-                            <div>Kapasitas: {{ $m->kapasitas }}</div>
-                            <div>Status: <span class="badge {{ $m->status == 'Tersedia' ? 'bg-success' : 'bg-success' }}">{{ $m->status }}</span></div>
-                            <div>Lokasi: {{ $m->location->name }}</div>
-                            <div>Lantai: {{ $m->location->floor }}</div>
-                        </label>
+                    <div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
+                        @foreach ($meja as $m)
+                            <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}"
+                                data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}"
+                                data-lantai="{{ $m->location->floor }}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="id_meja[]"
+                                                value="{{ $m->id }}" id="meja-{{ $m->id }}"
+                                                {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="meja-{{ $m->id }}">
+                                                <div>Nomor Meja: {{ $m->nomor_meja }}</div>
+                                                <div>Kapasitas: {{ $m->kapasitas }}</div>
+                                                <div>Status: <span
+                                                        class="badge {{ $m->status == 'Tersedia' ? 'bg-success' : 'bg-success' }}">{{ $m->status }}</span>
+                                                </div>
+                                                <div>Lokasi: {{ $m->location->name }}</div>
+                                                <div>Lantai: {{ $m->location->floor }}</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                </div>
-            </div>
-        </div>
-    @endforeach
-</div>
-
-<script>
-    // Filter tables by selected floor
-    document.getElementById('filter-lantai').addEventListener('change', function() {
-        var selectedFloor = this.value;
-
-        document.querySelectorAll('.meja-item').forEach(function(item) {
-            var floor = item.getAttribute('data-lantai');
-            if (selectedFloor === "" || floor === selectedFloor) {
-                item.style.display = '';  // Show the table item
-            } else {
-                item.style.display = 'none';  // Hide the table item
-            }
-        });
-    });
-</script>
-
                 </div>
             </div>
 
             {{-- Pilih Menu --}}
             <div class="card mb-3">
-    <div class="card-header bg-primary text-white">
-        <h4>Pilih Menu</h4>
-    </div>
-    <div class="card-body">
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <input type="text" id="search_menu" class="form-control" placeholder="Cari menu...">
-            </div>
-            <div class="col-md-6">
-                <select id="sort_by_menu" class="form-control">
-                    <option value="">Urutkan Menu</option>
-                    <option value="asc">Nama Menu (A-Z)</option>
-                    <option value="desc">Nama Menu (Z-A)</option>
-                    <option value="asc" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Harga Terendah</option>
-                    <option value="desc" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga Tertinggi</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="row" id="menu_list" style="max-height: 400px; overflow-y: auto;">
-            @foreach ($menus as $menu)
-                <div class="col-md-4 mb-4 menu-item" data-nama="{{ $menu->nama_menu }}">
-                    <div class="card h-100">
-                        @if ($menu->image)
-                            <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
-                        @else
-                            <img src="{{ asset('images/default-menu.jpg') }}" class="card-img-top" alt="Default Image">
-                        @endif
-                        <div class="card-body d-flex flex-column justify-content-between">
-                            <h5 class="card-title">{{ $menu->nama_menu }}</h5>
-                            <p class="card-text">Rp. {{ number_format($menu->harga, 0, ',', '.') }}</p>
-
-                            <p class="card-text">
-                                <small>Kategori:
-                                    @foreach ($menu->categories as $category)
-                                        <span class="badge bg-primary">{{ $category->nama_kategori }}</span>
-                                    @endforeach
-                                </small>
-                            </p>
-
-                            <!-- Menambahkan Rating -->
-                            <div class="d-flex align-items-center">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <span class="star {{ $i <= $menu->rating ? 'filled' : '' }}" style="color: {{ $i <= $menu->rating ? 'gold' : 'lightgray' }};">&#9733;</span>
-                                @endfor
-                                <span class="ms-2">{{ number_format($menu->rating, 1) }} / 5</span>
-                            </div>
-
-                            <!-- Penambahan Quantity (Centered) -->
-                            <div class="d-flex justify-content-center align-items-center mt-3">
-                            <input type="number" id="menu-quantity-{{ $menu->id }}" name="menu[{{ $menu->id }}][jumlah_pesanan]" class="form-control form-control-sm text-center w-25 outline-none" value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}" min="0">
-                                <button type="button" class="btn btn-outline-primary btn-sm ms-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
-                                <input type="hidden" name="menu[{{ $menu->id }}][id]" value="{{ $menu->id }}">
-                            </div>
-                            @error('menu.' . $menu->id . '.jumlah_pesanan')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
+                <div class="card-header bg-primary text-white">
+                    <h4>Pilih Menu</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <input type="text" id="search_menu" class="form-control" placeholder="Cari menu...">
+                        </div>
+                        <div class="col-md-6">
+                            <select id="sort_by_menu" class="form-control">
+                                <option value="">Urutkan Menu</option>
+                                <option value="asc">Nama Menu (A-Z)</option>
+                                <option value="desc">Nama Menu (Z-A)</option>
+                                <option value="asc" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Harga
+                                    Terendah</option>
+                                <option value="desc" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga
+                                    Tertinggi</option>
+                            </select>
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                data-bs-target="#keranjangModal">
+                                Keranjang (<span id="keranjangCount">0</span>)
+                            </button>
                         </div>
                     </div>
+
+                    <div class="row" id="menu_list" style="max-height: 400px; overflow-y: auto;">
+                        @foreach ($menus as $menu)
+                            <div class="col-md-4 mb-4 menu-item" data-nama="{{ $menu->nama_menu }}">
+                                <div class="card h-100">
+                                    @if ($menu->image)
+                                        <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top"
+                                            alt="{{ $menu->nama_menu }}">
+                                    @else
+                                        <img src="{{ asset('images/default-menu.jpg') }}" class="card-img-top"
+                                            alt="Default Image">
+                                    @endif
+                                    <div class="card-body d-flex flex-column justify-content-between">
+                                        <h5 class="card-title">{{ $menu->nama_menu }}</h5>
+                                        <p class="card-text">Rp. {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                                        <p class="card-text">
+                                            <small>Kategori:
+                                                @foreach ($menu->categories as $category)
+                                                    <span class="badge bg-primary">{{ $category->nama_kategori }}</span>
+                                                @endforeach
+                                            </small>
+                                        </p>
+                                        <div class="d-flex align-items-center">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm me-2 decrement-btn"
+                                                data-target="#menu-quantity-{{ $menu->id }}">-</button>
+                                            <input type="number" id="menu-quantity-{{ $menu->id }}"
+                                                name="menu[{{ $menu->id }}][jumlah_pesanan]"
+                                                class="form-control form-control-sm text-center w-25"
+                                                value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}"
+                                                min="0">
+                                                <button type="button" class="btn btn-outline-primary btn-sm me-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
+                                            <input type="hidden" name="menu[{{ $menu->id }}][id]"
+                                                value="{{ $menu->id }}">
+                                        </div>
+                                        @error('menu.' . $menu->id . '.jumlah_pesanan')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    @error('menu')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
                 </div>
-            @endforeach
-        </div>
-
-        @error('menu')
-            <div class="invalid-feedback d-block">{{ $message }}</div>
-        @enderror
-    </div>
-</div>
-
-
-
+            </div>
 
             {{-- Hidden Input untuk Status --}}
             <input type="hidden" name="status_reservasi" value="pending">
@@ -207,64 +176,74 @@
                     Lanjutkan ke Pembayaran
                 </button>
             </div>
-<!-- Modal Keranjang -->
-<div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel" aria-hidden="true">
-    <div class="modal-dialog left-align-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="keranjangItems"></div>
-                <div class="mt-3">
-                    <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
+            <!-- Modal Keranjang -->
+            <div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul id="keranjangItems" class="list-group">
+                                <!-- Item keranjang akan diisi melalui JavaScript -->
+                            </ul>
+                            <div class="mt-3">
+                                <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                <button type="submit" class="btn btn-warning text-white" form="reservasiForm">Bayar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- CSS -->
-<style>
-    .modal-dialog {
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: 300px; /* Atur lebar modal sesuai kebutuhan */
-        height: 100%; /* Full height */
-        margin: 0;
-        max-width: none; /* Hapus batasan lebar */
-    }
 
-    .modal-content {
-        height: 100%; /* Mengisi seluruh tinggi modal */
-        border-radius: 0;
-    }
+            <!-- CSS -->
+            <style>
+                .modal-dialog {
+                    position: fixed;
+                    top: 0;
+                    right: 0;
+                    width: 300px;
+                    /* Atur lebar modal sesuai kebutuhan */
+                    height: 100%;
+                    /* Full height */
+                    margin: 0;
+                    max-width: none;
+                    /* Hapus batasan lebar */
+                }
 
-    .modal-header {
-        border-bottom: 1px solid #dee2e6;
-        padding: 10px;
-    }
+                .modal-content {
+                    height: 100%;
+                    /* Mengisi seluruh tinggi modal */
+                    border-radius: 0;
+                }
 
-    .modal-body {
-        overflow-y: auto;
-        height: calc(100% - 120px); /* Menyesuaikan tinggi modal */
-    }
+                .modal-header {
+                    border-bottom: 1px solid #dee2e6;
+                    padding: 10px;
+                }
 
-    .modal-footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        border-top: 1px solid #dee2e6;
-        padding: 10px;
-    }
-</style>
+                .modal-body {
+                    overflow-y: auto;
+                    height: calc(100% - 120px);
+                    /* Menyesuaikan tinggi modal */
+                }
+
+                .modal-footer {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    border-top: 1px solid #dee2e6;
+                    padding: 10px;
+                }
+            </style>
 
 
         </form>
@@ -279,149 +258,211 @@
     const keranjangItemsElement = document.getElementById('keranjangItems');
     const totalHargaElement = document.getElementById('totalHarga');
 
-    // Update keranjang (cart)
     function updateKeranjang() {
         keranjangItemsElement.innerHTML = '';
         let totalHarga = 0;
-        let itemCount = 0;
+        let totalItems = 0;
 
-        for (const [id, item] of Object.entries(keranjang)) {
+        Object.keys(keranjang).forEach(id => {
+            const item = keranjang[id];
             if (item.jumlah > 0) {
-                const itemHarga = item.jumlah * item.harga;
-                totalHarga += itemHarga;
-                itemCount += item.jumlah;
+                totalHarga += item.harga * item.jumlah;
+                totalItems += item.jumlah;
 
-                keranjangItemsElement.innerHTML += `
-                    <div class="d-flex justify-content-between">
-                        <span>${item.nama} (${item.jumlah})</span>
-                        <span>Rp. ${itemHarga.toLocaleString()}</span>
-                    </div>
+                const itemHtml = `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <img src="${item.image}" alt="${item.nama}" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                            <div>
+                                <strong>${item.nama}</strong>
+                                <div>Rp. ${item.harga.toLocaleString('id-ID')}</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm me-2 cart-decrement-btn" data-id="${item.id}">-</button>
+                            <span class="mx-2">${item.jumlah}</span>
+                            <button type="button" class="btn btn-outline-primary btn-sm ms-2 cart-increment-btn" data-id="${item.id}">+</button>
+                        </div>
+                        <div>
+                            <strong>Rp. ${(item.harga * item.jumlah).toLocaleString('id-ID')}</strong>
+                        </div>
+                    </li>
                 `;
+                keranjangItemsElement.insertAdjacentHTML('beforeend', itemHtml);
             }
-        }
+        });
 
-        keranjangCountElement.textContent = itemCount;
-        totalHargaElement.textContent = totalHarga.toLocaleString();
+        totalHargaElement.textContent = totalHarga.toLocaleString('id-ID');
+        keranjangCountElement.textContent = totalItems;
+
+        // Add event listeners for cart increment/decrement buttons
+        document.querySelectorAll('.cart-increment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const menuId = this.dataset.id;
+                incrementItemInCart(menuId);
+            });
+        });
+
+        document.querySelectorAll('.cart-decrement-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const menuId = this.dataset.id;
+                decrementItemInCart(menuId);
+            });
+        });
     }
 
-    // Increment and Decrement Quantity
+    function incrementItemInCart(menuId) {
+        const input = document.getElementById(`menu-quantity-${menuId}`);
+        let jumlah = parseInt(input.value) + 1;
+        input.value = jumlah;
+
+        // Ambil informasi menu dari card
+        const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
+        const menuItem = {
+            id: menuId,
+            nama: menuCard.querySelector('.card-title').textContent,
+            harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
+            jumlah: jumlah,
+            image: menuCard.querySelector('.card-img-top').src
+        };
+        keranjang[menuId] = menuItem;
+        updateKeranjang();
+    }
+
+    function decrementItemInCart(menuId) {
+        const input = document.getElementById(`menu-quantity-${menuId}`);
+        let jumlah = Math.max(0, parseInt(input.value) - 1);
+        input.value = jumlah;
+
+        if (jumlah > 0) {
+            // Ambil informasi menu dari card
+            const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
+            const menuItem = {
+                id: menuId,
+                nama: menuCard.querySelector('.card-title').textContent,
+                harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
+                jumlah: jumlah,
+                image: menuCard.querySelector('.card-img-top').src
+            };
+            keranjang[menuId] = menuItem;
+        } else {
+            delete keranjang[menuId];
+        }
+        updateKeranjang();
+    }
+
+    // Add data-id to menu items for easier selection
+    document.querySelectorAll('.menu-item').forEach(item => {
+        const menuId = item.querySelector('input[type="number"]').id.split('-')[2];
+        item.setAttribute('data-id', menuId);
+    });
+
+    // Increment and Decrement buttons on menu items
     document.querySelectorAll('.increment-btn').forEach(button => {
         button.addEventListener('click', function() {
             const menuId = this.dataset.target.split('-')[2];
-            const input = document.getElementById(`menu-quantity-${menuId}`);
-            let jumlah = parseInt(input.value) + 1;
-            input.value = jumlah;
-
-            // Update keranjang (cart)
-            const menuItem = {
-                id: menuId,
-                nama: this.closest('.menu-item').dataset.nama,
-                harga: parseInt(this.closest('.card-body').querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
-                jumlah: jumlah
-            };
-            keranjang[menuId] = menuItem;
-            updateKeranjang();
+            incrementItemInCart(menuId);
         });
     });
 
-    // Decrement Quantity
     document.querySelectorAll('.decrement-btn').forEach(button => {
         button.addEventListener('click', function() {
             const menuId = this.dataset.target.split('-')[2];
-            const input = document.getElementById(`menu-quantity-${menuId}`);
-            let jumlah = Math.max(0, parseInt(input.value) - 1); // Prevent negative numbers
-            input.value = jumlah;
+            decrementItemInCart(menuId);
+        });
+    });
 
-            // Update keranjang (cart)
-            const menuItem = {
-                id: menuId,
-                nama: this.closest('.menu-item').dataset.nama,
-                harga: parseInt(this.closest('.card-body').querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
-                jumlah: jumlah
-            };
-            keranjang[menuId] = menuItem;
+    // Initial setup for number inputs
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const menuId = this.name.match(/\d+/)[0];
+            const jumlah = parseInt(this.value);
+            
+            if (jumlah < 0) {
+                this.value = 0;
+            }
+
+            if (jumlah > 0) {
+                // Ambil informasi menu dari card
+                const menuCard = this.closest('.menu-item');
+                const menuItem = {
+                    id: menuId,
+                    nama: menuCard.querySelector('.card-title').textContent,
+                    harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
+                    jumlah: jumlah,
+                    image: menuCard.querySelector('.card-img-top').src
+                };
+                keranjang[menuId] = menuItem;
+            } else {
+                delete keranjang[menuId];
+            }
+
             updateKeranjang();
         });
     });
 
-    // Show/Hide input quantity when the circle button is clicked
-    document.querySelectorAll('.circle-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const menuId = this.dataset.target.split('-')[2];
-            const input = document.getElementById(`menu-quantity-${menuId}`);
-            input.style.display = input.style.display === 'none' ? 'inline-block' : 'none';
+    // Search and Sorting functions (keeping the previous implementation)
+    document.getElementById('search_meja').addEventListener('input', function() {
+        const mejaSearchValue = this.value.toLowerCase();
+        const mejaItems = document.querySelectorAll('.meja-item');
+        mejaItems.forEach(item => {
+            const itemName = item.dataset.nomor.toLowerCase() + " " + item.dataset.lokasi.toLowerCase();
+            if (itemName.includes(mejaSearchValue)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
         });
     });
-});
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Meja Search
-            document.getElementById('search_meja').addEventListener('input', function() {
-                const mejaSearchValue = this.value.toLowerCase();
-                const mejaItems = document.querySelectorAll('.meja-item');
-                mejaItems.forEach(item => {
-                    const itemName = item.dataset.nomor.toLowerCase() + " " + item.dataset.lokasi.toLowerCase();
-                    if (itemName.includes(mejaSearchValue)) {
-                        item.style.display = '';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-
-            // Menu Search
-            document.getElementById('search_menu').addEventListener('input', function() {
-                const menuSearchValue = this.value.toLowerCase();
-                const menuItems = document.querySelectorAll('.menu-item');
-                menuItems.forEach(item => {
-                    const itemName = item.dataset.nama.toLowerCase();
-                    if (itemName.includes(menuSearchValue)) {
-                        item.style.display = '';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-
-            // Sorting Meja - menggunakan angka untuk pengurutan
-document.getElementById('sort_by_meja').addEventListener('change', function() {
-    const sortBy = this.value;
-    const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
-    mejaItems.sort((a, b) => {
-        const nomorA = parseInt(a.dataset.nomor); // Ubah menjadi angka
-        const nomorB = parseInt(b.dataset.nomor); // Ubah menjadi angka
-        return sortBy === 'asc' ? nomorA - nomorB : nomorB - nomorA; // Urutkan secara numerik
-    });
-    const mejaList = document.getElementById('meja_list');
-    mejaList.innerHTML = '';
-    mejaItems.forEach(item => mejaList.appendChild(item));
-});
-
-// Sorting Menu
-document.getElementById('sort_by_menu').addEventListener('change', function() {
-    const sortBy = this.value;
-    const menuItems = Array.from(document.querySelectorAll('.menu-item'));
-
-    menuItems.sort((a, b) => {
-        if (sortBy === 'asc' || sortBy === 'desc') {
-            // Mendapatkan harga dari elemen
-            const priceA = parseInt(a.querySelector('.card-text').textContent.replace(/[^\d]/g, '')); // Menghapus karakter selain angka
-            const priceB = parseInt(b.querySelector('.card-text').textContent.replace(/[^\d]/g, ''));
-
-            return sortBy === 'asc' ? priceA - priceB : priceB - priceA;
-        } else {
-            // Sorting berdasarkan nama menu (default)
-            const nameA = a.querySelector('.card-title').textContent;
-            const nameB = b.querySelector('.card-title').textContent;
-            return sortBy === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-        }
-    });
-
-    const menuList = document.getElementById('menu_list');
-    menuList.innerHTML = '';
-    menuItems.forEach(item => menuList.appendChild(item));
-});
-
+    document.getElementById('search_menu').addEventListener('input', function() {
+        const menuSearchValue = this.value.toLowerCase();
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            const itemName = item.dataset.nama.toLowerCase();
+            if (itemName.includes(menuSearchValue)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
         });
+    });
+
+    // Sorting functions
+    document.getElementById('sort_by_meja').addEventListener('change', function() {
+        const sortBy = this.value;
+        const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
+        mejaItems.sort((a, b) => {
+            const nomorA = parseInt(a.dataset.nomor);
+            const nomorB = parseInt(b.dataset.nomor);
+            return sortBy === 'asc' ? nomorA - nomorB : nomorB - nomorA;
+        });
+        const mejaList = document.getElementById('meja_list');
+        mejaList.innerHTML = '';
+        mejaItems.forEach(item => mejaList.appendChild(item));
+    });
+
+    document.getElementById('sort_by_menu').addEventListener('change', function() {
+        const sortBy = this.value;
+        const menuItems = Array.from(document.querySelectorAll('.menu-item'));
+
+        menuItems.sort((a, b) => {
+            if (sortBy === 'asc' || sortBy === 'desc') {
+                const priceA = parseInt(a.querySelector('.card-text').textContent.replace(/[^\d]/g, ''));
+                const priceB = parseInt(b.querySelector('.card-text').textContent.replace(/[^\d]/g, ''));
+
+                return sortBy === 'asc' ? priceA - priceB : priceB - priceA;
+            } else {
+                const nameA = a.querySelector('.card-title').textContent;
+                const nameB = b.querySelector('.card-title').textContent;
+                return sortBy === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            }
+        });
+
+        const menuList = document.getElementById('menu_list');
+        menuList.innerHTML = '';
+        menuItems.forEach(item => menuList.appendChild(item));
+    });
+});
     </script>
 @endpush
