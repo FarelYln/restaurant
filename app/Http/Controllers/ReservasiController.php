@@ -74,44 +74,6 @@ class ReservasiController extends Controller
     
     
 // Controller
-public function create(Request $request)
-{
-    // Validasi input
-    $validated = $request->validate([
-        'kapasitas' => 'nullable|integer',
-        'location' => 'nullable|string',
-    ]);
-
-    // Query untuk meja dengan eager loading dan filtering
-    $query = Meja::with('location')  // Eager loading relasi lokasi
-        ->where('status', 'tersedia');
-
-    // Filtering berdasarkan kapasitas
-    if ($request->filled('kapasitas')) {
-        $query->where('kapasitas', $validated['kapasitas']);
-    }
-
-    // Filtering berdasarkan lokasi
-    if ($request->filled('location')) {
-        $query->whereHas('location', function ($q) use ($validated) {
-            $q->where('name', 'like', '%' . $validated['location'] . '%');
-        });
-    }
-
-    // Pagination dengan parameter query string
-    $meja = $query->paginate(9)->appends($request->only(['kapasitas', 'location']));
-
-    // Ambil semua menu
-    $menus = Menu::all();
-
-    return view('pages.user.reservasi.create', [
-        'meja' => $meja,
-        'menus' => $menus,
-        'kapasitas' => $request->input('kapasitas'),
-        'location' => $request->input('location')
-    ]);
-}
-
 public function searchMeja(Request $request)
 {
     // Validasi input
@@ -137,6 +99,55 @@ public function searchMeja(Request $request)
         'total_items' => $meja->total()
     ]);
 }
+public function create(Request $request)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'kapasitas' => 'nullable|integer',
+        'location' => 'nullable|string',
+        'search_menu' => 'nullable|string',
+    ]);
+
+    // Query untuk meja dengan eager loading dan filtering
+    $query = Meja::with('location')  // Eager loading relasi lokasi
+        ->where('status', 'tersedia');
+
+    // Filtering berdasarkan kapasitas
+    if ($request->filled('kapasitas')) {
+        $query->where('kapasitas', $validated['kapasitas']);
+    }
+
+    // Filtering berdasarkan lokasi
+    if ($request->filled('location')) {
+        $query->whereHas('location', function ($q) use ($validated) {
+            $q->where('name', 'like', '%' . $validated['location'] . '%');
+        });
+    }
+
+    // Pagination untuk meja dengan parameter query string
+    $meja = $query->paginate(9)->appends($request->only(['kapasitas', 'location']));
+
+    // Query untuk menu dengan filtering dan pagination
+    $menuQuery = Menu::query();
+
+    // Filtering berdasarkan pencarian menu
+    if ($request->filled('search_menu')) {
+        $menuQuery->where('nama_menu', 'like', '%' . $validated['search_menu'] . '%')
+                  ->orWhere('harga', 'like', '%' . $validated['search_menu'] . '%');
+    }
+
+    // Pagination untuk menu
+    $menus = $menuQuery->paginate(3)->appends($request->only('search_menu'));
+
+    return view('pages.user.reservasi.create', [
+        'meja' => $meja,
+        'menus' => $menus,
+        'kapasitas' => $request->input('kapasitas'),
+        'location' => $request->input('location'),
+        'search_menu' => $request->input('search_menu')
+    ]);
+}
+
 
 public function sortMeja(Request $request)
 {
@@ -191,11 +202,37 @@ public function searchMenu(Request $request)
     ]);
 
     // Query pencarian menu dengan multiple kondisi
-    $menu = Menu::where('nama_menu', 'like', '%' . $validated['search'] . '%')
-        ->orWhere('harga', 'like', '%' . $validated['search'] . '%')
-        ->get();
+    $query = Menu::with('categories') // Eager load categories
+        ->when($request->filled('search'), function ($q) use ($validated) {
+            return $q->where(function ($subQuery) use ($validated) {
+                $subQuery->where('nama_menu', 'like', '%' . $validated['search'] . '%')
+                        ->orWhere('harga', 'like', '%' . $validated['search'] . '%')
+                        ->orWhereHas('categories', function ($catQuery) use ($validated) {
+                            $catQuery->where('nama_kategori', 'like', '%' . $validated['search'] . '%');
+                        });
+            });
+        });
 
-    return response()->json($menu);
+    // Pagination
+    $menu = $query->paginate(6); // 6 item per halaman
+
+    // Transform menu data untuk response
+    $transformedMenu = $menu->map(function ($item) {
+        return [
+            'id' => $item->id,
+            'nama_menu' => $item->nama_menu,
+            'harga' => $item->harga,
+            'image' => $item->image ? asset('storage/' . $item->image) : asset('images/default-menu.jpg'),
+            'categories' => $item->categories->pluck('nama_kategori')
+        ];
+    });
+
+    return response()->json([
+        'data' => $transformedMenu,
+        'current_page' => $menu->currentPage(),
+        'total_pages' => $menu->lastPage(),
+        'total_items' => $menu->total()
+    ]);
 }
 
 public function sortMenu(Request $request)
@@ -205,13 +242,17 @@ public function sortMenu(Request $request)
         'sort_by' => 'in:asc,desc'
     ]);
 
-    // Query sorting menu
+    // Query sorting menu dengan pagination
     $menu = Menu::orderBy('nama_menu', $validated['sort_by'] ?? 'asc')
-        ->get();
+        ->paginate(2);
 
-    return response()->json($menu);
+    return response()->json([
+        'data' => $menu->items(),
+        'current_page' => $menu->currentPage(),
+        'total_pages' => $menu->lastPage(),
+        'total_items' => $menu->total()
+    ]);
 }
-
     public function store(Request $request)
     {
         $validated = $request->validate([

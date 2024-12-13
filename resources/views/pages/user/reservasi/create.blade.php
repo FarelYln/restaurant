@@ -71,7 +71,10 @@
                             <div class="row">
                                 @foreach ($meja as $m)
                                     <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}"
-                                        data-lokasi="{{ $m->location->name }}">
+                                        data-nomor="{{ $m->kapasitas }}"
+                                        data-lokasi="{{ $m->location->name }}"
+                                        data-lokasi="{{ $m->location->floor }}">
+                                       
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="form-check">
@@ -80,7 +83,9 @@
                                                         {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
                                                     <label class="form-check-label" for="meja-{{ $m->id }}">
                                                         Meja {{ $m->nomor_meja }}
+                                                        Kapasitas{{ $m->kapasitas }}
                                                         ({{ $m->location->name }})
+                                                        ({{ $m->location->floor }})
                                                     </label>
                                                 </div>
                                             </div>
@@ -116,29 +121,55 @@
                                         </div>
                                     </div>
 
-                                    <div id="menu_list">
+                                    <div class="row" id="menu_list">
                                         @foreach ($menus as $menu)
-                                            <div class="menu-item mb-3" data-nama="{{ $menu->nama_menu }}"
-                                                data-harga="{{ $menu->harga }}">
-                                                <div class="d-flex align-items-center">
-                                                    <label class="mr-3 flex-grow-1">
-                                                        {{ $menu->nama_menu }}
-                                                        (Rp. {{ number_format($menu->harga, 0, ',', '.') }})
-                                                    </label>
-                                                    <input type="number" name="menu[{{ $menu->id }}][jumlah_pesanan]"
-                                                        min="0" placeholder="Jumlah"
-                                                        class="form-control form-control-sm w-25 
-                                              @error('menu.' . $menu->id . '.jumlah_pesanan') is-invalid @enderror"
-                                                        value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}">
-                                                    <input type="hidden" name="menu[{{ $menu->id }}][id]"
-                                                        value="{{ $menu->id }}">
+                                            <div class="col-md-4 mb-4">
+                                                <div class="card h-100">
+                                                    <!-- Menampilkan Gambar -->
+                                                    @if ($menu->image)
+                                                        <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top" alt="{{ $menu->nama_menu }}">
+                                                    @else
+                                                        <img src="{{ asset('images/default-menu.jpg') }}" class="card-img-top" alt="Default Image">
+                                                    @endif
+                                    
+                                                    <div class="card-body d-flex flex-column justify-content-between">
+                                                        <h5 class="card-title">{{ $menu->nama_menu }}</h5>
+                                                        <p class="card-text">Rp. {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                                    
+                                                        <!-- Menampilkan Nama Kategori -->
+                                                        <p class="card-text">
+                                                            <small>Kategori: 
+                                                                @foreach ($menu->categories as $category)
+                                                                    <span class="badge bg-primary">{{ $category->nama_kategori }}</span>
+                                                                @endforeach
+                                                            </small>
+                                                        </p>
+                                    
+                                                        <!-- Input Jumlah Pesanan -->
+                                                        <div class="d-flex align-items-center">
+                                                            <button type="button" class="btn btn-outline-primary btn-sm me-2 increment-btn"
+                                                                    data-target="#menu-quantity-{{ $menu->id }}">
+                                                                +
+                                                            </button>
+                                                            <input type="number" id="menu-quantity-{{ $menu->id }}"
+                                                                   name="menu[{{ $menu->id }}][jumlah_pesanan]"
+                                                                   class="form-control form-control-sm text-center w-25"
+                                                                   value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}" min="0">
+                                                            <input type="hidden" name="menu[{{ $menu->id }}][id]" value="{{ $menu->id }}">
+                                                        </div>
+                                                        @error('menu.' . $menu->id . '.jumlah_pesanan')
+                                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
                                                 </div>
-                                                @error('menu.' . $menu->id . '.jumlah_pesanan')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
                                             </div>
                                         @endforeach
                                     </div>
+                                    
+                                     {{-- Pagination Links --}}
+        <div class="d-flex justify-content-center mt-3">
+            {{ $menus->links('pagination::bootstrap-4') }}
+        </div>
                                     @error('menu')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -158,12 +189,12 @@
         </form>
     </div>
 @endsection
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Meja Search and Pagination
-            let currentMejaSearchPage = 1;
-            let mejaSearchValue = '';
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Meja Search and Pagination
+                let currentMejaSearchPage = 1;
+                let mejaSearchValue = '';
 
             document.getElementById('search_meja').addEventListener('input', function() {
                 mejaSearchValue = this.value.toLowerCase();
@@ -198,11 +229,13 @@
                     });
             }
 
-            function createMejaItem(meja) {
-                const col = document.createElement('div');
-                col.className = 'col-md-4 mb-3 meja-item';
-                col.dataset.nomor = meja.nomor_meja;
-                col.dataset.lokasi = meja.location.name;
+                function createMejaItem(meja) {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-4 mb-3 meja-item';
+                    col.dataset.nomor = meja.nomor_meja;
+                    col.dataset.lokasi = meja.location.name;
+                    col.dataset.lokasi = meja.location.floor;
+                    col.dataset.nomor = meja.kapasitas;
 
                 col.innerHTML = `
             <div class="card">
@@ -216,6 +249,8 @@
                         <label class="form-check-label" for="meja-${meja.id}">
                             Meja ${meja.nomor_meja} 
                             (${meja.location.name})
+                            (${meja.location.floor})
+                            (${meja.kapasitas})
                         </label>
                     </div>
                 </div>
@@ -255,54 +290,182 @@
                         paginationContainer.appendChild(pageButton);
                     }
 
-                    // Next button
-                    if (result.current_page < result.total_pages) {
-                        const nextButton = document.createElement('button');
-                        nextButton.textContent = 'Next';
-                        nextButton.className = 'btn btn-secondary';
-                        nextButton.addEventListener('click', () => {
-                            currentMejaSearchPage++;
-                            searchMeja();
-                        });
-                        paginationContainer.appendChild(nextButton);
+                        // Next button
+                        if (result.current_page < result.total_pages) {
+                            const nextButton = document.createElement('button');
+                            nextButton.textContent = 'Next';
+                            nextButton.className = 'btn btn-secondary';
+                            nextButton.addEventListener('click', () => {
+                                currentMejaSearchPage++;
+                                searchMeja();
+                            });
+                            paginationContainer.appendChild(nextButton);
+                        }
                     }
                 }
+ // Menu Search and Pagination
+ let currentMenuSearchPage = 1;
+    let menuSearchValue = '';
+
+    document.getElementById('search_menu').addEventListener('input', function() {
+        menuSearchValue = this.value.toLowerCase();
+        currentMenuSearchPage = 1;
+        searchMenu();
+    });
+
+    function searchMenu() {
+        fetch(`/search-menu?search=${menuSearchValue}&page=${currentMenuSearchPage}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            const menuList = document.getElementById('menu_list');
+            menuList.innerHTML = ''; // Clear existing items
+
+            // Render new items
+            result.data.forEach(menu => {
+                const menuItem = createMenuItem(menu);
+                menuList.appendChild(menuItem);
+            });
+
+            // Update pagination
+            updateMenuPagination(result);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function createMenuItem(menu) {
+    const col = document.createElement('div');
+    col.className = 'col-md-4 mb-4 menu-item';
+    col.dataset.nama = menu.nama_menu.toLowerCase();
+    col.innerHTML = `
+        <div class="card h-100">
+            <img src="${menu.image}" class="card-img-top" alt="${menu.nama_menu}">
+            <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="card-title">${menu.nama_menu}</h5>
+                <p class="card-text">Rp. ${formatCurrency(menu.harga)}</p>
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-outline-primary btn-sm me-2 increment-btn" 
+                            data-target="#menu-quantity-${menu.id}">
+                        +
+                    </button>
+                    <input type="number" id="menu-quantity-${menu.id}"
+                           name="menu[${menu.id}][jumlah_pesanan]"
+                           class="form-control form-control-sm text-center w-25"
+                           value="0" min="0">
+                    <input type="hidden" name="menu[${menu.id}][id]" value="${menu.id}">
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Tambahkan event listener untuk tombol increment
+    const incrementBtn = col.querySelector('.increment-btn');
+    const quantityInput = col.querySelector(`#menu-quantity-${menu.id}`);
+
+    incrementBtn.addEventListener('click', () => {
+        let currentValue = parseInt(quantityInput.value) || 0;
+        quantityInput.value = currentValue + 1;
+    });
+
+    // Validasi input
+    quantityInput.addEventListener('input', () => {
+        const value = parseInt(quantityInput.value);
+        if (isNaN(value) || value < 0) {
+            quantityInput.value = 0;
+        }
+    });
+
+    return col;
+}
+
+    function updateMenuPagination(result) {
+        const paginationContainer = document.getElementById('menu_pagination');
+        paginationContainer.innerHTML = ''; // Clear existing pagination
+
+        if (result.total_pages > 1) {
+            // Previous button
+            if (result.current_page > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = 'Previous';
+                prevButton.className = 'btn btn-secondary mr-2';
+                prevButton.addEventListener('click', () => {
+                    currentMenuSearchPage--;
+                    searchMenu();
+                });
+                paginationContainer.appendChild(prevButton);
             }
 
-            // Menu Search and Sorting
-            document.getElementById('search_menu').addEventListener('input', function() {
-                const searchValue = this.value.toLowerCase();
-                const menuItems = document.querySelectorAll('.menu-item');
-
-                menuItems.forEach(item => {
-                    const nama = item.dataset.nama.toLowerCase();
-
-                    item.style.display = nama.includes(searchValue) ?
-                        'block' :
-                        'none';
+            // Page numbers
+            for (let i = 1; i <= result.total_pages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = `btn ${i === result.current_page ? 'btn-primary' : 'btn-secondary'} mr-1`;
+                pageButton.addEventListener('click', () => {
+                    currentMenuSearchPage = i;
+                    searchMenu();
                 });
+                paginationContainer.appendChild(pageButton);
+            }
+
+            // Next button
+            if (result.current_page < result.total_pages) {
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Next';
+                nextButton.className = 'btn btn-secondary';
+                nextButton.addEventListener('click', () => {
+                    currentMenuSearchPage++;
+                    searchMenu();
+                });
+                paginationContainer.appendChild(nextButton);
+            }
+        }
+    }
+
+    // Utility function to format currency
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('id-ID', { 
+            minimumFractionDigits: 0, 
+            maximumFractionDigits: 0 
+        }).format(number);
+    }
+
+    // Sorting Menu (Modified to work with pagination)
+    document.getElementById('sort_by_menu').addEventListener('change', function() {
+        const sortBy = this.value;
+        currentMenuSearchPage = 1;
+        
+        fetch(`/sort-menu?sort_by=${sortBy}&page=${currentMenuSearchPage}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            const menuList = document.getElementById('menu_list');
+            menuList.innerHTML = ''; // Clear existing items
+
+            // Render new items
+            result.data.forEach(menu => {
+                const menuItem = createMenuItem(menu);
+                menuList.appendChild(menuItem);
             });
 
-            // Sorting Menu
-            document.getElementById('sort_by_menu').addEventListener('change', function() {
-                const sortBy = this.value;
-                const menuList = document.getElementById('menu_list');
-                const menuItems = Array.from(document.querySelectorAll('.menu-item'));
-
-                menuItems.sort((a, b) => {
-                    const namaA = a.dataset.nama;
-                    const namaB = b.dataset.nama;
-                    return sortBy === 'asc' ?
-                        namaA.localeCompare(namaB) :
-                        namaB.localeCompare(namaA);
-                });
-
-                // Hapus item lama
-                menuList.innerHTML = '';
-
-                // Tambahkan item yang sudah diurutkan
-                menuItems.forEach(item => menuList.appendChild(item));
-            });
+            // Update pagination
+            updateMenuPagination(result);
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
-    </script>
-@endpush
+    });
+            });
+        </script>
+    @endpush
