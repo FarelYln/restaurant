@@ -62,13 +62,13 @@ Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function ()
     Route::put('/admin/location/{id}', [LocationController::class, 'update'])->name('admin.location.update');
     Route::delete('/admin/location/{id}', [LocationController::class, 'destroy'])->name('admin.location.destroy');
     
-    Route::get('/admin/user', [UserController::class, 'index'])->middleware('auth')->name('user');
+    Route::get('/admin/user', [UserController::class, 'index'])->name('account.index');
+
+
 
     Route::get('/admin/reservasi', [ReservasiController::class, 'adminIndex'])->name('admin.reservasi.index');
     Route::get('/admin/reservasi/checkout/{id}', [ReservasiController::class, 'checkout'])->name('admin.reservasi.checkout');
     Route::get('/admin/reservasi/history', [ReservasiController::class, 'history'])->name('admin.reservasi.history');
-
-    Route::get('/admin/user/{type?}', [UserController::class, 'showAccount'])->name('account.show');
 
 });
 

@@ -1,39 +1,26 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 
 class UserController extends Controller
 {
-    // Method untuk menampilkan akun yang sedang login (user)
     public function index()
+{
+    // Data default untuk index
+    return redirect()->route('account.show'); // Redirect ke metode utama
+}
+
+    // Method untuk menampilkan semua akun user yang terdaftar
+    public function showAccount(Request $request)
     {
-        $user = Auth::user(); // Mengambil data user yang login
-        $type = 'user'; // Menentukan tipe default user
-        return view('pages.admin.user.index', compact('user', 'type'));
-    }
+        $sort = $request->query('sort', 'name'); // Default ke pengurutan berdasarkan nama
 
-    // Method untuk menampilkan akun user atau admin berdasarkan pilihan
-    public function showAccount(Request $request, $type = 'user')
-    {
-        $type = $request->query('type', 'user'); // Default ke 'user'
-    $sort = $request->query('sort', 'name'); 
+        // Ambil semua data user dan urutkan sesuai pilihan
+        $users = User::orderBy($sort, $sort === 'name' ? 'asc' : 'desc')->get();
 
-        // Cek apakah pilihan adalah admin
-        if ($type == 'admin') {
-            // Ambil data admin
-            $user = User::where('role', 'admin')->first(); // Mengambil admin pertama dengan role admin
-            if (!$user) {
-                // Jika tidak ada admin, beri pesan error atau fallback
-                return redirect()->route('account.show', ['type' => 'user'])->withErrors('Admin not found.');
-            }
-        } else {
-            // Ambil data user yang sedang login
-            $user = Auth::user(); // Mengambil data user yang sedang login
-        }
-
-        return view('pages.admin.user.index', compact('user', 'type', 'short')); // Mengirimkan variabel type ke view
+        // Kirimkan data ke view
+        return view('pages.admin.user.index', compact('users', 'sort'));
     }
 }
