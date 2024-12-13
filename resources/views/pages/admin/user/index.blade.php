@@ -39,6 +39,7 @@
                             <tr>
                                 <th>Nama</th>
                                 <th>Email</th>
+                                <th>Role</th>
                                 <th>Dibuat Pada</th>
                             </tr>
                         </thead>
@@ -47,6 +48,7 @@
                                 <tr>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
+                                    <td>{{ $user->role }}</td>
                                     <td>{{ $user->created_at->format('d M Y') }}</td>
                                 </tr>
                             @endforeach
