@@ -115,6 +115,16 @@
                 <div class="card-header bg-primary text-white">
                     <h4>Pilih Menu</h4>
                 </div>
+
+                <!-- Button for Keranjang -->
+                <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
+                    <!-- Other content can go here -->
+
+                    <button type="button" class="btn btn-info d-flex align-items-center ms-auto" data-bs-toggle="modal"
+                        data-bs-target="#keranjangModal">
+                        <i class="bi bi-cart-fill me-2"></i> Keranjang (<span id="keranjangCount">0</span>)
+                    </button>
+                </div>
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -130,10 +140,7 @@
                                 <option value="asc_rating">Rating Terendah</option>
                                 <option value="desc_rating">Rating Tertinggi</option>
                             </select>
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
-                                data-bs-target="#keranjangModal">
-                                Keranjang (<span id="keranjangCount">0</span>)
-                            </button>
+
                         </div>
                     </div>
 
@@ -207,74 +214,105 @@
                     Lanjutkan ke Pembayaran
                 </button>
             </div>
-            <!-- Modal Keranjang -->
-            <div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <ul id="keranjangItems" class="list-group">
-                                <!-- Item keranjang akan diisi melalui JavaScript -->
-                            </ul>
-                            <div class="mt-3">
-                                <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-
-                        </div>
-                    </div>
+        <!-- Modal Keranjang -->
+<div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Ubah class menjadi modal-lg untuk memperlebar modal -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="keranjangItems" class="list-group">
+                    <!-- Cart items will be dynamically inserted by JavaScript -->
+                </ul>
+                <div class="mt-3">
+                    <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- CSS -->
+<style>
+    .modal-dialog {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 600px; /* Lebar modal ditingkatkan */
+        height: 100%;
+        margin: 0;
+        max-width: none;
+    }
 
-            <!-- CSS -->
-            <style>
-                .modal-dialog {
-                    position: fixed;
-                    top: 0;
-                    right: 0;
-                    width: 300px;
-                    /* Atur lebar modal sesuai kebutuhan */
-                    height: 100%;
-                    /* Full height */
-                    margin: 0;
-                    max-width: none;
-                    /* Hapus batasan lebar */
-                }
+    .modal-content {
+        height: 100%;
+        border-radius: 0;
+        padding: 20px; /* Menambahkan padding agar lebih rapi */
+    }
 
-                .modal-content {
-                    height: 100%;
-                    /* Mengisi seluruh tinggi modal */
-                    border-radius: 0;
-                }
+    .modal-header {
+        border-bottom: 1px solid #dee2e6;
+        padding: 15px;
+        background-color: #f8f9fa; /* Menambahkan latar belakang untuk header modal */
+    }
 
-                .modal-header {
-                    border-bottom: 1px solid #dee2e6;
-                    padding: 10px;
-                }
+    .modal-body {
+        overflow-y: auto;
+        height: calc(100% - 160px); /* Menyesuaikan tinggi modal setelah header dan footer */
+    }
 
-                .modal-body {
-                    overflow-y: auto;
-                    height: calc(100% - 120px);
-                    /* Menyesuaikan tinggi modal */
-                }
+    .modal-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        border-top: 1px solid #dee2e6;
+        padding: 10px;
+        background-color: #f8f9fa; /* Menambahkan latar belakang untuk footer modal */
+    }
 
-                .modal-footer {
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 100%;
-                    border-top: 1px solid #dee2e6;
-                    padding: 10px;
-                }
-            </style>
+    .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px; /* Menambahkan padding agar lebih luas */
+        border: 1px solid #dee2e6; /* Memberikan batas pada item keranjang */
+        margin-bottom: 10px; /* Memberikan jarak antar item */
+    }
+
+    .list-group-item img {
+        width: 70px; /* Mengatur ukuran gambar */
+        height: 70px;
+        object-fit: cover;
+    }
+
+    .list-group-item .d-flex {
+        align-items: center;
+    }
+
+    .list-group-item .d-flex div {
+        margin-right: 10px;
+    }
+
+    .modal-body strong {
+        font-size: 1.2em;
+        margin-top: 20px;
+    }
+
+    .btn-close {
+        font-size: 1.5rem;
+    }
+
+    /* Styling tombol tambah / kurangi */
+    .cart-decrement-btn, .cart-increment-btn {
+        padding: 5px 10px;
+    }
+</style>
 
 
         </form>
