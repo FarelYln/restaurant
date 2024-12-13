@@ -30,14 +30,19 @@
                                 <label for="jam_reservasi">Jam Reservasi</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                    <input type="time" class="form-control @error('jam_reservasi') is-invalid @enderror"
-                                        name="jam_reservasi" value="{{ old('jam_reservasi') }}" required>
+                                    <input type="time" 
+                                           class="form-control @error('jam_reservasi') is-invalid @enderror"
+                                           name="jam_reservasi" 
+                                           value="{{ old('jam_reservasi') }}" 
+                                           required>
                                     @error('jam_reservasi')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <small class="text-muted">Jam buka: 08:00 - 22:00</small>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -49,15 +54,26 @@
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <input type="text" id="search_meja" class="form-control"
                                 placeholder="Cari meja yang dibutuhkan">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <select id="sort_by_meja" class="form-control">
                                 <option value="">Urutkan Meja</option>
                                 <option value="asc">Nomor Meja (A-Z)</option>
                                 <option value="desc">Nomor Meja (Z-A)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="filter_lantai" class="form-control">
+                                <option value="">Pilih Lantai</option>
+                                @php
+                                    $floors = $meja->pluck('location.floor')->unique()->sort();
+                                @endphp
+                                @foreach($floors as $floor)
+                                    <option value="{{ $floor }}">Lantai {{ $floor }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -65,8 +81,10 @@
                     {{-- Daftar Meja --}}
                     <div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
                         @foreach ($meja as $m)
-                            <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}"
-                                data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}"
+                            <div class="col-md-4 mb-3 meja-item" 
+                                data-nomor="{{ $m->nomor_meja }}"
+                                data-kapasitas="{{ $m->kapasitas }}" 
+                                data-lokasi="{{ $m->location->name }}"
                                 data-lantai="{{ $m->location->floor }}">
                                 <div class="card">
                                     <div class="card-body">
@@ -107,10 +125,10 @@
                                 <option value="">Urutkan Menu</option>
                                 <option value="asc">Nama Menu (A-Z)</option>
                                 <option value="desc">Nama Menu (Z-A)</option>
-                                <option value="asc" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Harga
-                                    Terendah</option>
-                                <option value="desc" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga
-                                    Tertinggi</option>
+                                <option value="asc_price" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Harga Terendah</option>
+                                <option value="desc_price" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga Tertinggi</option>
+                                <option value="asc_rating">Rating Terendah</option>
+                                <option value="desc_rating">Rating Tertinggi</option>
                             </select>
                             <button type="button" class="btn btn-info" data-bs-toggle="modal"
                                 data-bs-target="#keranjangModal">
@@ -121,7 +139,10 @@
 
                     <div class="row" id="menu_list" style="max-height: 400px; overflow-y: auto;">
                         @foreach ($menus as $menu)
-                            <div class="col-md-4 mb-4 menu-item" data-nama="{{ $menu->nama_menu }}">
+                            @php
+                                $averageRating = $menu->ulasans->avg('rating') ?? 0;
+                            @endphp
+                            <div class="col-md-4 mb-4 menu-item" data-nama="{{ $menu->nama_menu }}" data-rating="{{ $averageRating }}">
                                 <div class="card h-100">
                                     @if ($menu->image)
                                         <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top"
@@ -133,6 +154,16 @@
                                     <div class="card-body d-flex flex-column justify-content-between">
                                         <h5 class="card-title">{{ $menu->nama_menu }}</h5>
                                         <p class="card-text">Rp. {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="text-warning">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <i class="bi bi-star{{ $i <= round($averageRating) ? '-fill' : '' }}"></i>
+                                                    @endfor
+                                                </span>
+                                                <small class="text-muted">({{ number_format($averageRating, 1) }})</small>
+                                            </div>
+                                        </div>
                                         <p class="card-text">
                                             <small>Kategori:
                                                 @foreach ($menu->categories as $category)
@@ -149,7 +180,7 @@
                                                 class="form-control form-control-sm text-center w-25"
                                                 value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}"
                                                 min="0">
-                                                <button type="button" class="btn btn-outline-primary btn-sm me-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm ms-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
                                             <input type="hidden" name="menu[{{ $menu->id }}][id]"
                                                 value="{{ $menu->id }}">
                                         </div>
@@ -252,24 +283,24 @@
 
 @push('scripts')
     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    const keranjang = {};
-    const keranjangCountElement = document.getElementById('keranjangCount');
-    const keranjangItemsElement = document.getElementById('keranjangItems');
-    const totalHargaElement = document.getElementById('totalHarga');
+        document.addEventListener('DOMContentLoaded', function() {
+            const keranjang = {};
+            const keranjangCountElement = document.getElementById('keranjangCount');
+            const keranjangItemsElement = document.getElementById('keranjangItems');
+            const totalHargaElement = document.getElementById('totalHarga');
 
-    function updateKeranjang() {
-        keranjangItemsElement.innerHTML = '';
-        let totalHarga = 0;
-        let totalItems = 0;
+            function updateKeranjang() {
+                keranjangItemsElement.innerHTML = '';
+                let totalHarga = 0;
+                let totalItems = 0;
 
-        Object.keys(keranjang).forEach(id => {
-            const item = keranjang[id];
-            if (item.jumlah > 0) {
-                totalHarga += item.harga * item.jumlah;
-                totalItems += item.jumlah;
+                Object.keys(keranjang).forEach(id => {
+                    const item = keranjang[id];
+                    if (item.jumlah > 0) {
+                        totalHarga += item.harga * item.jumlah;
+                        totalItems += item.jumlah;
 
-                const itemHtml = `
+                        const itemHtml = `
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
                             <img src="${item.image}" alt="${item.nama}" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
@@ -288,103 +319,36 @@
                         </div>
                     </li>
                 `;
-                keranjangItemsElement.insertAdjacentHTML('beforeend', itemHtml);
-            }
-        });
+                        keranjangItemsElement.insertAdjacentHTML('beforeend', itemHtml);
+                    }
+                });
 
-        totalHargaElement.textContent = totalHarga.toLocaleString('id-ID');
-        keranjangCountElement.textContent = totalItems;
+                totalHargaElement.textContent = totalHarga.toLocaleString('id-ID');
+                keranjangCountElement.textContent = totalItems;
 
-        // Add event listeners for cart increment/decrement buttons
-        document.querySelectorAll('.cart-increment-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const menuId = this.dataset.id;
-                incrementItemInCart(menuId);
-            });
-        });
+                // Add event listeners for cart increment/decrement buttons
+                document.querySelectorAll('.cart-increment-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const menuId = this.dataset.id;
+                        incrementItemInCart(menuId);
+                    });
+                });
 
-        document.querySelectorAll('.cart-decrement-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const menuId = this.dataset.id;
-                decrementItemInCart(menuId);
-            });
-        });
-    }
-
-    function incrementItemInCart(menuId) {
-        const input = document.getElementById(`menu-quantity-${menuId}`);
-        let jumlah = parseInt(input.value) + 1;
-        input.value = jumlah;
-
-        // Ambil informasi menu dari card
-        const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
-        const menuItem = {
-            id: menuId,
-            nama: menuCard.querySelector('.card-title').textContent,
-            harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
-            jumlah: jumlah,
-            image: menuCard.querySelector('.card-img-top').src
-        };
-        keranjang[menuId] = menuItem;
-        updateKeranjang();
-    }
-
-    function decrementItemInCart(menuId) {
-        const input = document.getElementById(`menu-quantity-${menuId}`);
-        let jumlah = Math.max(0, parseInt(input.value) - 1);
-        input.value = jumlah;
-
-        if (jumlah > 0) {
-            // Ambil informasi menu dari card
-            const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
-            const menuItem = {
-                id: menuId,
-                nama: menuCard.querySelector('.card-title').textContent,
-                harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
-                jumlah: jumlah,
-                image: menuCard.querySelector('.card-img-top').src
-            };
-            keranjang[menuId] = menuItem;
-        } else {
-            delete keranjang[menuId];
-        }
-        updateKeranjang();
-    }
-
-    // Add data-id to menu items for easier selection
-    document.querySelectorAll('.menu-item').forEach(item => {
-        const menuId = item.querySelector('input[type="number"]').id.split('-')[2];
-        item.setAttribute('data-id', menuId);
-    });
-
-    // Increment and Decrement buttons on menu items
-    document.querySelectorAll('.increment-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const menuId = this.dataset.target.split('-')[2];
-            incrementItemInCart(menuId);
-        });
-    });
-
-    document.querySelectorAll('.decrement-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const menuId = this.dataset.target.split('-')[2];
-            decrementItemInCart(menuId);
-        });
-    });
-
-    // Initial setup for number inputs
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('change', function() {
-            const menuId = this.name.match(/\d+/)[0];
-            const jumlah = parseInt(this.value);
-            
-            if (jumlah < 0) {
-                this.value = 0;
+                document.querySelectorAll('.cart-decrement-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const menuId = this.dataset.id;
+                        decrementItemInCart(menuId);
+                    });
+                });
             }
 
-            if (jumlah > 0) {
+            function incrementItemInCart(menuId) {
+                const input = document.getElementById(`menu-quantity-${menuId}`);
+                let jumlah = parseInt(input.value) + 1;
+                input.value = jumlah;
+
                 // Ambil informasi menu dari card
-                const menuCard = this.closest('.menu-item');
+                const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
                 const menuItem = {
                     id: menuId,
                     nama: menuCard.querySelector('.card-title').textContent,
@@ -393,76 +357,186 @@
                     image: menuCard.querySelector('.card-img-top').src
                 };
                 keranjang[menuId] = menuItem;
-            } else {
-                delete keranjang[menuId];
+                updateKeranjang();
             }
 
-            updateKeranjang();
-        });
-    });
+            function decrementItemInCart(menuId) {
+                const input = document.getElementById(`menu-quantity-${menuId}`);
+                let jumlah = Math.max(0, parseInt(input.value) - 1);
+                input.value = jumlah;
 
-    // Search and Sorting functions (keeping the previous implementation)
-    document.getElementById('search_meja').addEventListener('input', function() {
-        const mejaSearchValue = this.value.toLowerCase();
-        const mejaItems = document.querySelectorAll('.meja-item');
-        mejaItems.forEach(item => {
-            const itemName = item.dataset.nomor.toLowerCase() + " " + item.dataset.lokasi.toLowerCase();
-            if (itemName.includes(mejaSearchValue)) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
+                if (jumlah > 0) {
+                    // Ambil informasi menu dari card
+                    const menuCard = document.querySelector(`.menu-item[data-id="${menuId}"]`);
+                    const menuItem = {
+                        id: menuId,
+                        nama: menuCard.querySelector('.card-title').textContent,
+                        harga: parseInt(menuCard.querySelector('.card-text').textContent.replace(/[^\d]/g, '')),
+                        jumlah: jumlah,
+                        image: menuCard.querySelector('.card-img-top').src
+                    };
+                    keranjang[menuId] = menuItem;
+                } else {
+                    delete keranjang[menuId];
+                }
+                updateKeranjang();
             }
+
+            // Add data-id to menu items for easier selection
+            document.querySelectorAll('.menu-item').forEach(item => {
+                const menuId = item.querySelector('input[type="number"]').id.split('-')[2];
+                item.setAttribute('data-id', menuId);
+            });
+
+            // Increment and Decrement buttons on menu items
+            document.querySelectorAll('.increment-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const menuId = this.dataset.target.split('-')[2];
+                    incrementItemInCart(menuId);
+                });
+            });
+
+            document.querySelectorAll('.decrement-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const menuId = this.dataset.target.split('-')[2];
+                    decrementItemInCart(menuId);
+                });
+            });
+
+            // Initial setup for number inputs
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const menuId = this.name.match(/\d+/)[0];
+                    const jumlah = parseInt(this.value);
+
+                    if (jumlah < 0) {
+                        this.value = 0;
+                    }
+
+                    if (jumlah > 0) {
+                        // Ambil informasi menu dari card
+                        const menuCard = this.closest('.menu-item');
+                        const menuItem = {
+                            id: menuId,
+                            nama: menuCard.querySelector('.card-title').textContent,
+                            harga: parseInt(menuCard.querySelector('.card-text').textContent
+                                .replace(/[^\d]/g, '')),
+                            jumlah: jumlah,
+                            image: menuCard.querySelector('.card-img-top').src
+                        };
+                        keranjang[menuId] = menuItem;
+                    } else {
+                        delete keranjang[menuId];
+                    }
+
+                    updateKeranjang();
+                });
+            });
+
+            // Search and Sorting functions (keeping the previous implementation)
+            document.getElementById('search_meja').addEventListener('input', function() {
+                const mejaSearchValue = this.value.toLowerCase();
+                const mejaItems = document.querySelectorAll('.meja-item');
+                mejaItems.forEach(item => {
+                    const itemName = item.dataset.nomor.toLowerCase() + " " + item.dataset.lokasi
+                        .toLowerCase();
+                    if (itemName.includes(mejaSearchValue)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            document.getElementById('search_menu').addEventListener('input', function() {
+                const menuSearchValue = this.value.toLowerCase();
+                const menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(item => {
+                    const itemName = item.dataset.nama.toLowerCase();
+                    if (itemName.includes(menuSearchValue)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+
+            // Sorting functions
+            document.getElementById('sort_by_meja').addEventListener('change', function() {
+                const sortBy = this.value;
+                const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
+                mejaItems.sort((a, b) => {
+                    const nomorA = parseInt(a.dataset.nomor);
+                    const nomorB = parseInt(b.dataset.nomor);
+                    return sortBy === 'asc' ? nomorA - nomorB : nomorB - nomorA;
+                });
+                const mejaList = document.getElementById('meja_list');
+                mejaList.innerHTML = '';
+                mejaItems.forEach(item => mejaList.appendChild(item));
+            });
+            // Floor filter for tables
+            document.getElementById('filter_lantai').addEventListener('change', function() {
+                const selectedFloor = this.value;
+                const mejaItems = document.querySelectorAll('.meja-item');
+
+                mejaItems.forEach(item => {
+                    if (selectedFloor === '' || item.dataset.lantai === selectedFloor) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+            // Updated sorting for menu
+            document.getElementById('sort_by_menu').addEventListener('change', function() {
+                const sortBy = this.value;
+                const menuItems = Array.from(document.querySelectorAll('.menu-item'));
+
+                menuItems.sort((a, b) => {
+                    switch (sortBy) {
+                        case 'asc_price':
+                            const priceA = parseInt(a.querySelector('.card-text').textContent
+                                .replace(/[^\d]/g, ''));
+                            const priceB = parseInt(b.querySelector('.card-text').textContent
+                                .replace(/[^\d]/g, ''));
+                            return priceA - priceB;
+
+                        case 'desc_price':
+                            const priceX = parseInt(a.querySelector('.card-text').textContent
+                                .replace(/[^\d]/g, ''));
+                            const priceY = parseInt(b.querySelector('.card-text').textContent
+                                .replace(/[^\d]/g, ''));
+                            return priceY - priceX;
+
+                        case 'asc_rating':
+                            const ratingA = parseFloat(a.dataset.rating);
+                            const ratingB = parseFloat(b.dataset.rating);
+                            return ratingA - ratingB;
+
+                        case 'desc_rating':
+                            const ratingX = parseFloat(a.dataset.rating);
+                            const ratingY = parseFloat(b.dataset.rating);
+                            return ratingY - ratingX;
+
+                        case 'asc':
+                            const nameA = a.querySelector('.card-title').textContent;
+                            const nameB = b.querySelector('.card-title').textContent;
+                            return nameA.localeCompare(nameB);
+
+                        case 'desc':
+                            const nameX = a.querySelector('.card-title').textContent;
+                            const nameY = b.querySelector('.card-title').textContent;
+                            return nameY.localeCompare(nameX);
+
+                        default:
+                            return 0;
+                    }
+                });
+
+                const menuList = document.getElementById('menu_list');
+                menuList.innerHTML = '';
+                menuItems.forEach(item => menuList.appendChild(item));
+            });
         });
-    });
-
-    document.getElementById('search_menu').addEventListener('input', function() {
-        const menuSearchValue = this.value.toLowerCase();
-        const menuItems = document.querySelectorAll('.menu-item');
-        menuItems.forEach(item => {
-            const itemName = item.dataset.nama.toLowerCase();
-            if (itemName.includes(menuSearchValue)) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    });
-
-    // Sorting functions
-    document.getElementById('sort_by_meja').addEventListener('change', function() {
-        const sortBy = this.value;
-        const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
-        mejaItems.sort((a, b) => {
-            const nomorA = parseInt(a.dataset.nomor);
-            const nomorB = parseInt(b.dataset.nomor);
-            return sortBy === 'asc' ? nomorA - nomorB : nomorB - nomorA;
-        });
-        const mejaList = document.getElementById('meja_list');
-        mejaList.innerHTML = '';
-        mejaItems.forEach(item => mejaList.appendChild(item));
-    });
-
-    document.getElementById('sort_by_menu').addEventListener('change', function() {
-        const sortBy = this.value;
-        const menuItems = Array.from(document.querySelectorAll('.menu-item'));
-
-        menuItems.sort((a, b) => {
-            if (sortBy === 'asc' || sortBy === 'desc') {
-                const priceA = parseInt(a.querySelector('.card-text').textContent.replace(/[^\d]/g, ''));
-                const priceB = parseInt(b.querySelector('.card-text').textContent.replace(/[^\d]/g, ''));
-
-                return sortBy === 'asc' ? priceA - priceB : priceB - priceA;
-            } else {
-                const nameA = a.querySelector('.card-title').textContent;
-                const nameB = b.querySelector('.card-title').textContent;
-                return sortBy === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-            }
-        });
-
-        const menuList = document.getElementById('menu_list');
-        menuList.innerHTML = '';
-        menuItems.forEach(item => menuList.appendChild(item));
-    });
-});
     </script>
 @endpush
