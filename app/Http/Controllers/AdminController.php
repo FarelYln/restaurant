@@ -18,19 +18,17 @@ class AdminController extends Controller
 
         // Ambil data reservasi per minggu untuk bulan yang dipilih
       // Controller
-$reservations = Reservasi::selectRaw('YEAR(tanggal_reservasi) as year, MONTH(tanggal_reservasi) as month, WEEK(tanggal_reservasi) as week, COUNT(*) as count')
-->whereMonth('tanggal_reservasi', '=', $month)
-->groupBy('year', 'month', 'week')
-->orderBy('week')
-->get();
-
-// Pemetaan minggu
-$reservations->transform(function ($item) {
-    $item->week = $item->week + 1; // Geser semua minggu ke nilai berikutnya
-    return $item;
-});
-
-return view('pages.admin.dashboard', compact('reservations', 'month'));
+      $month = $request->input('month', date('m')); // Default ke bulan saat ini jika tidak dipilih
+      $reservations = Reservasi::selectRaw('WEEK(tanggal_reservasi, 1) as week, COUNT(*) as count, SUM(total_bayar) as total_pemasukan')
+          ->whereMonth('tanggal_reservasi', '=', $month)
+          ->groupBy('week')
+          ->get();
+  
+      // Total pemasukan seluruh bulan
+      $totalPemasukan = Reservasi::whereMonth('tanggal_reservasi', '=', $month)
+          ->sum('total_bayar');
+  
+      return view('pages.admin.dashboard', compact('reservations', 'month', 'totalPemasukan'));
 
     }
 }

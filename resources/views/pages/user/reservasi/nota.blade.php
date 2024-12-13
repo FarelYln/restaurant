@@ -21,10 +21,14 @@
                             <p><strong>ID Reservasi:</strong> {{ $reservasi->id }}</p>
                             <p><strong>Tanggal Reservasi:</strong> {{ $reservasi->tanggal_reservasi->format('d M Y H:i') }}</p>
                             <p><strong>Meja:</strong>
-                                @foreach($reservasi->meja as $meja)
-                                    {{ $meja->nomor_meja }}@if(!$loop->last), @endif
-                                @endforeach
-                            </p>
+    @foreach($reservasi->meja as $meja)
+        {{ $meja->nomor_meja }} 
+        (Lantai: {{ $meja->location->floor ?? 'Tidak diketahui' }}, 
+        {{ ucfirst($meja->location->name ?? 'tidak diketahui') }})
+        @if(!$loop->last), @endif
+    @endforeach
+</p>
+
                         </div>
 
                         {{-- Pesanan Menu --}}

@@ -56,10 +56,22 @@
                             <tr class="align-middle">
                                 <td class="py-3" style="font-family: 'Roboto', sans-serif;">{{ $loop->iteration }}</td>
                                 <td class="py-3">
-                                    <span class="badge {{ $reservasi->status_reservasi === 'confirmed' ? 'bg-success' : ($reservasi->status_reservasi === 'completed' ? 'bg-primary' : 'bg-secondary') }}">
-                                        {{ ucfirst($reservasi->status_reservasi) }}
-                                    </span>
-                                </td>
+    <span class="badge {{ $reservasi->status_reservasi === 'confirmed' ? 'bg-success' : ($reservasi->status_reservasi === 'completed' ? 'bg-primary' : 'bg-secondary') }}">
+        @php
+            // Pemetaan status ke bahasa Indonesia
+            $statusTranslations = [
+                'confirmed' => 'Dikonfirmasi',
+                'completed' => 'Selesai',
+                'pending' => 'Menunggu',
+                'cancelled' => 'Dibatalkan',
+            ];
+            // Ambil terjemahan atau gunakan status asli jika tidak ada di pemetaan
+            $statusIndo = $statusTranslations[$reservasi->status_reservasi] ?? ucfirst($reservasi->status_reservasi);
+        @endphp
+        {{ $statusIndo }}
+    </span>
+</td>
+
                                 <td class="py-3">
                                     <a href="{{ route('user.reservasi.nota', $reservasi->id) }}" 
                                        class="btn btn-info btn-sm shadow-sm" 
