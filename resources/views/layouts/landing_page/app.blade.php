@@ -32,6 +32,12 @@
     <link href="{{ asset('asset_landing/css/style.css') }}" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+     <!-- SweetAlert2 -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ 
 </head>
 
 <body>
@@ -64,6 +70,7 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('asset_landing/js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Custom Scripts -->
     @stack('scripts')
