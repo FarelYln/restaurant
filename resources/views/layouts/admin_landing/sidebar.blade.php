@@ -35,9 +35,12 @@
                                 <i class="fa fa-history me-2"></i>History Reservasi
                             </a>
                         </div>
-                    </div>
+                    </div>                    
+                    <a href="/admin/pembayaran" class="nav-item nav-link {{ Request::is('admin/pembayaran') ? 'active' : '' }}">
+                        <i class="fa fa-credit-card me-2"></i>Pembayaran
+                    </a>
                     <a href="/admin/user" class="nav-item nav-link {{ Request::is('admin/user') ? 'active' : '' }}">
-                        <i class="fa fa-user me-2"></i>User
+                        <i class="fa fa-user"></i>User
                     </a>
                     
                 </div>
