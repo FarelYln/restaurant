@@ -48,7 +48,7 @@
                                 @if($reservasi->status_reservasi == 'confirmed')
                                 <form action="{{ route('admin.reservasi.checkout', $reservasi->id) }}" method="GET"
                                     onsubmit="return confirm('Are you sure?')">
-                                    <button type="submit" class="btn btn-primary checkout">Checkout</button>
+                                    <button type="submit" class="btn btn-primary checkout">Reservasi Selesai</button>
                                 </form>
                                 @endif
                             </div>
