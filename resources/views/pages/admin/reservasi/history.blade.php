@@ -127,7 +127,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $reservasi->user->name }}</td>
                                         <td>{{ $reservasi->tanggal_reservasi->format('d M Y') }}</td>
-                                        <td>{{ ucfirst($reservasi->status_reservasi) }}</td>
+                                        <td><span class="badge bg-warning">{{ ucfirst($reservasi->status_reservasi) }}</span></td>
                                         <td>
                                             <!-- Action Button -->
                                             <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal{{ $reservasi->id }}">
@@ -135,36 +135,79 @@
                                             </button>
                                         </td>
                                     </tr>
-                                    <!-- Modal for detail reservasi -->
-                                    <div class="modal fade" id="detailModal{{ $reservasi->id }}" tabindex="-1" aria-labelledby="detailModalLabel{{ $reservasi->id }}" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="detailModalLabel{{ $reservasi->id }}">Detail Reservasi</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p><strong>Nama Pelanggan:</strong> {{ $reservasi->user->name }}</p>
-                                                    <p><strong>Email Pelanggan:</strong> {{ $reservasi->user->email }}</p>
-                                                    <p><strong>Tanggal Reservasi:</strong> {{ $reservasi->tanggal_reservasi->format('d M Y H:i') }}</p>
-                                                    <p><strong>Status Reservasi:</strong> {{ ucfirst($reservasi->status_reservasi) }}</p>
-                                                    <p><strong>Meja:</strong>
-                                                        @foreach($reservasi->meja as $meja)
-                                                            {{ $meja->nomor_meja }}@if(!$loop->last), @endif
-                                                        @endforeach
-                                                    </p>
-                                                    <p><strong>Menu Pesanan:</strong>
-                                                        @foreach($reservasi->menus as $menu)
-                                                            {{ $menu->nama_menu }} (Jumlah: {{ $menu->pivot->jumlah_pesanan }})<br>
-                                                        @endforeach
-                                                    </p>
-                                                    <p><strong>Total Harga:</strong> Rp {{ number_format($reservasi->menus->sum(function ($menu) {
-                                                        return $menu->pivot->jumlah_pesanan * $menu->harga;
-                                                    }), 0, ',', '.') }}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                   <!-- Modal for detail reservasi -->
+<div class="modal fade" id="detailModal{{ $reservasi->id }}" tabindex="-1" aria-labelledby="detailModalLabel{{ $reservasi->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel{{ $reservasi->id }}">Detail Reservasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Informasi Pelanggan -->
+                <div class="mb-4">
+                    <h6 class="fw-bold">Informasi Pelanggan</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nama:</strong> {{ $reservasi->user->name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Email:</strong> {{ $reservasi->user->email }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Reservasi -->
+                <div class="mb-4">
+                    <h6 class="fw-bold">Detail Reservasi</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Tanggal Reservasi:</strong> {{ $reservasi->tanggal_reservasi->format('d M Y H:i') }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Status:</strong> <span class="badge bg-warning">{{ ucfirst($reservasi->status_reservasi) }}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Metode Pembayaran:</strong> {{ str_replace('_', ' ', $reservasi->metode_pembayaran) }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Media Pembayaran:</strong> {{ $reservasi->media_pembayaran }} ({{ $reservasi->nomor_media }})</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informasi Meja -->
+                <div class="mb-4">
+                    <h6 class="fw-bold">Informasi Meja</h6>
+                    <p><strong>Meja:</strong> 
+                        @foreach($reservasi->meja as $meja)
+                            {{ $meja->nomor_meja }}@if(!$loop->last), @endif
+                        @endforeach
+                    </p>
+                </div>
+
+                <!-- Menu Pesanan -->
+                <div class="mb-4">
+                    <h6 class="fw-bold">Menu Pesanan</h6>
+                    <p>
+                        @foreach($reservasi->menus as $menu)
+                            {{ $menu->nama_menu }} (Jumlah: {{ $menu->pivot->jumlah_pesanan }})<br>
+                        @endforeach
+                    </p>
+                </div>
+
+                <!-- Total Harga -->
+                <div class="mb-4">
+                    <h6 class="fw-bold">Total Harga</h6>
+                    <p><strong>Rp {{ number_format($reservasi->menus->sum(function ($menu) {
+                        return $menu->pivot->jumlah_pesanan * $menu->harga;
+                    }), 0, ',', '.') }}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
                                 @endforeach
                             </tbody>
                         </table>

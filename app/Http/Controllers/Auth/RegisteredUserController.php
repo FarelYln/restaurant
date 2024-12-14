@@ -33,18 +33,32 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            // Pesan validasi kustom dalam bahasa Indonesia
+            'name.required' => 'Nama harus diisi.',
+            'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'password.required' => 'Kata sandi harus diisi.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
-
+    
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
+    
         event(new Registered($user));
-
         Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+    
+        // Tambahkan flash message dalam bahasa Indonesia
+        return redirect(route('dashboard', absolute: false))
+            ->with('success', 'Selamat datang, ' . $user->name . '! Akun Anda berhasil dibuat.')
+            ->with('alert', [
+                'type' => 'success',
+                'message' => 'Registrasi berhasil! Anda telah login ke sistem.'
+            ]);
     }
 }

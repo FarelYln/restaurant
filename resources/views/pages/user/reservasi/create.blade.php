@@ -63,6 +63,8 @@
                                 <option value="">Urutkan Meja</option>
                                 <option value="asc">Nomor Meja (A-Z)</option>
                                 <option value="desc">Nomor Meja (Z-A)</option>
+                                <option value="asc_kapasitas">Kapasitas (Terendah)</option>
+                                <option value="desc_kapasitas">Kapasitas (Terbanyak)</option>
                             </select>
                         </div>
                         <div class="col-md-4">
@@ -501,30 +503,31 @@
 
             // Sorting functions
             document.getElementById('sort_by_meja').addEventListener('change', function() {
-                const sortBy = this.value;
-                const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
-                mejaItems.sort((a, b) => {
-                    const nomorA = parseInt(a.dataset.nomor);
-                    const nomorB = parseInt(b.dataset.nomor);
-                    return sortBy === 'asc' ? nomorA - nomorB : nomorB - nomorA;
-                });
-                const mejaList = document.getElementById('meja_list');
-                mejaList.innerHTML = '';
-                mejaItems.forEach(item => mejaList.appendChild(item));
-            });
-            // Floor filter for tables
-            document.getElementById('filter_lantai').addEventListener('change', function() {
-                const selectedFloor = this.value;
-                const mejaItems = document.querySelectorAll('.meja-item');
-
-                mejaItems.forEach(item => {
-                    if (selectedFloor === '' || item.dataset.lantai === selectedFloor) {
-                        item.style.display = '';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
+    const sortBy = this.value;
+    const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
+    
+    mejaItems.sort((a, b) => {
+        const kapasitasA = parseInt(a.dataset.kapasitas);
+        const kapasitasB = parseInt(b.dataset.kapasitas);
+        
+        switch(sortBy) {
+            case 'asc':
+                return parseInt(a.dataset.nomor) - parseInt(b.dataset.nomor);
+            case 'desc':
+                return parseInt(b.dataset.nomor) - parseInt(a.dataset.nomor);
+            case 'asc_kapasitas':
+                return kapasitasA - kapasitasB;
+            case 'desc_kapasitas':
+                return kapasitasB - kapasitasA;
+            default:
+                return 0;
+        }
+    });
+    
+    const mejaList = document.getElementById('meja_list');
+    mejaList.innerHTML = '';
+    mejaItems.forEach(item => mejaList.appendChild(item));
+});
             // Updated sorting for menu
             document.getElementById('sort_by_menu').addEventListener('change', function() {
                 const sortBy = this.value;

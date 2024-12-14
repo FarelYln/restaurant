@@ -3,7 +3,9 @@
 @section('content')
 <div class="container">
     <div class="card mb-4">
-        <h1>Daftar Reservasi Pelanggan</h1>
+        <div class="card-header">
+            <h1 class="card-title">Daftar Reservasi Pelanggan</h1>
+        </div>
         <div class="card-body">
             <form action="" method="get">
                 <div class="row">
@@ -18,49 +20,84 @@
             </form>
         </div>
     </div>
+
     @if($reservasiData->isEmpty())
-        <p style="text-align: center">Tidak ada reservasi yang memiliki status confirmed atau completed.</p>
+        <div class="alert alert-info text-center" role="alert">
+            Tidak ada reservasi yang memiliki status confirmed atau completed.
+        </div>
     @else
-        <div class="row">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
             @foreach($reservasiData as $reservasi)
-                <div class="col-md-4">
-                    <div class="card">
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Reservasi #{{ $loop->iteration }}</h5>
+                            <span class="badge 
+                                {{ $reservasi->status_reservasi == 'confirmed' ? 'bg-success' : 
+                                   ($reservasi->status_reservasi == 'completed' ? 'bg-primary' : 'bg-warning') }}">
+                                {{ ucfirst($reservasi->status_reservasi) }}
+                            </span>
+                        </div>
                         <div class="card-body">
-                            <h5 class="card-title">Reservasi {{ $loop->iteration }}</h5>
-                            <p class="card-text">Nama Pelanggan: {{ $reservasi->user->name }}</p>
-                            <p class="card-text">Gmail Pelanggan: {{ $reservasi->user->email }}</p>
-                            <p class="card-text">Tanggal Reservasi: {{ $reservasi->tanggal_reservasi->format('d m Y H:i') }}</p>
-                            <p class="card-text">Status Reservasi: {{ ucfirst($reservasi->status_reservasi) }}</p>
-                            <p class="card-text">Meja:
-                                @foreach($reservasi->meja as $meja)
-                                    {{ $meja->nomor_meja }}@if(!$loop->last), @endif
-                                @endforeach
-                            </p>
-                            <p class="card-text">Menu Pesanan:
-                                @foreach($reservasi->menus as $menu)
-                                    {{ $menu->nama_menu }} (Jumlah: {{ $menu->pivot->jumlah_pesanan }})<br>
-                                @endforeach
-                            </p>
-                            <p class="card-text">Total Harga: Rp {{ number_format($reservasi->menus->sum(function ($menu) {
-                                return $menu->pivot->jumlah_pesanan * $menu->harga;
-                            }), 0, ',', '.') }}</p>
-                            <div class="text-center">
-                                @if($reservasi->status_reservasi == 'confirmed')
-                                <form action="{{ route('admin.reservasi.checkout', $reservasi->id) }}" method="GET"
-                                    onsubmit="return confirm('Are you sure?')">
-                                    <button type="submit" class="btn btn-primary checkout">Selesai</button>
-                                </form>
-                                @endif
+                            <div class="mb-3">
+                                <strong>Informasi Pelanggan</strong>
+                                <p class="mb-1">Nama: {{ $reservasi->user->name }}</p>
+                                <p class="mb-1">Email: {{ $reservasi->user->email }}</p>
                             </div>
+
+                            <div class="mb-3">
+                                <strong>Detail Reservasi</strong>
+                                <p class="mb-1">Tanggal: {{ $reservasi->tanggal_reservasi->format('d M Y H:i') }}</p>
+                                <p class="mb-1">Metode Pembayaran: {{ $reservasi->metode_pembayaran }}</p>
+                                <p class="mb-1">Media: {{ $reservasi->media_pembayaran }} ({{ $reservasi->nomor_media }})</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>Meja</strong>
+                                <p class="mb-1">
+                                    @foreach($reservasi->meja as $meja)
+                                        {{ $meja->nomor_meja }}@if(!$loop->last), @endif
+                                    @endforeach
+                                </p>
+                            </div>
+
+                            <div class="mb-3">
+                                <strong>Pesanan</strong>
+                                @foreach($reservasi->menus as $menu)
+                                    <p class="mb-1">
+                                        {{ $menu->nama_menu }} 
+                                        <span class="text-muted">(x{{ $menu->pivot->jumlah_pesanan }})</span>
+                                    </p>
+                                @endforeach
+                            </div>
+
+                            <div class="mt-3">
+                                <strong>Total Harga</strong>
+                                <h5 class="text-primary">
+                                    Rp {{ number_format($reservasi->menus->sum(function ($menu) {
+                                        return $menu->pivot->jumlah_pesanan * $menu->harga;
+                                    }), 0, ',', '.') }}
+                                </h5>
+                            </div>
+
+                            @if($reservasi->status_reservasi == 'confirmed')
+                                <div class="text-center mt-3">
+                                    <form action="{{ route('admin.reservasi.checkout', $reservasi->id) }}" method="GET"
+                                        class="checkout-form">
+                                        <button type="submit" class="btn btn-primary checkout">Selesai</button>
+                                    </form>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
     @endif
-    <div class="mt-3">
+
+    <div class="mt-4">
         <nav aria-label="Page navigation">
-            <ul class="pagination justify-content">
+            <ul class="pagination justify-content-center">
                 <!-- Previous Button -->
                 <li class="page-item {{ $reservasiData->onFirstPage() ? 'disabled' : '' }}">
                     <a class="page-link" href="{{ $reservasiData->previousPageUrl() }}" aria-label="Previous">
@@ -83,65 +120,23 @@
         </nav>
     </div>
 </div>
-<style>
-    .pagination {
-        justify-content: center;
-    }
 
-    .pagination .page-item {
-        margin : 0 2px;
-    }
-
-    .pagination .page-link {
-        border: 1px solid #ddd;
-        color: #495057;
-        border-radius: 5px;
-    }
-
-    .pagination .page-link:hover {
-        background-color: #389ee2;
-        color: white;
-    }
-
-    .pagination .page-item.active .page-link {
-        background-color: #386ee2;
-        border-color: #007bff;
-        color: white;
-    }
-
-    .pagination .page-item.disabled .page-link {
-        color: #6c757d;
-        pointer-events: none;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: Arial, sans-serif;
-    }
-
-    .card {
-        margin-top: 20px; /* Adjust margin as needed */
-    }
-</style>
 <script>
-    document.querySelectorAll('.checkout').forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault(); // Mencegah form submit otomatis
-            const form = this.closest('form');
+    document.querySelectorAll('.checkout-form').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); 
 
             Swal.fire({
                 title: 'Apakah Anda yakin?',
-                text: 'Reservasi ini akan di-checkout!',
+                text: 'Reservasi ini akan di-selesai!',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya, Checkout!',
+                confirmButtonText: 'Ya, Selesai!',
                 cancelButtonText: 'Batal',
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    form.submit(); // Melanjutkan pengiriman form
+                    form.submit(); 
                 }
             });
         });

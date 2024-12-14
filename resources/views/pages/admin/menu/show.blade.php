@@ -59,7 +59,6 @@
         }
     </style>
 
-
     <div class="container">
         <!-- Detail Menu -->
         <div class="card shadow border-0 mb-5">
@@ -71,8 +70,7 @@
                 <div class="col-md-6">
                     <div class="card-body">
                         <h5 class="card-title mb-3"><strong>Nama Menu:</strong> {{ $menu->nama_menu }}</h5>
-                        <p class="card-price mb-3"><strong>Harga:</strong> Rp {{ number_format($menu->harga, 2, ',', '.') }}
-                        </p>
+                        <p class="card-price mb-3"><strong>Harga:</strong> Rp {{ number_format($menu->harga, 2, ',', '.') }}</p>
                         <p class="card-description mb-3"><strong>Deskripsi:</strong> {{ $menu->description }}</p>
                         <div class="card-categories mb-4">
                             <strong>Kategori:</strong>
@@ -94,6 +92,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Form Ulasan -->
         <div class="card shadow border-0 mb-5">
             <div class="card-body">
@@ -104,18 +103,13 @@
 
                     <div class="mb-3">
                         <label for="rating" class="form-label">Rating:</label>
-                        <!-- Form Ulasan -->
                         <div class="star-rating" style="direction: rtl; display: block; text-align: left;">
                             @for ($i = 5; $i >= 1; $i--)
-                                <input type="radio" id="star{{ $i }}" name="rating"
-                                    value="{{ $i }}" required>
+                                <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}" required>
                                 <label for="star{{ $i }}" title="{{ $i }} Bintang"
-                                    style="font-size: 1.5rem; cursor: pointer;">
-                                    &#9733;
-                                </label>
+                                    style="font-size: 1.5rem; cursor: pointer;">&#9733;</label>
                             @endfor
                         </div>
-
                     </div>
 
                     <div class="mb-3">
@@ -125,7 +119,7 @@
                     </div>
                     <a href="/admin/menu" class="btn btn-warning text-white">
                         <i class="bi bi-arrow-left"></i> Kembali
-                    </a>  
+                    </a>
                     <button type="submit" class="btn btn-primary">Kirim Ulasan</button>
                 </form>
             </div>
@@ -157,5 +151,22 @@
                 @endif
             </div>
         </div>
+    </div>
 
-    @endsection
+    <!-- SweetAlert -->
+    @if (session('success'))
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+            });
+        </script>
+    @endif
+@endsection

@@ -34,15 +34,15 @@
                 @endif
             </div>
 
-            <h2 class="text-2xl font-bold mb-8 text-center text-gray-900 dark:text-gray-200">Create an account</h2>
+            <h2 class="text-2xl font-bold mb-8 text-center text-gray-900 dark:text-gray-200">Buat akun baru</h2>
 
             <form method="POST" action="{{ route('register') }}" class="space-y-6">
                 @csrf
 
                 <!-- Name -->
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-                    <input id="name" name="name" type="text" autocomplete="name" required autofocus class="mt-1 px-3 py-2 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your name" value="{{ old('name') }}">
+                    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nama</label>
+                    <input id="name" name="name" type="text" autocomplete="name" required autofocus class="mt-1 px-3 py-2 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Masukkan nama anda" value="{{ old('name') }}">
                     @error('name')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -50,8 +50,8 @@
 
                 <!-- Email Address -->
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-                    <input id="email" name="email" type="email" autocomplete="email" required class="mt-1 px-3 py-2 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your email" value="{{ old('email') }}">
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Alamat Email</label>
+                    <input id="email" name="email" type="email" autocomplete="email" required class="mt-1 px-3 py-2 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Masukkan email anda" value="{{ old('email') }}">
                     @error('email')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -59,9 +59,9 @@
 
                 <!-- Password -->
                 <div class="relative">
-                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kata Sandi</label>
                     <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus-within:ring-indigo-500 focus-within:border-indigo-500">
-                        <input id="password" name="password" type="password" autocomplete="new-password" required class="px-3 py-2 block w-full focus:outline-none sm:text-sm" placeholder="Enter your password">
+                        <input id="password" name="password" type="password" autocomplete="new-password" required class="px-3 py-2 block w-full focus:outline-none sm:text-sm" placeholder="masukkan password yang anda inginkan">
                         <button type="button" id="togglePassword" class="flex items-center px-3 py-2 text-gray-400 dark:text-gray-600" aria-label="Toggle password visibility">
                             <i class="fas fa-eye-slash"></i>
                         </button>
@@ -73,9 +73,9 @@
 
                 <!-- Confirm Password -->
                 <div class="relative">
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Konfirmasi Kata Sandi</label>
                     <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus-within:ring-indigo-500 focus-within:border-indigo-500">
-                        <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="px-3 py-2 block w-full focus:outline-none sm:text-sm" placeholder="Confirm your password">
+                        <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="px-3 py-2 block w-full focus:outline-none sm:text-sm" placeholder="Konfirmasi kata sandi anda">
                         <button type="button" id="toggleConfirmPassword" class="flex items-center px-3 py-2 text-gray-400 dark:text-gray-600" aria-label="Toggle confirm password visibility">
                             <i class="fas fa-eye-slash"></i>
                         </button>
@@ -87,11 +87,11 @@
 
                 <div class="flex items-center justify-between mt-4">
                     <a href="{{ route('login') }}" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                        Already registered?
+                        Sudah Terdaftar?
                     </a>
 
                     <button type="submit" class="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                        Register
+                        Daftar
                     </button>
                 </div>
             </form>

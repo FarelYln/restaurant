@@ -85,7 +85,7 @@ public function searchMeja(Request $request)
     ->where('status', 'tersedia')
     ->where(function($query) use ($validated) {
         $query->where('nomor_meja', 'like', '%' . $validated['search'] . '%')
-            ->orWhere('kapasitas', $validated['search']) // Menggunakan pencarian angka langsung
+            ->orWhere('kapasitas', 'like', '%' . $validated['search'] . '%') 
             ->orWhereHas('location', function($q) use ($validated) {
                 $q->where('name', 'like', '%' . $validated['search'] . '%')
                   ->where('floor', 'like', '%' . $validated['search'] . '%');
