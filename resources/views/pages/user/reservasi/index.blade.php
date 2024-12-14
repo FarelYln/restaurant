@@ -76,7 +76,7 @@
                                     <a href="{{ route('user.reservasi.nota', $reservasi->id) }}" 
                                        class="btn btn-info btn-sm shadow-sm" 
                                        style="font-family: 'Poppins', sans-serif; border-radius: 25px; padding: 5px 15px;">
-                                        <i class="fas fa-eye"></i> Detail
+                                         Detail
                                     </a>
                                 </td>
                             </tr>

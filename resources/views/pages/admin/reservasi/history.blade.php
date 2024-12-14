@@ -127,7 +127,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $reservasi->user->name }}</td>
                                         <td>{{ $reservasi->tanggal_reservasi->format('d M Y') }}</td>
-                                        <td>{{ ucfirst($reservasi->status_reservasi) }}</td>
+                                        <td><span class="badge bg-warning">{{ ucfirst($reservasi->status_reservasi) }}</span></td>
                                         <td>
                                             <!-- Action Button -->
                                             <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal{{ $reservasi->id }}">
@@ -147,7 +147,9 @@
                                                     <p><strong>Nama Pelanggan:</strong> {{ $reservasi->user->name }}</p>
                                                     <p><strong>Email Pelanggan:</strong> {{ $reservasi->user->email }}</p>
                                                     <p><strong>Tanggal Reservasi:</strong> {{ $reservasi->tanggal_reservasi->format('d M Y H:i') }}</p>
-                                                    <p><strong>Status Reservasi:</strong> {{ ucfirst($reservasi->status_reservasi) }}</p>
+                                                    <p><strong>Status Reservasi:</strong><span class="badge bg-warning"> {{ ucfirst($reservasi->status_reservasi) }}</span></p>
+                                                    <p><strong>Metode Pembayaran:</strong> {{ $reservasi->metode_pembayaran }}</strong></p>
+                                                    <p><strong>Media Pembayaran:</strong> {{ $reservasi->media_pembayaran }} ({{ $reservasi->nomor_media }})</p>
                                                     <p><strong>Meja:</strong>
                                                         @foreach($reservasi->meja as $meja)
                                                             {{ $meja->nomor_meja }}@if(!$loop->last), @endif
