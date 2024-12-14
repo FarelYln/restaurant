@@ -90,6 +90,7 @@
                                     <div class="w-100 d-flex flex-column text-start ps-2">
                                         <h5 class="d-flex justify-content-between border-bottom pb-1 mb-1">
                                             <span class="fw-bold" style="font-size: 1rem;">{{ $menu->nama_menu }}</span>
+                                            <small class="fst-italic d-block mt-2">Rating: {{ $menu->averageRating ?? 'kosong' }}</small>
                                             <span class="text-primary" style="font-size: 0.9rem;">Rp
                                                 {{ number_format($menu->harga, 2, ',', '.') }}</span>
                                         </h5>

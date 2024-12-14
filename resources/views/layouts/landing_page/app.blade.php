@@ -31,6 +31,11 @@
     <!-- Template Stylesheet -->
     <link href="{{ asset('asset_landing/css/style.css') }}" rel="stylesheet">
 
+        <!-- SweetAlert2 -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
      <!-- SweetAlert2 -->
@@ -72,6 +77,60 @@
     <script src="{{ asset('asset_landing/js/main.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Notifikasi sukses
+            @if (session('success'))
+                Swal.fire({
+                    toast: true,
+                    icon: 'success',
+                    title: "{{ session('success') }}",
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+            @endif
+    
+            // Notifikasi error
+            @if (session('error'))
+                Swal.fire({
+                    toast: true,
+                    icon: 'error',
+                    title: "{{ session('error') }}",
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+            @endif
+    
+            // Notifikasi info
+            @if (session('info'))
+                Swal.fire({
+                    toast: true,
+                    icon: 'info',
+                    title: "{{ session('info') }}",
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+            @endif
+        });
+    </script>
     <!-- Custom Scripts -->
     @stack('scripts')
 </body>
