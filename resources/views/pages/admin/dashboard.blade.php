@@ -46,11 +46,25 @@
     <!-- Sale & Revenue End -->
      <!-- chart -->
 
-<div class="container mt-5">
-    <form method="GET" action="{{ route('dashboard') }}">
-    <div class="container mt-5">
+     <div class="container mt-5">
     <form method="GET" action="{{ route('dashboard') }}">
         <div class="row align-items-center">
+            <!-- Pilih Tahun -->
+            <div class="col-md-4">
+                <label for="year" class="form-label">Pilih Tahun</label>
+                <select name="year" id="year" class="form-select" onchange="this.form.submit()">
+                    @php
+                        $currentYear = date('Y');
+                        $years = range($currentYear - 5, $currentYear + 5); // Tampilkan tahun 5 tahun terakhir dan 5 tahun mendatang
+                    @endphp
+                    @foreach($years as $year)
+                        <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
+                            {{ $year }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- Pilih Bulan -->
             <div class="col-md-4">
                 <label for="month" class="form-label">Pilih Bulan</label>
@@ -91,129 +105,127 @@
                         </div>
                     </div>
                 </div>
+            @else
+                <!-- Display card when there is no data -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-0">Tidak ada data masukan untuk bulan ini.</h5>
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>
     </form>
+
+    <div class="row">
+        <div class="col-md-8">
+            @if($reservations->isEmpty())
+                <!-- Display Empty Chart when no data -->
+                <canvas id="reservasiChart" width="400" height="200"></canvas>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    const labels = ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'];
+                    const data = [0, 0, 0, 0];  // Empty data for no reservations
+
+                    const ctx = document.getElementById('reservasiChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar', // Use a bar chart
+                        data: {
+                            labels: labels, // All weeks from week 1 to 4
+                            datasets: [{
+                                label: 'Jumlah Reservasi',
+                                data: data, // Empty data
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Background color of bars
+                                borderColor: 'rgb(75, 192, 192)', // Border color of bars
+                                borderWidth: 1, // Border width
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Minggu'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Jumlah Reservasi'
+                                    },
+                                    beginAtZero: true
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                }
+                            }
+                        }
+                    });
+                </script>
+            @else
+                <!-- Normal chart when there is data -->
+                <canvas id="reservasiChart" width="400" height="200"></canvas>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    const allWeeks = Array.from({ length: 4 }, (_, i) => i + 1); // List of weeks from 1 to 4 (or as needed)
+                    const dataWeeks = @json($reservations->pluck('week'));
+                    const dataCounts = @json($reservations->pluck('count'));
+
+                    const dataMap = Object.fromEntries(dataWeeks.map((week, index) => [week, dataCounts[index]]));
+                    const labels = allWeeks.map(week => `Minggu ${week}`);
+                    const weekData = allWeeks.map(week => dataMap[week] || 0); // Fill with 0 if data is missing
+
+                    const ctx = document.getElementById('reservasiChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels, 
+                            datasets: [{
+                                label: 'Jumlah Reservasi',
+                                data: weekData, // Data with weeks without reservations
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar background color
+                                borderColor: 'rgb(75, 192, 192)', // Bar border color
+                                borderWidth: 1, 
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Minggu'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Jumlah Reservasi'
+                                    },
+                                    beginAtZero: true
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                }
+                            }
+                        }
+                    });
+                </script>
+            @endif
+        </div>
+    </div>
 </div>
 
-    </form>
-
-    @if($reservations->isEmpty())
-        <p class="text-center mt-5">Tidak ada data reservasi untuk bulan ini.</p>
-    @else
-        <canvas id="reservasiChart" width="400" height="200"></canvas>
-        
-
-      <!-- end chart -->
-      
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-    const allWeeks = Array.from({ length: 4 }, (_, i) => i + 1); // Daftar minggu dari 1 hingga 5 (atau sesuai kebutuhan)
-    const dataWeeks = @json($reservations->pluck('week'));
-    const dataCounts = @json($reservations->pluck('count'));
-
-    // Buat objek data berbasis minggu yang tersedia
-    const dataMap = Object.fromEntries(dataWeeks.map((week, index) => [week, dataCounts[index]]));
-
-    // Lengkapi data untuk semua minggu
-    const labels = allWeeks.map(week => `Minggu ${week}`);
-    const weekData = allWeeks.map(week => dataMap[week] || 0); // Isi 0 jika data tidak tersedia
-
-    const ctx = document.getElementById('reservasiChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar', // Menggunakan chart batang
-        data: {
-            labels: labels, // Semua minggu dari minggu 1 hingga 5
-            datasets: [{
-                label: 'Jumlah Reservasi',
-                data: weekData, // Data termasuk minggu tanpa reservasi
-                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Warna latar belakang batang
-                borderColor: 'rgb(75, 192, 192)', // Warna border batang
-                borderWidth: 1, // Ketebalan border batang
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Minggu'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Jumlah Reservasi'
-                    },
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top'
-                }
-            }
-        }
-    });
-    const dataPemasukan = @json($reservations->pluck('total_pemasukan'));
-const pemasukanData = allWeeks.map(week => dataMap[week] || 0); // Sama seperti weekData, lengkapi data pemasukan
-
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: labels, // Semua minggu dari 1 hingga 5
-        datasets: [
-            {
-                label: 'Jumlah Reservasi',
-                data: weekData, // Data reservasi
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgb(75, 192, 192)',
-                borderWidth: 1,
-            },
-            {
-                label: 'Pemasukan (Rp)',
-                data: pemasukanData, // Data pemasukan
-                backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                borderColor: 'rgb(255, 159, 64)',
-                borderWidth: 1,
-            },
-        ]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: 'Minggu'
-                }
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Jumlah'
-                },
-                beginAtZero: true
-            }
-        },
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            }
-        }
-    }
-});
-
-</script>
 
 
-
-
-    @endif
-</div>
 
     
     <!-- Sales Chart Start -->

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_user'); // Foreign key for the user
             $table->dateTime('tanggal_reservasi'); // Tanggal dan waktu reservasi
             $table->enum('status_reservasi', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending'); // Status reservasi
+            $table->boolean('is_paid')->default(false); // Kolom untuk status pembayaran, default false
             $table->timestamps(); // created_at dan updated_at
             
             // Foreign key constraints
