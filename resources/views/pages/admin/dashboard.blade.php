@@ -5,7 +5,7 @@
     <div class="row g-4">
     <div class="col-sm-6 col-xl-3">
         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-            <i class="fa fa-chart-line fa-3x text-primary"></i>
+            <i class="fa fa-users fa-3x text-primary"></i>
             <div class="ms-3">
                 <p class="mb-2">Jumlah User</p>
                 <h6 class="mb-0">{{ \App\Models\User::count() }}</h6> <!-- Mengambil jumlah User -->
@@ -14,7 +14,7 @@
     </div>
     <div class="col-sm-6 col-xl-3">
         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-            <i class="fa fa-chart-bar fa-3x text-primary"></i>
+            <i class="fa fa-utensils fa-3x text-primary"></i>
             <div class="ms-3">
                 <p class="mb-2">Jumlah Menu</p>
                 <h6 class="mb-0">{{ \App\Models\Menu::count() }}</h6> <!-- Mengambil jumlah Menu -->
@@ -23,7 +23,7 @@
     </div>
     <div class="col-sm-6 col-xl-3">
         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-            <i class="fa fa-chart-area fa-3x text-primary"></i>
+            <i class="fa fa-book fa-3x text-primary"></i>
             <div class="ms-3">
                 <p class="mb-2">Jumlah Reservasi</p>
                 <h6 class="mb-0">{{ \App\Models\Reservasi::count() }}</h6> <!-- Mengambil jumlah Reservasi -->
@@ -32,7 +32,7 @@
     </div>
     <div class="col-sm-6 col-xl-3">
         <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
-            <i class="fa fa-chart-pie fa-3x text-primary"></i>
+            <i class="fa fa-table fa-3x text-primary"></i>
             <div class="ms-3">
                 <p class="mb-2">Jumlah Meja</p>
                 <h6 class="mb-0">{{ \App\Models\Meja::count() }}</h6> <!-- Mengambil jumlah Meja -->
@@ -45,7 +45,6 @@
 
     <!-- Sale & Revenue End -->
      <!-- chart -->
-
      <div class="container mt-5">
     <form method="GET" action="{{ route('dashboard') }}">
         <div class="row align-items-center">
