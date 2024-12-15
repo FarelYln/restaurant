@@ -1,6 +1,11 @@
 @extends('layouts.landing_page.app')
 
 @section('content')
+<style>
+    .container-xxl{
+        background-color: white;
+    }
+</style>
     <div class="container-xxl py-5 bg-dark hero-header mb-5">
         <div class="container my-5 py-5 text-center">
             <h1 class="display-3 text-white mb-3 animated slideInDown">Daftar Menu</h1>
@@ -20,7 +25,7 @@
     <div class="container-xxl">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h5 class="section-title ff-secondary text-center text-primary fw-normal">Menu Makanan</h5>
+                <h5 class="section-title ff-secondary text-center text-primary fw-normal mt-4">Menu Makanan</h5>
                 <h1 class="mb-5">Semua Menu yang ada di restoran kami</h1>
             </div>
             <div class="row">
@@ -57,9 +62,9 @@
                             <li>
                                 <div class="d-flex justify-content-between fruite-name">
                                     <a href="{{ route('user.menu.index') }}"><i class="fas fa-th-large me-2"></i>All Menu</a>
-                                    <span>({{ $menus->total() }})</span>
                                 </div>
                             </li>
+                            
                             @foreach ($categories as $category)
                                 <li>
                                     <div class="d-flex justify-content-between fruite-name">
@@ -92,11 +97,11 @@
                                             <span class="text-primary" style="font-size: 0.9rem;">Rp
                                                 {{ number_format($menu->harga, 2, ',', '.') }}</span>
                                         </h5>
-                                        <small class="fst-italic text-muted"
+                                        <small class=" text-muted"
                                             style="font-size: 0.8rem;">{{ $menu->description }}</small>
                                         <div class="card-categories mt-2">
                                             @foreach ($menu->categories as $category)
-                                                <span class="badge bg-secondary"
+                                                <span class="badge bg-primary"
                                                     style="font-size: 0.75rem;">{{ $category->nama_kategori }}</span>
                                             @endforeach
                                         </div>

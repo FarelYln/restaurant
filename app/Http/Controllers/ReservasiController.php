@@ -47,6 +47,7 @@ class ReservasiController extends Controller
                               ->when($search, function ($query, $search) {
                                   $query->where(function ($query) use ($search) {
                                       $query->where('tanggal_reservasi', 'like', '%' . $search . '%')
+                                      ->orWhere('id_reservasi', 'like', '%' . $search . '%')
                                             ->orWhere('status_reservasi', 'like', '%' . $search . '%')
                                             ->orWhereHas('user', function ($query) use ($search) {
                                                 $query->where('name', 'like', '%' . $search . '%');

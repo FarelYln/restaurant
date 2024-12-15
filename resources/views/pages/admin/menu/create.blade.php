@@ -113,7 +113,9 @@
                 <label for="image" class="form-label mt-4">Gambar</label>
                 <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*" onchange="previewImage(event)">
                 @error('image')
-                <div class="invalid-feedback">Gambar wajib diunggah.</div>
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
                 @enderror
                 <div class="mt-3">
                     <img id="imagePreview" src="#" alt="Preview" class="image-preview">
@@ -126,14 +128,18 @@
                 <label for="nama_menu" class="form-label">Nama Menu</label>
                 <input type="text" class="form-control @error('nama_menu') is-invalid @enderror" id="nama_menu" name="nama_menu" value="{{ old('nama_menu') }}">
                 @error('nama_menu')
-                <div class="invalid-feedback">Nama menu wajib diisi.</div>
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
                 @enderror
             </div>
             <div class="col-md-6">
                 <label for="harga" class="form-label">Harga</label>
                 <input type="number" class="form-control @error('harga') is-invalid @enderror" id="harga" name="harga" step="0.01" value="{{ old('harga') }}">
                 @error('harga')
-                <div class="invalid-feedback">Harga wajib diisi .</div>
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
                 @enderror
             </div>
         </div>
@@ -144,16 +150,21 @@
                 <div class="d-flex flex-wrap">
                     @foreach($categories as $category)
                         <div class="form-check me-3 mb-2">
-                            <input type="checkbox" class="form-check-input" id="category{{ $category->id }}" name="category_ids[]" value="{{ $category->id }}">
+                            <!-- Periksa apakah id kategori ada di old data, jika ada, centang checkbox -->
+                            <input type="checkbox" class="form-check-input" id="category{{ $category->id }}" name="category_ids[]" value="{{ $category->id }}" 
+                                @if(in_array($category->id, old('category_ids', []))) checked @endif>
                             <label class="form-check-label" for="category{{ $category->id }}">{{ $category->nama_kategori }}</label>
                         </div>
                     @endforeach
                 </div>
                 @error('category_ids')
-                <div class="text-danger">Setidaknya satu kategori harus dipilih.</div>
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
                 @enderror
             </div>
         </div>
+        
 
         <div class="row mb-3">
             <div class="col-md-12">

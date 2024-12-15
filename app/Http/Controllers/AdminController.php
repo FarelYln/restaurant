@@ -19,10 +19,13 @@ class AdminController extends Controller
     
         // Ambil data reservasi per minggu untuk bulan dan tahun yang dipilih
         $reservations = Reservasi::selectRaw("
-            FLOOR((DAY(tanggal_reservasi) - 1) / 7) + 1 as week,
-            COUNT(*) as count,
-            SUM(total_bayar) as total_pemasukan
-        ")
+            CASE
+        WHEN DAY(tanggal_reservasi) IN (29, 30, 31) THEN 4
+        ELSE FLOOR((DAY(tanggal_reservasi) - 1) / 7) + 1
+    END as week,
+    COUNT(*) as count,
+    SUM(total_bayar) as total_pemasukan
+")
         ->whereMonth('tanggal_reservasi', '=', $month)
         ->whereYear('tanggal_reservasi', '=', $selectedYear)
         ->whereIn('status_reservasi', ['confirmed', 'completed']) // Tambahkan filter status

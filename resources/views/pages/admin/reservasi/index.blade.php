@@ -1,10 +1,121 @@
 @extends('layouts.admin_landing.app')
 
 @section('content')
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+
+    .header-card {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .header-card .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        text-decoration: none;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .form-inline {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .form-control {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .meja-card {
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-top: -10px;
+    }
+
+    .meja-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+  
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.875rem;
+        line-height: 1.25;
+    }
+</style>
+<style>
+.pagination {
+    justify-content: center;
+}
+
+.pagination .page-item {
+    margin: 0 2px;
+}
+
+.pagination .page-link {
+    border: 1px solid #ddd;
+    color: #495057;
+    border-radius: 5px;
+}
+
+.pagination .page-link:hover {
+    background-color: #389ee2;
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #386ee2;
+    border-color: #007bff;
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+}
+</style>
 <div class="container">
-    <div class="card mb-4">
-        <div class="card-header">
-            <h1 class="card-title">Daftar Reservasi Pelanggan</h1>
+    <div class="header-card">
+        <div class="header">
+            <h1 class="title">Daftar Reservasi Pelanggan</h1>
         </div>
         <div class="card-body">
             <form action="" method="get">
@@ -31,7 +142,7 @@
                 <div class="col">
                     <div class="card h-100 shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Reservasi #{{ $loop->iteration }}</h5>
+                            <h5 class="card-title mb-0">ID Reservasi: {{ $reservasi->id_reservasi }}</h5>
                             <span class="badge 
                                 {{ $reservasi->status_reservasi == 'confirmed' ? 'bg-success' : 
                                    ($reservasi->status_reservasi == 'completed' ? 'bg-primary' : 'bg-warning') }}">

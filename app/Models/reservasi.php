@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class reservasi extends Model
 {
@@ -15,6 +16,7 @@ class reservasi extends Model
     // Menentukan kolom yang dapat diisi (mass assignable)
     protected $fillable = [
         'id_user',
+        'id_reservasi',
         'tanggal_reservasi',
         'status_reservasi',
         'metode_pembayaran', 
@@ -30,7 +32,18 @@ class reservasi extends Model
         'expired_at' => 'datetime',
     ];
 
-    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Loop hingga ID acak unik ditemukan
+            do {
+                // ID acak 6 karakter yang terdiri dari huruf kapital dan angka
+                $model->id_reservasi = strtoupper(Str::random(6));  // ID acak kapital
+            } while (Reservasi::where('id_reservasi', $model->id_reservasi)->exists()); // Cek jika sudah ada
+        });
+    }
 
     // Menentukan relasi antara reservasi dan user
     public function user()

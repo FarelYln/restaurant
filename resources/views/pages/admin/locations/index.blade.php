@@ -60,46 +60,44 @@
             border-radius: 5px;
         }
 
-        .pagination {
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .pagination .page-link {
-            border-radius: 50%;
-            padding: 10px 15px;
-            margin: 0 5px;
-            color: #007bff;
-            background-color: #fff;
-            border: 1px solid #ddd;
-        }
-
-        .pagination .page-link:hover {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .pagination .active .page-link {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .pagination .page-item {
-            margin: 0 2px;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d;
-            pointer-events: none;
-        }
-
+       
         .btn-sm {
             padding: 5px 10px;
             font-size: 0.875rem;
             line-height: 1.25;
         }
     </style>
+ <style>
+    .pagination {
+        justify-content: center;
+    }
 
+    .pagination .page-item {
+        margin: 0 2px;
+    }
+
+    .pagination .page-link {
+        border: 1px solid #ddd;
+        color: #495057;
+        border-radius: 5px;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #389ee2;
+        color: white;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #386ee2;
+        border-color: #007bff;
+        color: white;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+    }
+</style>
     <div class="container">
         <!-- Header and Filter Section -->
         <div class="header-card">

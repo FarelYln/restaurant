@@ -100,12 +100,31 @@ class MenuController extends Controller
     {
         $validatedData = $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'nama_menu' => 'required|string|max:255',
+            'nama_menu' => 'required|string|max:255|unique:menus,nama_menu',
             'harga' => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'category_ids' => 'required|array',
             'category_ids.*' => 'exists:categories,id',
+        ], [
+            'image.required' => 'Gambar menu wajib diunggah.',
+            'image.image' => 'File yang diunggah harus berupa gambar.',
+            'image.mimes' => 'Gambar harus berformat jpeg, png, jpg, atau gif.',
+            'image.max' => 'Ukuran gambar maksimal 2MB.',
+            
+            'nama_menu.required' => 'Nama menu wajib diisi.',
+            'nama_menu.unique' => 'Nama menu sudah terdaftar, silakan pilih nama lain.',
+            'nama_menu.string' => 'Nama menu harus berupa teks.',
+            'nama_menu.max' => 'Nama menu maksimal 255 karakter.',
+            
+            'harga.required' => 'Harga menu wajib diisi.',
+            'harga.numeric' => 'Harga harus berupa angka.',
+            'harga.min' => 'Harga tidak boleh kurang dari 0.',
+            
+            'category_ids.required' => 'Kategori menu wajib dipilih.',
+            'category_ids.array' => 'Kategori menu harus berupa array.',
+            'category_ids.*.exists' => 'Salah satu kategori yang dipilih tidak valid.',
         ]);
+        
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');

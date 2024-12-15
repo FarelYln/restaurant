@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('reservasis', function (Blueprint $table) {
             $table->id(); // Auto increment ID
+            $table->string('id_reservasi', 6)->unique();
             $table->unsignedBigInteger('id_user'); // Foreign key for the user
             $table->dateTime('tanggal_reservasi'); // Tanggal dan waktu reservasi
             $table->enum('status_reservasi', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending'); // Status reservasi

@@ -6,7 +6,7 @@
     <title>Register</title>
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="icon" sizes="180x180" href="{{ asset('asset/img/LogosBW.jpg') }}">
+    <link rel="icon" sizes="180x180" href="{{ asset('asset/img/logo.png') }}">
     <!-- Dark mode plugin for Tailwind CSS (optional) -->
     <style>
         /* Add this line to enable dark mode */
