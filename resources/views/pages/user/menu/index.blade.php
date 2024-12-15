@@ -24,57 +24,56 @@
                 <h1 class="mb-5">Semua Menu yang ada di restoran kami</h1>
             </div>
             <div class="row">
-               <!-- Sidebar untuk kategori -->
-<div class="col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
-    <div class="mb-2">
-        <form method="GET" action="{{ route('user.menu.index') }}">
-            <div class="input-group">
-                <input 
-                    type="search" 
-                    name="search" 
-                    class="form-control p-2" 
-                    placeholder="Cari menu..." 
-                    aria-label="Search" 
-                    style="border-radius: 4px;" 
-                    value="{{ request('search') }}"
-                >
-                <span class="input-group-text" 
-                      style="background-color: #ecd8c3; border: 1px solid #c5baa9; color: #be9662; border-radius: 4px;">
-                    <button 
-                        class="btn p-0" 
-                        type="submit" 
-                        style="background: transparent; border: none; padding: 0; margin: 0;">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </span>
-            </div>
-        </form>
-    </div>
-
-    <div class="mb-3">
-        <h4 class="mb-4">Category</h4>
-        <ul class="list-unstyled fruite-categorie">
-            <li>
-                <div class="d-flex justify-content-between fruite-name">
-                    <a href="{{ route('user.menu.index') }}"><i class="fas fa-th-large me-2"></i>All Menu</a>
-                    <span>({{ $menus->total() }})</span>
-                </div>
-            </li>
-            @foreach ($categories as $category)
-                <li>
-                    <div class="d-flex justify-content-between fruite-name">
-                        <a href="{{ route('user.menu.index', ['category' => $category->id]) }}">
-                            <i class="fas fa-utensils me-2"></i>
-                            {{ $category->nama_kategori }}
-                        </a>
-                        <span>({{ $category->menus->count() }})</span>
+                <!-- Sidebar untuk kategori -->
+                <div class="col-lg-3 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="mb-2">
+                        <form method="GET" action="{{ route('user.menu.index') }}">
+                            <div class="input-group">
+                                <input 
+                                    type="search" 
+                                    name="search" 
+                                    class="form-control p-2" 
+                                    placeholder="Cari menu..." 
+                                    aria-label="Search" 
+                                    style="border-radius: 4px;" 
+                                    value="{{ request('search') }}"
+                                >
+                                <span class="input-group-text" 
+                                    style="background-color: #ecd8c3; border: 1px solid #c5baa9; color: #be9662; border-radius: 4px;">
+                                    <button 
+                                        class="btn p-0" 
+                                        type="submit" 
+                                        style="background: transparent; border: none; padding: 0; margin: 0;">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
                     </div>
-                </li>
-            @endforeach
-        </ul>
-    </div>
-</div>
 
+                    <div class="mb-3">
+                        <h4 class="mb-4">Category</h4>
+                        <ul class="list-unstyled fruite-categorie">
+                            <li>
+                                <div class="d-flex justify-content-between fruite-name">
+                                    <a href="{{ route('user.menu.index') }}"><i class="fas fa-th-large me-2"></i>All Menu</a>
+                                    <span>({{ $menus->total() }})</span>
+                                </div>
+                            </li>
+                            @foreach ($categories as $category)
+                                <li>
+                                    <div class="d-flex justify-content-between fruite-name">
+                                        <a href="{{ route('user.menu.index', ['category' => $category->id]) }}">
+                                            <i class="fas fa-utensils me-2"></i>
+                                            {{ $category->nama_kategori }}
+                                        </a>
+                                        <span>({{ $category->menus->count() }})</span>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
 
                 <!-- Menu items -->
                 <div class="col-lg-9 wow fadeInUp" data-wow-delay="0.1s">
@@ -90,7 +89,6 @@
                                     <div class="w-100 d-flex flex-column text-start ps-2">
                                         <h5 class="d-flex justify-content-between border-bottom pb-1 mb-1">
                                             <span class="fw-bold" style="font-size: 1rem;">{{ $menu->nama_menu }}</span>
-                                            <small class="fst-italic d-block mt-2">Rating: {{ $menu->averageRating ?? 'kosong' }}</small>
                                             <span class="text-primary" style="font-size: 0.9rem;">Rp
                                                 {{ number_format($menu->harga, 2, ',', '.') }}</span>
                                         </h5>
@@ -101,6 +99,22 @@
                                                 <span class="badge bg-secondary"
                                                     style="font-size: 0.75rem;">{{ $category->nama_kategori }}</span>
                                             @endforeach
+                                        </div>
+                                        <div class="mt-2">
+                                            <!-- Rating Bintang -->
+                                            @if ($menu->averageRating)
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= $menu->averageRating)
+                                                        <i class="fas fa-star text-warning"></i>
+                                                    @elseif ($i - $menu->averageRating < 1)
+                                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                                    @else
+                                                        <i class="far fa-star text-warning"></i>
+                                                    @endif
+                                                @endfor
+                                            @else
+                                                <small class="text-muted">Belum ada rating</small>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

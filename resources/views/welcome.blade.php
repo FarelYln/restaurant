@@ -141,60 +141,75 @@
             </div>
         </div>
         <!-- About End -->
-
-    <!-- Menu Start -->
-<div class="container-xxl py-5">
-    <div class="container">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h5 class="section-title ff-secondary text-center text-primary fw-normal">Menu Makanan</h5>
-            <h1 class="mb-5">Item Paling Populer</h1>
-        </div>
-        <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
-            <div class="tab-content">
-                <div id="tab-1" class="tab-pane fade show p-0 active">
-                    <div class="row g-4">
-                        @foreach ($menus as $menu)
-                            <div class="col-lg-6">
-                                <div class="d-flex align-items-center">
-                                    <!-- Pastikan gambar diakses dengan benar -->
-                                    <a href="{{ route('user.menu.show', $menu->id) }}">
-                                        <img class="img-fluid rounded-3"
-                                            src="{{ asset('storage/' . $menu->image) }}"
-                                            alt="{{ $menu->nama_menu }}" style="max-width: 80px; height: auto;">
-                                    </a>
-                                    <div class="w-100 d-flex flex-column text-start ps-4">
-                                        <h5 class="d-flex justify-content-between border-bottom pb-2">
-                                            <span>{{ $menu->nama_menu }}</span>
-                                            <span class="text-primary">${{ $menu->harga }}</span>
-                                        </h5>
-                                        <small class="fst-italic">Kategori:
-                                            @foreach ($menu->categories as $category)
-                                                {{ $category->nama_kategori }}@if (!$loop->last)
-                                                    ,
-                                                @endif
-                                            @endforeach
-                                        </small>
-                                        <small class="fst-italic d-block mt-2">Rating Rata-rata: 
-                                            @if ($menu->averageRating)
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <i class="fa{{ $i <= $menu->averageRating ? 's' : 'r' }} fa-star text-warning"></i>
-                                                @endfor
-                                            @else
-                                                Belum ada rating
-                                            @endif
-                                        </small>
+        <!-- Menu Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                    <h5 class="section-title ff-secondary text-center text-primary fw-normal">Menu Makanan</h5>
+                    <h1 class="mb-5">Item Paling Populer</h1>
+                </div>
+                <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane fade show p-0 active">
+                            <div class="row g-4">
+                                @foreach ($menus as $menu)
+                                    <div class="col-lg-6">
+                                        <div class="d-flex align-items-center border rounded p-3 shadow-sm"
+                                            style="font-size: 0.9rem;">
+                                            <!-- Gambar Menu -->
+                                            <a href="{{ route('user.menu.show', $menu->id) }}">
+                                                <img class="img-fluid rounded-3"
+                                                    src="{{ asset('storage/' . $menu->image) }}"
+                                                    alt="{{ $menu->nama_menu }}" style="max-width: 80px; height: auto;">
+                                            </a>
+                                            <!-- Informasi Menu -->
+                                            <div class="w-100 d-flex flex-column text-start ps-4">
+                                                <h5 class="d-flex justify-content-between border-bottom pb-2">
+                                                    <span>{{ $menu->nama_menu }}</span>
+                                                    <span class="text-primary">Rp
+                                                        {{ number_format($menu->harga, 2, ',', '.') }}</span>
+                                                </h5>
+                                                <small class="fst-italic text-muted">{{ $menu->description }}</small>
+                                                <div class="mt-2">
+                                                    <!-- Kategori -->
+                                                    <small class="fst-italic">Kategori:
+                                                        <div class="d-flex flex-wrap mt-1">
+                                                            @foreach ($menu->categories as $category)
+                                                                <span class="badge me-1 mb-1"
+                                                                    style="background-color: {{ $category->color ?? '#6c757d' }};">
+                                                                    {{ $category->nama_kategori }}
+                                                                </span>
+                                                            @endforeach
+                                                        </div>
+                                                    </small>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <!-- Rating -->
+                                                    @if ($menu->averageRating)
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <= $menu->averageRating)
+                                                                <i class="fas fa-star text-warning"></i>
+                                                            @elseif ($i - $menu->averageRating < 1)
+                                                                <i class="fas fa-star-half-alt text-warning"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning"></i>
+                                                            @endif
+                                                        @endfor
+                                                    @else
+                                                        <small class="text-muted">Belum ada rating</small>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<!-- Menu End -->
-
+        <!-- Menu End -->
 
 
 
@@ -288,17 +303,18 @@
                 <div class="owl-carousel testimonial-carousel">
                     <div class="testimonial-item bg-transparent border rounded p-4">
                         <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                        <p>Pengalaman yang luar biasa, sangat profesional dan melayani dengan sangat baik. Saya sangat puas dengan layanan yang diberikan.</p>
+                        <p>Pengalaman yang luar biasa, sangat profesional dan melayani dengan sangat baik. Saya sangat puas
+                            dengan layanan yang diberikan.</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                 src="{{ asset('asset_landing/img/testimonial-1.jpg') }}"
-                                 style="width: 50px; height: 50px;">
+                                src="{{ asset('asset_landing/img/testimonial-1.jpg') }}"
+                                style="width: 50px; height: 50px;">
                             <div class="ps-3">
                                 <h5 class="mb-1">Marco Van Basten</h5>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="testimonial-item bg-transparent border rounded p-4">
                         <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
                         <p>Pengalaman yang luar biasa! Mereka sangat profesional dan melayani dengan sangat baik.</p>
