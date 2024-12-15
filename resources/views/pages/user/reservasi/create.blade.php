@@ -30,11 +30,8 @@
                                 <label for="jam_reservasi">Jam Reservasi</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                    <input type="time" 
-                                           class="form-control @error('jam_reservasi') is-invalid @enderror"
-                                           name="jam_reservasi" 
-                                           value="{{ old('jam_reservasi') }}" 
-                                           required>
+                                    <input type="time" class="form-control @error('jam_reservasi') is-invalid @enderror"
+                                        name="jam_reservasi" value="{{ old('jam_reservasi') }}" required>
                                     @error('jam_reservasi')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -42,7 +39,7 @@
                                 <small class="text-muted">Jam buka: 08:00 - 22:00</small>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
@@ -73,7 +70,7 @@
                                 @php
                                     $floors = $meja->pluck('location.floor')->unique()->sort();
                                 @endphp
-                                @foreach($floors as $floor)
+                                @foreach ($floors as $floor)
                                     <option value="{{ $floor }}">Lantai {{ $floor }}</option>
                                 @endforeach
                             </select>
@@ -83,10 +80,8 @@
                     {{-- Daftar Meja --}}
                     <div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
                         @foreach ($meja as $m)
-                            <div class="col-md-4 mb-3 meja-item" 
-                                data-nomor="{{ $m->nomor_meja }}"
-                                data-kapasitas="{{ $m->kapasitas }}" 
-                                data-lokasi="{{ $m->location->name }}"
+                            <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}"
+                                data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}"
                                 data-lantai="{{ $m->location->floor }}">
                                 <div class="card">
                                     <div class="card-body">
@@ -94,14 +89,20 @@
                                             <input class="form-check-input" type="checkbox" name="id_meja[]"
                                                 value="{{ $m->id }}" id="meja-{{ $m->id }}"
                                                 {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="meja-{{ $m->id }}">
-                                                <div>Nomor Meja: {{ $m->nomor_meja }}</div>
-                                                <div>Kapasitas: {{ $m->kapasitas }}</div>
-                                                <div>Status: <span
-                                                        class="badge {{ $m->status == 'Tersedia' ? 'bg-success' : 'bg-success' }}">{{ $m->status }}</span>
+                                            <label class="form-check-label w-100" for="meja-{{ $m->id }}">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Nomor Meja: {{ $m->nomor_meja }}</span>
+                                                    <span>Kapasitas: {{ $m->kapasitas }}</span>
                                                 </div>
-                                                <div>Lokasi: {{ $m->location->name }}</div>
-                                                <div>Lantai: {{ $m->location->floor }}</div>
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Lokasi: {{ $m->location->name }}</span>
+                                                    <span>Lantai: {{ $m->location->floor }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <span><span
+                                                            class="badge {{ $m->status == 'Tersedia' ? 'bg-success' : 'bg-success' }}">{{ $m->status }}</span>
+                                                    </span>
+                                                </div>
                                             </label>
                                         </div>
                                     </div>
@@ -109,212 +110,222 @@
                             </div>
                         @endforeach
                     </div>
+
                 </div>
             </div>
 
-            {{-- Pilih Menu --}}
-            <div class="card mb-3">
-                <div class="card-header bg-primary text-white">
-                    <h4>Pilih Menu</h4>
-                </div>
+{{-- Pilih Menu --}}
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4>Pilih Menu</h4>
+    </div>
+    <div class="card-body">
+        <!-- Row for search, sort and keranjang buttons -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Search Input -->
+            <div class="flex-fill me-2">
+                <input type="text" id="search_menu" class="form-control" placeholder="Cari menu...">
+            </div>
+            <!-- Sort Dropdown -->
+            <div class="flex-fill me-2">
+                <select id="sort_by_menu" class="form-control">
+                    <option value="">Urutkan Menu</option>
+                    <option value="asc">Nama Menu (A-Z)</option>
+                    <option value="desc">Nama Menu (Z-A)</option>
+                    <option value="asc_price" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Harga Terendah</option>
+                    <option value="desc_price" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga Tertinggi</option>
+                    <option value="asc_rating">Rating Terendah</option>
+                    <option value="desc_rating">Rating Tertinggi</option>
+                </select>
+            </div>
+            <!-- Keranjang Button -->
+            <div>
+                <button type="button" class="btn btn-info d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#keranjangModal">
+                    <i class="bi bi-cart-fill me-2"></i> Keranjang (<span id="keranjangCount">0</span>)
+                </button>
+            </div>
+        </div>
 
-                <!-- Button for Keranjang -->
-                <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
-                    <!-- Other content can go here -->
-
-                    <button type="button" class="btn btn-info d-flex align-items-center ms-auto" data-bs-toggle="modal"
-                        data-bs-target="#keranjangModal">
-                        <i class="bi bi-cart-fill me-2"></i> Keranjang (<span id="keranjangCount">0</span>)
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <input type="text" id="search_menu" class="form-control" placeholder="Cari menu...">
-                        </div>
-                        <div class="col-md-6">
-                            <select id="sort_by_menu" class="form-control">
-                                <option value="">Urutkan Menu</option>
-                                <option value="asc">Nama Menu (A-Z)</option>
-                                <option value="desc">Nama Menu (Z-A)</option>
-                                <option value="asc_price" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Harga Terendah</option>
-                                <option value="desc_price" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Harga Tertinggi</option>
-                                <option value="asc_rating">Rating Terendah</option>
-                                <option value="desc_rating">Rating Tertinggi</option>
-                            </select>
-
-                        </div>
-                    </div>
-
-                    <div class="row" id="menu_list" style="max-height: 400px; overflow-y: auto;">
-                        @foreach ($menus as $menu)
-                            @php
-                                $averageRating = $menu->ulasans->avg('rating') ?? 0;
-                            @endphp
-                            <div class="col-md-4 mb-4 menu-item" data-nama="{{ $menu->nama_menu }}" data-rating="{{ $averageRating }}">
-                                <div class="card h-100">
-                                    @if ($menu->image)
-                                        <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top"
-                                            alt="{{ $menu->nama_menu }}">
-                                    @else
-                                        <img src="{{ asset('images/default-menu.jpg') }}" class="card-img-top"
-                                            alt="Default Image">
-                                    @endif
-                                    <div class="card-body d-flex flex-column justify-content-between">
-                                        <h5 class="card-title">{{ $menu->nama_menu }}</h5>
-                                        <p class="card-text">Rp. {{ number_format($menu->harga, 0, ',', '.') }}</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <span class="text-warning">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        <i class="bi bi-star{{ $i <= round($averageRating) ? '-fill' : '' }}"></i>
-                                                    @endfor
-                                                </span>
-                                                <small class="text-muted">({{ number_format($averageRating, 1) }})</small>
-                                            </div>
-                                        </div>
-                                        <p class="card-text">
-                                            <small>Kategori:
-                                                @foreach ($menu->categories as $category)
-                                                    <span class="badge bg-primary">{{ $category->nama_kategori }}</span>
-                                                @endforeach
-                                            </small>
-                                        </p>
-                                        <div class="d-flex align-items-center">
-                                            <button type="button"
-                                                class="btn btn-outline-primary btn-sm me-2 decrement-btn"
-                                                data-target="#menu-quantity-{{ $menu->id }}">-</button>
-                                            <input type="number" id="menu-quantity-{{ $menu->id }}"
-                                                name="menu[{{ $menu->id }}][jumlah_pesanan]"
-                                                class="form-control form-control-sm text-center w-25"
-                                                value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}"
-                                                min="0">
-                                            <button type="button" class="btn btn-outline-primary btn-sm ms-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
-                                            <input type="hidden" name="menu[{{ $menu->id }}][id]"
-                                                value="{{ $menu->id }}">
-                                        </div>
-                                        @error('menu.' . $menu->id . '.jumlah_pesanan')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+        <!-- Menu List -->
+        <div class="row" id="menu_list" style="max-height: 400px; overflow-y: auto;">
+            @foreach ($menus as $menu)
+                @php
+                    $averageRating = $menu->ulasans->avg('rating') ?? 0;
+                @endphp
+                <div class="col-md-4 mb-4 menu-item" data-nama="{{ $menu->nama_menu }}" data-rating="{{ $averageRating }}">
+                    <div class="card h-100">
+                        @if ($menu->image)
+                            <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top menu-image" alt="{{ $menu->nama_menu }}">
+                        @else
+                            <img src="{{ asset('images/default-menu.jpg') }}" class="card-img-top menu-image" alt="Default Image">
+                        @endif
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <h5 class="card-title">{{ $menu->nama_menu }}</h5>
+                            <p class="card-text">Rp. {{ number_format($menu->harga, 0, ',', '.') }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-warning">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <i class="bi bi-star{{ $i <= round($averageRating) ? '-fill' : '' }}"></i>
+                                        @endfor
+                                    </span>
+                                    <small class="text-muted">({{ number_format($averageRating, 1) }})</small>
                                 </div>
                             </div>
-                        @endforeach
+                            <p class="card-text">
+                                <small>Kategori:
+                                    @foreach ($menu->categories as $category)
+                                        <span class="badge bg-primary">{{ $category->nama_kategori }}</span>
+                                    @endforeach
+                                </small>
+                            </p>
+                            <div class="d-flex align-items-center">
+                                <button type="button" class="btn btn-outline-primary btn-sm me-2 decrement-btn" data-target="#menu-quantity-{{ $menu->id }}">-</button>
+                                <input type="number" id="menu-quantity-{{ $menu->id }}" name="menu[{{ $menu->id }}][jumlah_pesanan]" class="form-control form-control-sm text-center w-25" value="{{ old('menu.' . $menu->id . '.jumlah_pesanan', 0) }}" min="0">
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-2 increment-btn" data-target="#menu-quantity-{{ $menu->id }}">+</button>
+                                <input type="hidden" name="menu[{{ $menu->id }}][id]" value="{{ $menu->id }}">
+                            </div>
+                            @error('menu.' . $menu->id . '.jumlah_pesanan')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    @error('menu')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
                 </div>
-            </div>
+            @endforeach
+        </div>
+        @error('menu')
+            <div class="invalid-feedback d-block">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <style>
+        .menu-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</div>
+
 
             {{-- Hidden Input untuk Status --}}
             <input type="hidden" name="status_reservasi" value="pending">
 
-            {{-- Tombol Submit --}}
+           
+            <!-- Modal Keranjang -->
+            <div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg"> <!-- Ubah class menjadi modal-lg untuk memperlebar modal -->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <ul id="keranjangItems" class="list-group">
+                                <!-- Cart items will be dynamically inserted by JavaScript -->
+                            </ul>
+                            <div class="mt-3">
+                                <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
+                            </div>
+                        </div>
+                        {{-- Tombol Submit --}}
             <div class="form-group text-right">
                 <button type="submit" class="btn btn-warning text-white">
                     Lanjutkan ke Pembayaran
                 </button>
             </div>
-        <!-- Modal Keranjang -->
-<div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg"> <!-- Ubah class menjadi modal-lg untuk memperlebar modal -->
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ul id="keranjangItems" class="list-group">
-                    <!-- Cart items will be dynamically inserted by JavaScript -->
-                </ul>
-                <div class="mt-3">
-                    <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- CSS -->
-<style>
-    .modal-dialog {
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: 600px; /* Lebar modal ditingkatkan */
-        height: 100%;
-        margin: 0;
-        max-width: none;
-    }
+            <!-- CSS -->
+            <style>
+                .modal-dialog {
+                    position: fixed;
+                    top: 0;
+                    right: 0;
+                    width: 600px;
+                    /* Lebar modal ditingkatkan */
+                    height: 100%;
+                    margin: 0;
+                    max-width: none;
+                }
 
-    .modal-content {
-        height: 100%;
-        border-radius: 0;
-        padding: 20px; /* Menambahkan padding agar lebih rapi */
-    }
+                .modal-content {
+                    height: 100%;
+                    border-radius: 0;
+                    padding: 20px;
+                    /* Menambahkan padding agar lebih rapi */
+                }
 
-    .modal-header {
-        border-bottom: 1px solid #dee2e6;
-        padding: 15px;
-        background-color: #f8f9fa; /* Menambahkan latar belakang untuk header modal */
-    }
+                .modal-header {
+                    border-bottom: 1px solid #dee2e6;
+                    padding: 15px;
+                    background-color: #f8f9fa;
+                    /* Menambahkan latar belakang untuk header modal */
+                }
 
-    .modal-body {
-        overflow-y: auto;
-        height: calc(100% - 160px); /* Menyesuaikan tinggi modal setelah header dan footer */
-    }
+                .modal-body {
+                    overflow-y: auto;
+                    height: calc(100% - 160px);
+                    /* Menyesuaikan tinggi modal setelah header dan footer */
+                }
 
-    .modal-footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        border-top: 1px solid #dee2e6;
-        padding: 10px;
-        background-color: #f8f9fa; /* Menambahkan latar belakang untuk footer modal */
-    }
+                .modal-footer {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    border-top: 1px solid #dee2e6;
+                    padding: 10px;
+                    background-color: #f8f9fa;
+                    /* Menambahkan latar belakang untuk footer modal */
+                }
 
-    .list-group-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px; /* Menambahkan padding agar lebih luas */
-        border: 1px solid #dee2e6; /* Memberikan batas pada item keranjang */
-        margin-bottom: 10px; /* Memberikan jarak antar item */
-    }
+                .list-group-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 15px;
+                    /* Menambahkan padding agar lebih luas */
+                    border: 1px solid #dee2e6;
+                    /* Memberikan batas pada item keranjang */
+                    margin-bottom: 10px;
+                    /* Memberikan jarak antar item */
+                }
 
-    .list-group-item img {
-        width: 70px; /* Mengatur ukuran gambar */
-        height: 70px;
-        object-fit: cover;
-    }
+                .list-group-item img {
+                    width: 70px;
+                    /* Mengatur ukuran gambar */
+                    height: 70px;
+                    object-fit: cover;
+                }
 
-    .list-group-item .d-flex {
-        align-items: center;
-    }
+                .list-group-item .d-flex {
+                    align-items: center;
+                }
 
-    .list-group-item .d-flex div {
-        margin-right: 10px;
-    }
+                .list-group-item .d-flex div {
+                    margin-right: 10px;
+                }
 
-    .modal-body strong {
-        font-size: 1.2em;
-        margin-top: 20px;
-    }
+                .modal-body strong {
+                    font-size: 1.2em;
+                    margin-top: 20px;
+                }
 
-    .btn-close {
-        font-size: 1.5rem;
-    }
+                .btn-close {
+                    font-size: 1.5rem;
+                }
 
-    /* Styling tombol tambah / kurangi */
-    .cart-decrement-btn, .cart-increment-btn {
-        padding: 5px 10px;
-    }
-</style>
+                /* Styling tombol tambah / kurangi */
+                .cart-decrement-btn,
+                .cart-increment-btn {
+                    padding: 5px 10px;
+                }
+            </style>
 
 
         </form>
@@ -503,31 +514,31 @@
 
             // Sorting functions
             document.getElementById('sort_by_meja').addEventListener('change', function() {
-    const sortBy = this.value;
-    const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
-    
-    mejaItems.sort((a, b) => {
-        const kapasitasA = parseInt(a.dataset.kapasitas);
-        const kapasitasB = parseInt(b.dataset.kapasitas);
-        
-        switch(sortBy) {
-            case 'asc':
-                return parseInt(a.dataset.nomor) - parseInt(b.dataset.nomor);
-            case 'desc':
-                return parseInt(b.dataset.nomor) - parseInt(a.dataset.nomor);
-            case 'asc_kapasitas':
-                return kapasitasA - kapasitasB;
-            case 'desc_kapasitas':
-                return kapasitasB - kapasitasA;
-            default:
-                return 0;
-        }
-    });
-    
-    const mejaList = document.getElementById('meja_list');
-    mejaList.innerHTML = '';
-    mejaItems.forEach(item => mejaList.appendChild(item));
-});
+                const sortBy = this.value;
+                const mejaItems = Array.from(document.querySelectorAll('.meja-item'));
+
+                mejaItems.sort((a, b) => {
+                    const kapasitasA = parseInt(a.dataset.kapasitas);
+                    const kapasitasB = parseInt(b.dataset.kapasitas);
+
+                    switch (sortBy) {
+                        case 'asc':
+                            return parseInt(a.dataset.nomor) - parseInt(b.dataset.nomor);
+                        case 'desc':
+                            return parseInt(b.dataset.nomor) - parseInt(a.dataset.nomor);
+                        case 'asc_kapasitas':
+                            return kapasitasA - kapasitasB;
+                        case 'desc_kapasitas':
+                            return kapasitasB - kapasitasA;
+                        default:
+                            return 0;
+                    }
+                });
+
+                const mejaList = document.getElementById('meja_list');
+                mejaList.innerHTML = '';
+                mejaItems.forEach(item => mejaList.appendChild(item));
+            });
             // Updated sorting for menu
             document.getElementById('sort_by_menu').addEventListener('change', function() {
                 const sortBy = this.value;

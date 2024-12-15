@@ -99,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/reservasi/{id}/confirm', [ReservasiController::class, 'confirmPayment'])->name('user.reservasi.confirm');
     Route::get('/user/reservasi/nota/{id}', [ReservasiController::class, 'nota'])->name('user.reservasi.nota');
     Route::delete('/reservasi/{id}', [ReservasiController::class, 'destroy'])->name('user.reservasi.destroy');
+    Route::get('/reservasi/{id}/pdf', [ReservasiController::class, 'generatePDF'])->name('reservasi.pdf');
 });
 
 require __DIR__ . '/auth.php';

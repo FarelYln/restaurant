@@ -159,7 +159,7 @@
                             <div class="mb-3">
                                 <strong>Detail Reservasi</strong>
                                 <p class="mb-1">Tanggal: {{ $reservasi->tanggal_reservasi->format('d M Y H:i') }}</p>
-                                <p class="mb-1">Metode Pembayaran: {{ $reservasi->metode_pembayaran }}</p>
+                                <p class="mb-1">Metode Pembayaran: {{ str_replace('_', ' ', $reservasi->metode_pembayaran) }}</p>
                                 <p class="mb-1">Media: {{ $reservasi->media_pembayaran }} ({{ $reservasi->nomor_media }})</p>
                             </div>
 

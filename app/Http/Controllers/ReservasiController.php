@@ -9,9 +9,38 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReservasiController extends Controller
 {
+    public function generatePDF($reservasiId)
+    {
+        $reservasi = Reservasi::findOrFail($reservasiId);
+        
+        // Hitung total harga
+        $totalHarga = $reservasi->menus->sum(function($menu) {
+            return $menu->pivot->jumlah_pesanan * $menu->harga;
+        });
+        
+        // Load view PDF dengan layout minimal
+        $pdf = PDF::loadView('pdfs.nota', [
+            'reservasi' => $reservasi,
+            'totalHarga' => $totalHarga
+        ])
+        // Atur ukuran kertas dan orientasi
+        ->setPaper('a4', 'portrait')
+        // Hapus margin default
+        ->setOption('margin-top', 0)
+        ->setOption('margin-right', 0)
+        ->setOption('margin-bottom', 0)
+        ->setOption('margin-left', 0);
+        
+        // Generate nama file unik
+        $filename = 'Nota_Pembayaran_' . $reservasi->id . '_' . now()->format('YmdHis') . '.pdf';
+        
+        // Force download
+        return $pdf->download($filename);
+    }
     public function history(Request $request)
     {
         $status = $request->input('status');

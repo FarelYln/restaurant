@@ -42,47 +42,40 @@
                 Tidak ada reservasi yang tersedia.
             </div>
         @else
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle text-center shadow-sm rounded-3">
-                    <thead class="table" style="color: #000; font-family: 'Poppins', sans-serif;">
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Status Reservasi</th>
-                            <th scope="col">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($reservasiData as $reservasi)
-                            <tr class="align-middle">
-                                <td class="py-3" style="font-family: 'Roboto', sans-serif;">{{ $loop->iteration }}</td>
-                                <td class="py-3">
-    <span class="badge {{ $reservasi->status_reservasi === 'confirmed' ? 'bg-success' : ($reservasi->status_reservasi === 'completed' ? 'bg-primary' : 'bg-secondary') }}">
-        @php
-            // Pemetaan status ke bahasa Indonesia
-            $statusTranslations = [
-                'confirmed' => 'Dikonfirmasi',
-                'completed' => 'Selesai',
-                'pending' => 'Menunggu',
-                'cancelled' => 'Dibatalkan',
-            ];
-            // Ambil terjemahan atau gunakan status asli jika tidak ada di pemetaan
-            $statusIndo = $statusTranslations[$reservasi->status_reservasi] ?? ucfirst($reservasi->status_reservasi);
-        @endphp
-        {{ $statusIndo }}
-    </span>
-</td>
-
-                                <td class="py-3">
+            <div class="row">
+                @foreach ($reservasiData as $reservasi)
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <h5 class="card-title">Reservasi {{ $loop->iteration }} | ID: {{ $reservasi->id_reservasi }}</h5>
+                                <p class="card-text">
+                                    Status: 
+                                    <span class="badge {{ $reservasi->status_reservasi === 'confirmed' ? 'bg-success' : ($reservasi->status_reservasi === 'completed' ? 'bg-primary' : 'bg-secondary') }}">
+                                        @php
+                                            // Pemetaan status ke bahasa Indonesia
+                                            $statusTranslations = [
+                                                'confirmed' => 'Dikonfirmasi',
+                                                'completed' => 'Selesai',
+                                                'pending' => 'Menunggu',
+                                                'cancelled' => 'Dibatalkan',
+                                            ];
+                                            // Ambil terjemahan atau gunakan status asli jika tidak ada di pemetaan
+                                            $statusIndo = $statusTranslations[$reservasi->status_reservasi] ?? ucfirst($reservasi->status_reservasi);
+                                        @endphp
+                                        {{ $statusIndo }}
+                                    </span>
+                                </p>
+                                <div class="d-flex justify-content-end">
                                     <a href="{{ route('user.reservasi.nota', $reservasi->id) }}" 
-                                       class="btn btn-info btn-sm shadow-sm" 
+                                       class="btn btn-primary btn-sm shadow-sm" 
                                        style="font-family: 'Poppins', sans-serif; border-radius: 25px; padding: 5px 15px;">
-                                         Detail
+                                        Detail
                                     </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         @endif
     </div>
