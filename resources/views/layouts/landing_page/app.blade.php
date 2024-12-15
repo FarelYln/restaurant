@@ -12,6 +12,7 @@
     <link href="{{ asset('asset_landing/img/favicon.ico') }}" rel="icon">
 
     <!-- Google Web Fonts -->
+    <link rel="icon" sizes="180x180" href="{{ asset('asset/img/Bkp.jpg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
