@@ -32,12 +32,12 @@ class MenuController extends Controller
     {
         $search = $request->input('search');
         $categoryId = $request->input('category');
-
+    
         // Ambil semua kategori
         $categories = Category::all();
-
+    
         // Query untuk menampilkan menu
-        $menus = Menu::with('categories')
+        $query = Menu::with('categories', 'ulasans')
             ->when($search, function ($query, $search) {
                 return $query->where('nama_menu', 'like', '%' . $search . '%');
             })
@@ -45,9 +45,14 @@ class MenuController extends Controller
                 return $query->whereHas('categories', function ($query) use ($categoryId) {
                     $query->where('category_id', $categoryId);
                 });
-            })
-            ->paginate(10); // Paginasi 10 item per halaman
-
+            });
+    
+        // Paginate first, then map to add average rating
+        $menus = $query->paginate(10)->through(function ($menu) {
+            $menu->averageRating = $menu->ulasans->avg('rating');
+            return $menu;
+        });
+    
         return view('pages.user.menu.index', compact('menus', 'categories'));
     }
 
