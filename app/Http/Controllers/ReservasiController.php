@@ -507,21 +507,5 @@ public function store(Request $request)
             return back()->with('error', 'Gagal melakukan checkout. Silakan coba lagi.');
         }
     }
-    public function chart()
-    {
-        $reservasiPerBulan = Reservasi::selectRaw('MONTH(created_at) as bulan, COUNT(*) as jumlah')
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->get();
 
-        $labels = $reservasiPerBulan->pluck('bulan')
-            ->map(fn($bulan) => date('F', mktime(0, 0, 0, $bulan, 1)))
-            ->toArray();
-
-        $data = $reservasiPerBulan->pluck('jumlah')->toArray();
-
-        return view('pages.admin.dashboard', compact('labels', 'data'));
-    }
-
-    
 }
