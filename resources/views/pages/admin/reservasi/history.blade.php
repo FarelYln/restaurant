@@ -155,7 +155,7 @@
                                         <td>{{ $reservasi->id_reservasi }}</td>
                                         <td>{{ $reservasi->user->name }}</td>
                                         <td>{{ $reservasi->tanggal_reservasi->format('d M Y') }}</td>
-                                        <td><span class="badge bg-warning">{{ ucfirst($reservasi->status_reservasi) }}</span></td>
+                                        <td><span class="badge bg-warning">selesai</span></td>
                                         <td>
                                             <!-- Action Button -->
                                             <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal{{ $reservasi->id }}">
@@ -209,14 +209,17 @@
 
                 <!-- Informasi Meja -->
                 <div class="mb-4">
-                    <h6 class="fw-bold">Informasi Meja</h6>
-                    <p><strong>Meja:</strong> 
+                    <strong>Meja dan Lantai</strong>
+                    <p class="mb-1">
                         @foreach($reservasi->meja as $meja)
-                            {{ $meja->nomor_meja }}@if(!$loop->last), @endif
+                            Meja: {{ $meja->nomor_meja }} - 
+                            Lokasi: {{ optional($meja->location)->name ?? 'Lokasi tidak tersedia' }} - 
+                            Lantai: {{ optional($meja->location)->floor ?? 'Lantai tidak tersedia' }}
+                            @if(!$loop->last), 
+                            @endif
                         @endforeach
                     </p>
                 </div>
-
                 <!-- Menu Pesanan -->
                 <div class="mb-4">
                     <h6 class="fw-bold">Menu Pesanan</h6>

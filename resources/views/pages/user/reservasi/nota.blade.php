@@ -85,7 +85,7 @@
                         {{-- Tombol Cetak --}}
                         <div class="text-center">
                             <button onclick="window.location.href='{{ route('reservasi.pdf', $reservasi->id) }}'" class="btn btn-primary" style="border-radius: 25px; padding: 10px 20px;">
-                                <i class="fas fa-file-pdf"></i> Download Nota
+                                <i class="fas fa-file-pdf"></i> Cetak Nota
                             </button>
                             
                         </div>

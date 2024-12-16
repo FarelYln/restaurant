@@ -14,12 +14,12 @@
                         <span class="d-none d-lg-inline-flex">{{ auth()->user()->name }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                        <a href="/admin/profile" class="dropdown-item">My Profile</a>
+                        <a href="/admin/profile" class="dropdown-item">Profile</a>
             
                         <!-- Form Logout -->
                         <form action="{{ route('logout') }}" method="POST" class="dropdown-item">
                             @csrf
-                            <button type="submit" class="btn btn-link w-100 text-start">Log Out</button>
+                            <button type="submit" class="btn btn-link w-100 text-start">Keluar</button>
                         </form>
                     </div>
                 </div>

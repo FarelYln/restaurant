@@ -169,14 +169,14 @@
                                                     <span class="text-primary">Rp
                                                         {{ number_format($menu->harga, 2, ',', '.') }}</span>
                                                 </h5>
-                                                <small class="fst-italic text-muted">{{ $menu->description }}</small>
+                                                <small class=" text-muted">{{ $menu->description }}</small>
                                                 <div class="mt-2">
                                                     <!-- Kategori -->
-                                                    <small class="fst-italic">Kategori:
+                                                    <small class="">Kategori:
                                                         <div class="d-flex flex-wrap mt-1">
                                                             @foreach ($menu->categories as $category)
                                                                 <span class="badge me-1 mb-1"
-                                                                    style="background-color: {{ $category->color ?? '#6c757d' }};">
+                                                                    style="background-color: {{ $category->color ?? '#ffa500' }};">
                                                                     {{ $category->nama_kategori }}
                                                                 </span>
                                                             @endforeach
@@ -303,14 +303,13 @@
                 <div class="owl-carousel testimonial-carousel">
                     <div class="testimonial-item bg-transparent border rounded p-4">
                         <i class="fa fa-quote-left fa-2x text-primary mb-3"></i>
-                        <p>Pengalaman yang luar biasa, sangat profesional dan melayani dengan sangat baik. Saya sangat puas
-                            dengan layanan yang diberikan.</p>
+                        <p>Pengalaman yang luar biasa, sangat profesional dan melayani dengan sangat baik.</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                src="{{ asset('asset_landing/img/testimonial-1.jpg') }}"
+                                src="{{ asset('asset_landing/img/2.jpg') }}"
                                 style="width: 50px; height: 50px;">
                             <div class="ps-3">
-                                <h5 class="mb-1">Marco Van Basten</h5>
+                                <h5 class="mb-1">Polo</h5>
                             </div>
                         </div>
                     </div>
@@ -320,10 +319,10 @@
                         <p>Pengalaman yang luar biasa! Mereka sangat profesional dan melayani dengan sangat baik.</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                src="{{ asset('asset_landing/img/testimonial-2.jpg') }}"
+                                src="{{ asset('asset_landing/img/3.jpg') }}"
                                 style="width: 50px; height: 50px;">
                             <div class="ps-3">
-                                <h5 class="mb-1">Paolo Maldini</h5>
+                                <h5 class="mb-1">Maldini</h5>
                             </div>
                         </div>
                     </div>
@@ -332,7 +331,7 @@
                         <p>Pelayanan yang sangat memuaskan! Kami akan kembali lagi untuk menggunakan layanan mereka.</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                src="{{ asset('asset_landing/img/testimonial-3.jpg') }}"
+                                src="{{ asset('asset_landing/img/3.jpg') }}"
                                 style="width: 50px; height: 50px;">
                             <div class="ps-3">
                                 <h5 class="mb-1">Fernando Torres</h5>
@@ -344,10 +343,10 @@
                         <p>Suasana yang sangat menyenangkan, sangat cocok untuk acara keluarga atau bisnis!</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                src="{{ asset('asset_landing/img/testimonial-4.jpg') }}"
+                                src="{{ asset('asset_landing/img/2.jpg') }}"
                                 style="width: 50px; height: 50px;">
                             <div class="ps-3">
-                                <h5 class="mb-1">Cold Palmer</h5>
+                                <h5 class="mb-1">Agus</h5>
                             </div>
                         </div>
                     </div>

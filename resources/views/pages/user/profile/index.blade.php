@@ -83,7 +83,7 @@
                 </div>
                 <div class="col-lg-6 text-center">
                     <img class="img-fluid rounded-circle" style="width: 200px; height: 200px; object-fit: cover;"
-                        src="{{ asset('asset_landing/img/alok.jpg') }}" alt="Foto Pemilik Restoran">
+                        src="{{ asset('asset_landing/img/team-3.jpg') }}" alt="Foto Pemilik Restoran">
                     <h5 class="mt-3">John Doe</h5>
                     <p class="text-muted">Pendiri dan Pemilik</p>
                 </div>

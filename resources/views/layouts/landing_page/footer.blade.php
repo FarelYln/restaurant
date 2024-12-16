@@ -15,26 +15,20 @@
                 <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Jalan Sempu, Sempu, BWI</p>
                 <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+62 815-4874-3796</p>
                 <p class="mb-2"><i class="fa fa-envelope me-3"></i>restoranto@gmail.com</p>
+               
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Jam Buka</h4>
+                <h5 class="text-light fw-normal">Senin - Minggu</h5>
+                <p> Buka 08.00 - 22.00</p>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Sosial Media</h4>
                 <div class="d-flex pt-2">
                     <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
                     <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
                     <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
                     <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Jam Buka</h4>
-                <h5 class="text-light fw-normal">Senin - Sabtu</h5>
-                <p> Buka selama 24 jam</p>
-                <h5 class="text-light fw-normal">Minggu</h5>
-                <p>Buka selama 25 jam</p>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Newsletter</h4>
-                <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
-                <div class="position-relative mx-auto" style="max-width: 400px;">
-                    <input class="form-control border-primary w-100 py-3 ps-4 pe-5" type="text" placeholder="Email Anda">
-                    <button type="button" class="btn py-2 position-absolute top-0 end-0 mt-2 me-2" style="background-color: orange; color: white; border: none;">Daftar</button>
                 </div>
             </div>
         </div>
@@ -43,7 +37,7 @@
         <div class="copyright">
             <div class="row">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#">Restoranto</a>, Hak Cipta Dilindungi. 
+                    &copy; <a class="border-bottom" href="#">Restoran</a>, Hak Cipta Dilindungi. 
                     
                     <!--/*** Template ini gratis selama Anda mempertahankan tautan kredit penulis di footer. Jika Anda ingin menggunakan template tanpa tautan kredit penulis, Anda dapat membeli Lisensi Penghapusan Kredit dari "https://htmlcodex.com/credit-removal". Terima kasih atas dukungan Anda. ***/-->
                     Dirancang Oleh <a class="border-bottom" href="/">Kami</a>

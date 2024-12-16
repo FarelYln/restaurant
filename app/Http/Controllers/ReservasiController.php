@@ -66,30 +66,33 @@ class ReservasiController extends Controller
         return view('pages.admin.reservasi.history', compact('reservasiData'));
     }
     public function adminIndex(Request $request)
-{
-    $status = $request->input('status');
-    $search = $request->input('search');
+    {
+        $status = $request->input('status');
+        $search = $request->input('search');
     
-    $reservasiData = Reservasi::whereIn('status_reservasi', ['confirmed'])
-                              ->with('menus', 'meja', 'user') // Mengambil relasi menus, meja, dan user
-                            
-                              ->when($search, function ($query, $search) {
-                                  $query->where(function ($query) use ($search) {
-                                      $query->where('tanggal_reservasi', 'like', '%' . $search . '%')
-                                      ->orWhere('id_reservasi', 'like', '%' . $search . '%')
-                                            ->orWhere('status_reservasi', 'like', '%' . $search . '%')
-                                            ->orWhereHas('user', function ($query) use ($search) {
-                                                $query->where('name', 'like', '%' . $search . '%');
-                                            })
-                                            ->orWhereHas('meja', function ($query) use ($search) {
-                                                $query->where('nomor_meja', 'like', '%' . $search . '%');
-                                            });
-                                  });
-                              })
-                              ->paginate(10); // Menambahkan paginate dengan 10 item per halaman
-        
-    return view('pages.admin.reservasi.index', compact('reservasiData'));
-}
+        $reservasiData = Reservasi::whereIn('status_reservasi', ['confirmed'])
+                                  ->with('menus', 'meja.location', 'user') // Menambahkan meja.location
+                                  ->when($search, function ($query, $search) {
+                                      $query->where(function ($query) use ($search) {
+                                          $query->where('tanggal_reservasi', 'like', '%' . $search . '%')
+                                                ->orWhere('id_reservasi', 'like', '%' . $search . '%')
+                                                ->orWhere('status_reservasi', 'like', '%' . $search . '%')
+                                                ->orWhereHas('user', function ($query) use ($search) {
+                                                    $query->where('name', 'like', '%' . $search . '%');
+                                                })
+                                                ->orWhereHas('meja', function ($query) use ($search) {
+                                                    $query->where('nomor_meja', 'like', '%' . $search . '%');
+                                                })
+                                                ->orWhereHas('meja.location', function ($query) use ($search) {
+                                                    $query->where('name', 'like', '%' . $search . '%'); // Pencarian berdasarkan nama lokasi
+                                                });
+                                      });
+                                  })
+                                  ->paginate(10); // Menambahkan paginate dengan 10 item per halaman
+    
+        return view('pages.admin.reservasi.index', compact('reservasiData'));
+    }
+    
     public function index()
     {
         // Ambil reservasi yang memiliki status 'confirmed' atau 'completed' milik user yang sedang login
@@ -152,6 +155,13 @@ public function create(Request $request)
             $q->where('name', 'like', '%' . $validated['location'] . '%');
         });
     }
+
+    if ($request->filled('floor')) {
+        $query->whereHas('location', function ($q) use ($request) {
+            $q->where('floor', $request->input('floor'));
+        });
+    }
+    
 
     // Query untuk meja tanpa pagination
     $meja = $query->get();

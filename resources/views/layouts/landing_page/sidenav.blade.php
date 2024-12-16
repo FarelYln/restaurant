@@ -57,7 +57,7 @@
                         class="nav-item nav-link {{ request()->is('reservasi') ? 'active' : '' }}">Reservasi</a>
                 @endauth
 
-                <a href="/contact" class="nav-item nav-link {{ request()->is('contact') ? 'active' : '' }}">Contact</a>
+                <a href="/contact" class="nav-item nav-link {{ request()->is('contact') ? 'active' : '' }}">Kontak</a>
             </div>
 
             @auth
@@ -84,7 +84,7 @@
                 <li>
                     <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                        <i class="bi bi-box-arrow-right me-2"></i> Keluar
                     </a>
                 </li>
             </ul>

@@ -43,7 +43,7 @@
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">{{ __('Simpan') }}</button>
+                            <button type="submit" class="btn btn-warning w-100">{{ __('Simpan') }}</button>
                             @if (session('status') === 'profile-updated')
                             <p class="text-success small mt-2">{{ __('Tersimpan.') }}</p>
                             @endif
@@ -81,7 +81,7 @@
                                 <div class="text-danger mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">{{ __('Simpan') }}</button>
+                            <button type="submit" class="btn btn-warning w-100">{{ __('Simpan') }}</button>
                             @if (session('status') === 'password-updated')
                             <p class="text-success small mt-2">{{ __('Tersimpan.') }}</p>
                             @endif

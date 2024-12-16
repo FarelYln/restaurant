@@ -134,7 +134,7 @@
 
     @if($reservasiData->isEmpty())
         <div class="alert alert-info text-center" role="alert">
-            Tidak ada reservasi yang memiliki status confirmed atau completed.
+            Tidak ada reservasi yang memiliki status confirmed.
         </div>
     @else
         <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -146,7 +146,7 @@
                             <span class="badge 
                                 {{ $reservasi->status_reservasi == 'confirmed' ? 'bg-success' : 
                                    ($reservasi->status_reservasi == 'completed' ? 'bg-primary' : 'bg-warning') }}">
-                                {{ ucfirst($reservasi->status_reservasi) }}
+                            dikonfirmasi
                             </span>
                         </div>
                         <div class="card-body">
@@ -164,14 +164,19 @@
                             </div>
 
                             <div class="mb-3">
-                                <strong>Meja</strong>
+                                <strong>Meja dan Lantai</strong>
                                 <p class="mb-1">
                                     @foreach($reservasi->meja as $meja)
-                                        {{ $meja->nomor_meja }}@if(!$loop->last), @endif
+                                        Meja: {{ $meja->nomor_meja }} - 
+                                        Lokasi: {{ optional($meja->location)->name ?? 'Lokasi tidak tersedia' }} - 
+                                        Lantai: {{ optional($meja->location)->floor ?? 'Lantai tidak tersedia' }}
+                                        @if(!$loop->last), 
+                                        @endif
                                     @endforeach
                                 </p>
                             </div>
-
+                            
+                            
                             <div class="mb-3">
                                 <strong>Pesanan</strong>
                                 @foreach($reservasi->menus as $menu)

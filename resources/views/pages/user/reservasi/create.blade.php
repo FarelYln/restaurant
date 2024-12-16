@@ -65,13 +65,13 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <select id="filter_lantai" class="form-control">
+                            <select id="filter_lantai" name="floor" class="form-control">
                                 <option value="">Pilih Lantai</option>
                                 @php
                                     $floors = $meja->pluck('location.floor')->unique()->sort();
                                 @endphp
                                 @foreach ($floors as $floor)
-                                    <option value="{{ $floor }}">Lantai {{ $floor }}</option>
+                                    <option value="{{ $floor }}" {{ request('floor') == $floor ? 'selected' : '' }}>Lantai {{ $floor }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -140,7 +140,7 @@
             </div>
             <!-- Keranjang Button -->
             <div>
-                <button type="button" class="btn btn-info d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#keranjangModal">
+                <button type="button" class="btn btn-warning d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#keranjangModal">
                     <i class="bi bi-cart-fill me-2"></i> Keranjang (<span id="keranjangCount">0</span>)
                 </button>
             </div>
@@ -392,7 +392,20 @@
                     });
                 });
             }
+            document.getElementById('filter_lantai').addEventListener('change', function() {
+    const selectedFloor = this.value;
+    const mejaItems = document.querySelectorAll('.meja-item');
 
+    mejaItems.forEach(item => {
+        const lantaiMeja = item.dataset.lantai;
+        
+        if (selectedFloor === '' || lantaiMeja === selectedFloor) {
+            item.style.display = ''; // Tampilkan meja
+        } else {
+            item.style.display = 'none'; // Sembunyikan meja
+        }
+    });
+});
             function incrementItemInCart(menuId) {
                 const input = document.getElementById(`menu-quantity-${menuId}`);
                 let jumlah = parseInt(input.value) + 1;
