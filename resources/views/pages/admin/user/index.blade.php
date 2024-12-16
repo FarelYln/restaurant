@@ -2,13 +2,60 @@
 
 @section('content')
     <style>
-        .card { border-radius: 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); border: none; }
-        .card-header { background-color: #f8fafc; font-size: 1.25rem; font-weight: bold; padding: 15px; border-bottom: 1px solid #e2e8f0; }
-        .card-body { padding: 20px; }
-        .table th, .table td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
-        .table th { font-weight: bold; }
-        .table tbody tr:last-child td { border-bottom: none; }
-        .pagination { justify-content: center; margin-top: 20px; }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .card-header {
+            background-color: #f8fafc;
+            font-size: 1.25rem;
+            font-weight: bold;
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            font-weight: bold;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination .page-item .page-link {
+            border-radius: 0; /* Membuat bentuk kotak */
+            margin: 0 3px;
+            color: #007bff;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: #e2e8f0;
+            color: #0056b3;
+        }
     </style>
 
     <div class="container mt-5">
@@ -64,7 +111,7 @@
                     </table>
                     <!-- Navigasi Pagination -->
                     <div class="pagination-wrapper">
-                        {{ $users->appends(['search' => $search, 'sort' => $sort])->links() }}
+                        {{ $users->appends(['search' => $search, 'sort' => $sort])->links('pagination::bootstrap-4') }}
                     </div>
                 @endif
             </div>
