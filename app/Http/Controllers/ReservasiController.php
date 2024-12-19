@@ -130,70 +130,7 @@ public function searchMeja(Request $request)
     return response()->json($meja);
 }
 
-public function create(Request $request)
-{
-    // Validasi input
-    $validated = $request->validate([
-        'kapasitas' => 'nullable|integer',
-        'location' => 'nullable|string',
-        'search_menu' => 'nullable|string',
-        'sort_price' => 'nullable|in:asc,desc', // Validasi untuk parameter sort_price
-    ]);
 
-    // Query untuk meja tanpa pagination
-    $query = Meja::with('location')  // Eager loading relasi lokasi
-        ->where('status', 'tersedia',)
-        ->orWhere('status', 'tidak tersedia');
-
-    // Filtering berdasarkan kapasitas
-    if ($request->filled('kapasitas')) {
-        $query->where('kapasitas', $validated['kapasitas']);
-    }
-
-    // Filtering berdasarkan lokasi
-    if ($request->filled('location')) {
-        $query->whereHas('location', function ($q) use ($validated) {
-            $q->where('name', 'like', '%' . $validated['location'] . '%');
-        });
-    }
-
-    if ($request->filled('floor')) {
-        $query->whereHas('location', function ($q) use ($request) {
-            $q->where('floor', $request->input('floor'));
-        });
-    }
-    
-
-    // Query untuk meja tanpa pagination
-    $meja = $query->get();
-
-    // Query untuk menu dengan filtering tanpa pagination
-    $menuQuery = Menu::query();
-
-    // Filtering berdasarkan pencarian menu
-    if ($request->filled('search_menu')) {
-        $menuQuery->where('nama_menu', 'like', '%' . $validated['search_menu'] . '%')
-                  ->orWhere('harga', 'like', '%' . $validated['search_menu'] . '%');
-    }
-
-    
-
-    // Menambahkan sorting berdasarkan harga jika parameter sort_price ada
-    if ($request->filled('sort_price')) {
-        $menuQuery->orderBy('harga', $validated['sort_price']);
-    }
-
-    $menus = $menuQuery->get(); // Menggunakan get() untuk mengambil semua data
-
-    return view('pages.user.reservasi.create', [
-        'meja' => $meja,
-        'menus' => $menus,
-        'kapasitas' => $request->input('kapasitas'),
-        'location' => $request->input('location'),
-        'search_menu' => $request->input('search_menu'),
-        'sort_price' => $request->input('sort_price'), // Menambahkan parameter sort_price ke view
-    ]);
-}
 
 
 
@@ -306,6 +243,66 @@ public function sortMenu(Request $request)
 }
 
 
+public function create(Request $request)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'kapasitas' => 'nullable|integer',
+        'location' => 'nullable|string',
+        'search_menu' => 'nullable|string',
+        'sort_price' => 'nullable|in:asc,desc',
+    ]);
+
+    // Query untuk meja tanpa pagination
+    $query = Meja::with('location');  // Menghapus where status karena tidak menggunakan status lagi
+
+    // Filtering berdasarkan kapasitas
+    if ($request->filled('kapasitas')) {
+        $query->where('kapasitas', $validated['kapasitas']);
+    }
+
+    // Filtering berdasarkan lokasi
+    if ($request->filled('location')) {
+        $query->whereHas('location', function ($q) use ($validated) {
+            $q->where('name', 'like', '%' . $validated['location'] . '%');
+        });
+    }
+
+    if ($request->filled('floor')) {
+        $query->whereHas('location', function ($q) use ($request) {
+            $q->where('floor', $request->input('floor'));
+        });
+    }
+
+    // Query untuk meja tanpa pagination
+    $meja = $query->get();
+
+    // Query untuk menu dengan filtering tanpa pagination
+    $menuQuery = Menu::query();
+
+    // Filtering berdasarkan pencarian menu
+    if ($request->filled('search_menu')) {
+        $menuQuery->where('nama_menu', 'like', '%' . $validated['search_menu'] . '%')
+                  ->orWhere('harga', 'like', '%' . $validated['search_menu'] . '%');
+    }
+
+    // Menambahkan sorting berdasarkan harga jika parameter sort_price ada
+    if ($request->filled('sort_price')) {
+        $menuQuery->orderBy('harga', $validated['sort_price']);
+    }
+
+    $menus = $menuQuery->get();
+
+    return view('pages.user.reservasi.create', [
+        'meja' => $meja,
+        'menus' => $menus,
+        'kapasitas' => $request->input('kapasitas'),
+        'location' => $request->input('location'),
+        'search_menu' => $request->input('search_menu'),
+        'sort_price' => $request->input('sort_price'),
+    ]);
+}
+
 public function store(Request $request)
 {
     $validated = $request->validate([
@@ -325,30 +322,34 @@ public function store(Request $request)
                 $waktuSekarang = Carbon::now('Asia/Jakarta');
                 $waktuReservasi = Carbon::parse($request->tanggal_reservasi . ' ' . $value, 'Asia/Jakarta');
                 
-                // Jika tanggal sama dengan hari ini, cek apakah waktu reservasi kurang dari 1 jam dari sekarang
                 if ($waktuReservasi->isSameDay($waktuSekarang) && 
                     $waktuReservasi->lt($waktuSekarang->copy()->addHour())) {
                     $fail('Jam reservasi harus minimal 1 jam dari waktu sekarang.');
                 }
             }
         ],
-       'id_meja' => [
+        'id_meja' => [
             'required', 
             'array', 
             'min:1',
             function ($attribute, $value, $fail) use ($request) {
-                // Validasi ketersediaan meja
+                $tanggalReservasi = $request->tanggal_reservasi;
+                $jamReservasi = $request->jam_reservasi;
+                $waktuReservasi = Carbon::parse($tanggalReservasi . ' ' . $jamReservasi);
+
                 foreach ($value as $mejaId) {
-                    // Cek apakah meja sudah direservasi pada tanggal yang sama
-                    $reservasiTerakhir = Reservasi::whereHas('meja', function ($query) use ($mejaId) {
+                    // Cek apakah ada reservasi yang overlap pada tanggal yang sama
+                    $existingReservation = Reservasi::whereHas('meja', function ($query) use ($mejaId) {
                         $query->where('meja.id', $mejaId);
                     })
-                    ->whereDate('tanggal_reservasi', $request->tanggal_reservasi)
+                    ->whereDate('tanggal_reservasi', $tanggalReservasi)
                     ->whereIn('status_reservasi', ['pending', 'confirmed'])
                     ->first();
 
-                    if ($reservasiTerakhir) {
-                        $fail("Meja dengan ID $mejaId sudah tidak tersedia pada tanggal yang dipilih.");
+                    if ($existingReservation) {
+                        $fail("Meja dengan ID $mejaId sudah direservasi pada tanggal " . 
+                              Carbon::parse($tanggalReservasi)->format('d-m-Y') . 
+                              ". Silakan pilih meja atau tanggal lain.");
                     }
                 }
             }
@@ -367,32 +368,25 @@ public function store(Request $request)
         'status_reservasi.in' => 'Status reservasi tidak valid.',
         'menu.array' => 'Menu yang dipesan harus dalam format array.',
     ]);
-    
-    // Validasi khusus untuk menu
+
+    // Validasi menu sama seperti sebelumnya...
     $menuValidation = [];
-    
-    // Cek apakah ada menu yang diisi
     $hasMenuOrder = false;
     
     if (!empty($request->input('menu'))) {
         foreach ($request->input('menu') as $menuId => $menuData) {
-            // Jika jumlah pesanan lebih dari 0
             if (!empty($menuData['jumlah_pesanan']) && $menuData['jumlah_pesanan'] > 0) {
                 $hasMenuOrder = true;
-                
-                // Validasi spesifik untuk menu yang diisi
                 $menuValidation['menu.'.$menuId.'.id'] = 'required|integer|exists:menus,id';
                 $menuValidation['menu.'.$menuId.'.jumlah_pesanan'] = 'required|integer|min:1';
             }
         }
     }
 
-    // Jika tidak ada menu yang dipesan
     if (!$hasMenuOrder) {
         return redirect()->back()->withErrors(['menu' => 'Minimal satu menu harus dipilih dengan jumlah pesanan.']);
     }
 
-    // Jalankan validasi tambahan jika ada menu yang diisi
     if (!empty($menuValidation)) {
         $request->validate($menuValidation, [
             'menu.*.id.required' => 'Menu harus dipilih.',
@@ -402,28 +396,75 @@ public function store(Request $request)
         ]);
     }
 
-    // Simpan data reservasi ke database
+    // Simpan data reservasi
     $reservasi = Reservasi::create([
         'id_user' => auth()->id(),
         'tanggal_reservasi' => Carbon::parse($validated['tanggal_reservasi'] . ' ' . $validated['jam_reservasi']),
         'status_reservasi' => $validated['status_reservasi'],
     ]);
 
-    // Menyimpan data meja ke pivot table
     $reservasi->meja()->attach($validated['id_meja']);
 
-    // Simpan menu pesanan
     foreach ($request->input('menu') as $menuId => $menuData) {
         if (!empty($menuData['jumlah_pesanan']) && $menuData['jumlah_pesanan'] > 0) {
             $reservasi->menus()->attach($menuData['id'], ['jumlah_pesanan' => $menuData['jumlah_pesanan']]);
         }
     }
 
-    // Simpan ID reservasi ke session
     session(['reservasi_id' => $reservasi->id]);
-
-    // Arahkan ke halaman pembayaran dengan ID reservasi
     return redirect()->route('user.reservasi.payment', ['id' => $reservasi->id]);
+}
+
+public function confirmPayment($id, Request $request)
+{
+    $request->validate([
+        'payment_method' => 'required|in:scan,kartu_kredit,e_wallet',
+        'total_price' => 'required|numeric',
+    ]);
+
+    $reservasi = Reservasi::findOrFail($id);
+
+    $mediaProvider = null;
+    $nomorMedia = null;
+    $cardHolderName = null;
+
+    switch ($request->input('payment_method')) {
+        case 'e_wallet':
+            $request->validate([
+                'e_wallet_provider' => 'required|in:ovo,gopay,dana,shopeepay',
+                'e_wallet_number' => 'required|numeric'
+            ]);
+            $mediaProvider = $request->input('e_wallet_provider');
+            $nomorMedia = $request->input('e_wallet_number');
+            break;
+
+        case 'kartu_kredit':
+            $request->validate([
+                'credit_card_type' => 'required|in:visa,mastercard,bca',
+                'card_number' => 'required|numeric|digits_between:12,19',
+                'card_holder_name' => 'required|string|max:255',
+            ]);
+            $mediaProvider = $request->input('credit_card_type');
+            $nomorMedia = $request->input('card_number');
+            $cardHolderName = $request->input('card_holder_name');
+            break;
+
+        default:
+            $mediaProvider = null;
+            $nomorMedia = null;
+            break;
+    }
+
+    $reservasi->update([
+        'metode_pembayaran' => $request->input('payment_method'),
+        'media_pembayaran' => $mediaProvider,
+        'nomor_media' => $nomorMedia,
+        'total_bayar' => $request->input('total_price'),
+        'status_reservasi' => 'confirmed',
+        'card_holder_name' => $cardHolderName,
+    ]);
+    
+    return redirect()->route('user.reservasi.nota', $id);
 }
 
 public function getMejaByTanggal(Request $request)
@@ -456,68 +497,6 @@ public function getMejaByTanggal(Request $request)
     }
     
     
-    public function confirmPayment($id, Request $request)
-    {
-        // dd($request->all());  // Tambahkan ini untuk debugging
-        $request->validate([
-            'payment_method' => 'required|in:scan,kartu_kredit,e_wallet',
-            'total_price' => 'required|numeric',
-        ]);
-    
-        // Ambil reservasi yang sesuai
-        $reservasi = Reservasi::findOrFail($id);
-    
-        // Menyimpan data kartu kredit tambahan
-        $mediaProvider = null;
-        $nomorMedia = null;
-        $cardHolderName = null;
-    
-        switch ($request->input('payment_method')) {
-            case 'e_wallet':
-                $request->validate([
-                    'e_wallet_provider' => 'required|in:ovo,gopay,dana,shopeepay',
-                    'e_wallet_number' => 'required|numeric'
-                ]);
-                $mediaProvider = $request->input('e_wallet_provider');
-                $nomorMedia = $request->input('e_wallet_number');
-                break;
-    
-            case 'kartu_kredit':
-                $request->validate([
-                    'credit_card_type' => 'required|in:visa,mastercard,bca',
-                    'card_number' => 'required|numeric|digits_between:12,19',
-                    'card_holder_name' => 'required|string|max:255',
-                ]);
-                $mediaProvider = $request->input('credit_card_type');
-                $nomorMedia = $request->input('card_number');
-                $cardHolderName = $request->input('card_holder_name');
-                break;
-    
-            default:
-                $mediaProvider = null;
-                $nomorMedia = null;
-                break;
-        }
-    
-        // // Debug output for checking the request data
-        // dd($request->all(), $mediaProvider, $nomorMedia, $cardHolderName);
-    
-        // Lanjutkan dengan pembaruan data reservasi
-        $reservasi->update([
-            'metode_pembayaran' => $request->input('payment_method'),
-            'media_pembayaran' => $mediaProvider,
-            'nomor_media' => $nomorMedia,
-            'total_bayar' => $request->input('total_price'),
-            'status_reservasi' => 'confirmed',
-            'card_holder_name' => $cardHolderName,
-        ]);
-
-        // Proses lanjutan (ubah status meja, dll)
-    $mejaIds = $reservasi->meja->pluck('id')->toArray();
-    Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
-        
-        return redirect()->route('user.reservasi.nota', $id);
-    }
     
     
     
