@@ -142,7 +142,8 @@ public function create(Request $request)
 
     // Query untuk meja tanpa pagination
     $query = Meja::with('location')  // Eager loading relasi lokasi
-        ->where('status', 'tersedia');
+        ->where('status', 'tersedia',)
+        ->orWhere('status', 'tidak tersedia');
 
     // Filtering berdasarkan kapasitas
     if ($request->filled('kapasitas')) {
@@ -386,7 +387,8 @@ public function store(Request $request)
         'jam_reservasi' => [
             'required',
             'date_format:H:i',
-            function ($attribute, $value, $fail) {
+            function ($attribute, $value, $fail) use ($request) {
+                // Validasi jam operasional
                 $jamBuka = '08:00';
                 $jamTutup = '22:00';
                 if ($value < $jamBuka || $value > $jamTutup) {
@@ -397,34 +399,30 @@ public function store(Request $request)
                 $waktuSekarang = Carbon::now('Asia/Jakarta');
                 $waktuReservasi = Carbon::parse($request->tanggal_reservasi . ' ' . $value, 'Asia/Jakarta');
                 
+                // Jika tanggal sama dengan hari ini, cek apakah waktu reservasi kurang dari 1 jam dari sekarang
                 if ($waktuReservasi->isSameDay($waktuSekarang) && 
                     $waktuReservasi->lt($waktuSekarang->copy()->addHour())) {
                     $fail('Jam reservasi harus minimal 1 jam dari waktu sekarang.');
                 }
             }
         ],
-        'id_meja' => [
+       'id_meja' => [
             'required', 
             'array', 
             'min:1',
             function ($attribute, $value, $fail) use ($request) {
-                $tanggalReservasi = $request->tanggal_reservasi;
-                $jamReservasi = $request->jam_reservasi;
-                $waktuReservasi = Carbon::parse($tanggalReservasi . ' ' . $jamReservasi);
-
+                // Validasi ketersediaan meja
                 foreach ($value as $mejaId) {
-                    // Cek apakah ada reservasi yang overlap pada tanggal yang sama
-                    $existingReservation = Reservasi::whereHas('meja', function ($query) use ($mejaId) {
+                    // Cek apakah meja sudah direservasi pada tanggal yang sama
+                    $reservasiTerakhir = Reservasi::whereHas('meja', function ($query) use ($mejaId) {
                         $query->where('meja.id', $mejaId);
                     })
-                    ->whereDate('tanggal_reservasi', $tanggalReservasi)
+                    ->whereDate('tanggal_reservasi', $request->tanggal_reservasi)
                     ->whereIn('status_reservasi', ['pending', 'confirmed'])
                     ->first();
 
-                    if ($existingReservation) {
-                        $fail("Meja dengan ID $mejaId sudah direservasi pada tanggal " . 
-                              Carbon::parse($tanggalReservasi)->format('d-m-Y') . 
-                              ". Silakan pilih meja atau tanggal lain.");
+                    if ($reservasiTerakhir) {
+                        $fail("Meja dengan ID $mejaId sudah tidak tersedia pada tanggal yang dipilih.");
                     }
                 }
             }
@@ -490,8 +488,17 @@ public function store(Request $request)
     return redirect()->route('user.reservasi.payment', ['id' => $reservasi->id]);
 }
 
-    
-    
+public function getMejaByTanggal(Request $request)
+{
+    $tanggal = $request->input('tanggal');
+    $meja = Meja::whereDoesntHave('reservasi', function ($query) use ($tanggal) {
+        $query->whereDate('tanggal_reservasi', $tanggal)
+            ->whereNotIn('status_reservasi', ['confirmed']);
+    })->get();
+
+    return response()->json($meja);
+}
+
     public function payment($id)
     {
         // Ambil data reservasi berdasarkan ID yang diteruskan

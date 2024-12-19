@@ -100,6 +100,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/reservasi/nota/{id}', [ReservasiController::class, 'nota'])->name('user.reservasi.nota');
     Route::delete('/reservasi/{id}', [ReservasiController::class, 'destroy'])->name('user.reservasi.destroy');
     Route::get('/reservasi/{id}/pdf', [ReservasiController::class, 'generatePDF'])->name('reservasi.pdf');
+    Route::get('/reservasi/meja', [ReservasiController::class, 'getMejaByTanggal'])->name('reservasi.meja');
+
 });
 
 require __DIR__ . '/auth.php';

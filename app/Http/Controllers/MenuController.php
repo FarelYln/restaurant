@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
+    
     public function landing(Request $request) {
         // Ambil semua kategori
         $categories = Category::all();
