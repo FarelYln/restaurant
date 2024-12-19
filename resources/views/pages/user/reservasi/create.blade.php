@@ -77,39 +77,74 @@
                         </div>
                     </div>
 
-                    {{-- Daftar Meja --}}
-                    <div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
-                        @foreach ($meja as $m)
-                            <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}"
-                                data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}"
-                                data-lantai="{{ $m->location->floor }}">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="id_meja[]"
-                                                value="{{ $m->id }}" id="meja-{{ $m->id }}"
-                                                {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
-                                            <label class="form-check-label w-100" for="meja-{{ $m->id }}">
-                                                <div class="d-flex justify-content-between">
-                                                    <span>Nomor Meja: {{ $m->nomor_meja }}</span>
-                                                    <span>Kapasitas: {{ $m->kapasitas }}</span>
-                                                </div>
-                                                <div class="d-flex justify-content-between">
-                                                    <span>Lokasi: {{ $m->location->name }}</span>
-                                                    <span>Lantai: {{ $m->location->floor }}</span>
-                                                </div>
-                                                <div class="d-flex justify-content-end">
-                                                    <span><span
-                                                            class="badge {{ $m->status == 'Tersedia' ? 'bg-success' : 'bg-success' }}">{{ $m->status }}</span>
-                                                    </span>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                   {{-- Daftar Meja --}}
+<div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
+    @foreach ($meja as $m)
+        <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}"
+            data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}"
+            data-lantai="{{ $m->location->floor }}">
+            <div class="card meja-card">
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="id_meja[]"
+                            value="{{ $m->id }}" id="meja-{{ $m->id }}"
+                            {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
+                        <label class="form-check-label w-100" for="meja-{{ $m->id }}">
+                            <div class="d-flex justify-content-between">
+                                <span>Nomor Meja: {{ $m->nomor_meja }}</span>
+                                <span>Kapasitas: {{ $m->kapasitas }}</span>
                             </div>
-                        @endforeach
+                            <div class="d-flex justify-content-between">
+                                <span>Lokasi: {{ $m->location->name }}</span>
+                                <span>Lantai: {{ $m->location->floor }}</span>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <span><span
+                                        class="badge {{ $m->status == 'Tersedia' ? 'bg-success' : 'bg-success' }}">{{ $m->status }}</span>
+                                </span>
+                            </div>
+                        </label>
                     </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+</div>
+
+{{-- Custom Styles untuk Card --}}
+@section('styles')
+    <style>
+        /* Card Hover Effects */
+        .meja-card {
+            border: 1px solid #ddd; /* Batas card yang tipis */
+            border-radius: 10px; /* Sudut yang lebih bulat pada card */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animasi smooth untuk hover */
+        }
+
+        /* Efek Hover pada Card */
+        .meja-card:hover {
+            transform: translateY(-5px); /* Card bergeser sedikit ke atas */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Menambahkan bayangan halus pada hover */
+        }
+
+        /* Card Checkboxes */
+        .meja-card .form-check-label {
+            transition: background-color 0.3s ease;
+        }
+
+        .meja-card .form-check-input:checked {
+            background-color: #28a745; /* Warna latar belakang ketika checkbox dicentang */
+            border-color: #28a745; /* Warna border untuk checkbox yang dicentang */
+        }
+
+        /* Bayangan pada Hover untuk Label */
+        .meja-card:hover .form-check-label {
+            background-color: #f8f9fa; /* Ubah warna latar belakang saat card di-hover */
+            border-radius: 8px; /* Sudut lebih bulat untuk label */
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1); /* Bayangan halus di dalam label */
+        }
+    </style>
+@endsection
 
                 </div>
             </div>
@@ -207,38 +242,85 @@
     </style>
 </div>
 
+<div>
+    <button type="button" class="btn btn-warning d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#keranjangModal">
+        <i class="bi bi-check-lg me-2"></i> Konfirmasi Pesanan
+    </button>
+</div>
 
             {{-- Hidden Input untuk Status --}}
             <input type="hidden" name="status_reservasi" value="pending">
 
            
-            <!-- Modal Keranjang -->
-            <div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg"> <!-- Ubah class menjadi modal-lg untuk memperlebar modal -->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <ul id="keranjangItems" class="list-group">
-                                <!-- Cart items will be dynamically inserted by JavaScript -->
-                            </ul>
-                            <div class="mt-3">
-                                <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
-                            </div>
-                        </div>
-                        {{-- Tombol Submit --}}
-            <div class="form-group text-right">
-                <button type="submit" class="btn btn-warning text-white">
-                    Lanjutkan ke Pembayaran
-                </button>
+          <!-- Modal Keranjang -->
+<div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel"
+aria-hidden="true">
+<div class="modal-dialog modal-lg"> <!-- Ubah class menjadi modal-lg untuk memperlebar modal -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <ul id="keranjangItems" class="list-group">
+                <!-- Cart items will be dynamically inserted by JavaScript -->
+            </ul>
+            <div class="mt-3">
+                <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
             </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+        {{-- Tombol Submit --}}
+        <div class="form-group text-right">
+            <button type="submit" class="btn btn-warning text-white">
+                Lanjutkan ke Pembayaran
+            </button>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<!-- Custom Styles untuk Hover dan Efek Morph -->
+@section('styles')
+<style>
+    /* Efek hover pada tombol yang membuka modal keranjang */
+    .btn-info:hover {
+        transform: translateX(10px); /* Menggeser tombol sedikit ke kanan */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        background-color: #17a2b8; /* Warna latar belakang berubah saat dihover */
+    }
+
+    /* Efek morph pada modal, muncul dari kanan */
+    .modal-content {
+        transform: translateX(100%); /* Modal dimulai dari luar layar (kanan) */
+        transition: transform 0.5s ease-in-out; /* Efek transisi untuk muncul dari kanan */
+    }
+
+    .modal.show .modal-content {
+        transform: translateX(0); /* Modal bergerak ke posisi normal saat muncul */
+    }
+
+    /* Efek hover pada item keranjang, muncul dari kanan */
+    #keranjangItems .list-group-item {
+        opacity: 0;
+        transform: translateX(100%); /* Item dimulai dari luar layar (kanan) */
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    #keranjangItems .list-group-item:hover {
+        transform: translateX(10px); /* Item bergeser sedikit saat di-hover */
+        opacity: 1; /* Menampilkan item saat di-hover */
+    }
+
+    /* Agar item keranjang muncul dengan animasi saat modal terbuka */
+    .modal.show #keranjangItems .list-group-item {
+        transform: translateX(0); /* Item bergerak ke posisi normal */
+        opacity: 1;
+    }
+</style>
+@endsection
+
 
             <!-- CSS -->
             <style>
@@ -604,4 +686,5 @@
             });
         });
     </script>
+    
 @endpush

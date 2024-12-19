@@ -45,7 +45,7 @@
             <div class="row">
                 @foreach ($reservasiData as $reservasi)
                     <div class="col-md-4 mb-4">
-                        <div class="card shadow-sm border-0">
+                        <div class="card shadow-sm border-0 hover-shadow-lg">
                             <div class="card-body">
                                 <h5 class="card-title">Reservasi {{ $loop->iteration }} | ID: {{ $reservasi->id_reservasi }}</h5>
                                 <p class="card-text">
@@ -79,4 +79,30 @@
             </div>
         @endif
     </div>
+@endsection
+
+@section('styles')
+    <style>
+        .card {
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .hover-shadow-lg {
+            transition: all 0.3s ease;
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 @endsection
