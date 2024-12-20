@@ -78,7 +78,7 @@
                     </div>
 
                    {{-- Daftar Meja --}}
-<div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
+                   <div id="meja_list" class="row" style="max-height: 400px; overflow-y: auto;">
     @foreach ($meja as $m)
         <div class="col-md-4 mb-3 meja-item" data-nomor="{{ $m->nomor_meja }}"
             data-kapasitas="{{ $m->kapasitas }}" data-lokasi="{{ $m->location->name }}"
@@ -88,6 +88,7 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="id_meja[]"
                             value="{{ $m->id }}" id="meja-{{ $m->id }}"
+                            data-status="{{ $m->status }}"
                             {{ in_array($m->id, old('id_meja', [])) ? 'checked' : '' }}>
                         <label class="form-check-label w-100" for="meja-{{ $m->id }}">
                             <div class="d-flex justify-content-between">
@@ -110,6 +111,26 @@
         </div>
     @endforeach
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const activeReservations = @json($activeReservations);
+
+        const checkboxes = document.querySelectorAll('input[name="id_meja[]"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const selectedMejaId = this.value;
+                const mejaReservasi = activeReservations.find(res => res.id_meja == selectedMejaId);
+
+                if (mejaReservasi) {
+                    alert('Meja sudah digunakan dalam kurun waktu ini');
+                    this.checked = false; // Batalkan pemilihan meja
+                }
+            });
+        });
+    });
+</script>
+
 
 {{-- Custom Styles untuk Card --}}
 @section('styles')
@@ -242,43 +263,146 @@
     </style>
 </div>
 
-<div>
-    <button type="button" class="btn btn-warning d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#keranjangModal">
-        <i class="bi bi-check-lg me-2"></i> Konfirmasi Pesanan
-    </button>
-</div>
+<!-- Modal Keranjang -->
+<div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Step 1: Cart Summary -->
+            <div id="cartStep" class="step-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="keranjangItems" class="list-group">
+                        <!-- Cart items will be dynamically inserted by JavaScript -->
+                    </ul>
+                    <div class="mt-3">
+                        <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning text-white" id="showPaymentStep">
+                        Lanjutkan ke Pembayaran
+                    </button>
+                </div>
+            </div>
 
-            {{-- Hidden Input untuk Status --}}
-            <input type="hidden" name="status_reservasi" value="pending">
-
-           
-          <!-- Modal Keranjang -->
-<div class="modal fade" id="keranjangModal" tabindex="-1" aria-labelledby="keranjangModalLabel"
-aria-hidden="true">
-<div class="modal-dialog modal-lg"> <!-- Ubah class menjadi modal-lg untuk memperlebar modal -->
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="keranjangModalLabel">Keranjang Pesanan</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <ul id="keranjangItems" class="list-group">
-                <!-- Cart items will be dynamically inserted by JavaScript -->
-            </ul>
-            <div class="mt-3">
-                <strong>Total Harga: Rp. <span id="totalHarga">0</span></strong>
+            <!-- Step 2: Payment Options -->
+            <div id="paymentStep" class="step-content" style="display: none;">
+    <div class="modal-header">
+        <h5 class="modal-title">Pilih Metode Pembayaran</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="payment-options">
+            <!-- DP Option -->
+            <div class="payment-option-card mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="payment_method" id="dpPayment" value="dp">
+                    <label class="form-check-label w-100" for="dpPayment">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-wallet2 me-2"></i>
+                            <span>Down Payment (DP)</span>
+                        </div>
+                        <small class="text-muted">DP 10% dari total pesanan</small>
+                        <div class="dp-amount-container mt-2" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Jumlah DP (10%):</span>
+                                <span class="dp-amount-display fw-bold">Rp 0</span>
+                            </div>
+                            <input type="hidden" id="dpAmount" name="dp_amount" value="">
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Cash Option -->
+            <div class="payment-option-card">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="payment_method" id="cashPayment" value="cash">
+                    <label class="form-check-label w-100" for="cashPayment">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-cash me-2"></i>
+                            <span>Cash</span>
+                        </div>
+                        <small class="text-muted">Pembayaran penuh langsung</small>
+                    </label>
+                </div>
             </div>
         </div>
-        {{-- Tombol Submit --}}
-        <div class="form-group text-right">
-            <button type="submit" class="btn btn-warning text-white">
-                Lanjutkan ke Pembayaran
-            </button>
-        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="backToCart">Kembali</button>
+        <button type="submit" class="btn btn-warning text-white">Konfirmasi Pembayaran</button>
     </div>
 </div>
-</div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cartStep = document.getElementById('cartStep');
+    const paymentStep = document.getElementById('paymentStep');
+    const showPaymentStepBtn = document.getElementById('showPaymentStep');
+    const backToCartBtn = document.getElementById('backToCart');
+    const dpPayment = document.getElementById('dpPayment');
+    const dpAmountContainer = document.querySelector('.dp-amount-container');
+    const dpAmountInput = document.getElementById('dpAmount');
+    const dpAmountDisplay = document.querySelector('.dp-amount-display');
+
+    // Format number to Rupiah
+    function formatRupiah(number) {
+        return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Calculate and display DP amount
+    function calculateDP() {
+        const totalHarga = parseInt(document.getElementById('totalHarga').textContent.replace(/\D/g, ''));
+        const dpAmount = Math.round(totalHarga * 0.1); // 10% of total
+        dpAmountInput.value = dpAmount;
+        dpAmountDisplay.textContent = formatRupiah(dpAmount);
+    }
+
+    // Show payment step
+    showPaymentStepBtn.addEventListener('click', function() {
+        cartStep.style.display = 'none';
+        paymentStep.style.display = 'block';
+        calculateDP(); // Calculate DP when showing payment step
+    });
+
+    // Back to cart
+    backToCartBtn.addEventListener('click', function() {
+        paymentStep.style.display = 'none';
+        cartStep.style.display = 'block';
+    });
+
+    // Handle DP payment option
+    dpPayment.addEventListener('change', function() {
+        dpAmountContainer.style.display = this.checked ? 'block' : 'none';
+    });
+
+    // Reset modal state when closed
+    document.getElementById('keranjangModal').addEventListener('hidden.bs.modal', function() {
+        cartStep.style.display = 'block';
+        paymentStep.style.display = 'none';
+        dpAmountContainer.style.display = 'none';
+        dpPayment.checked = false;
+        document.getElementById('cashPayment').checked = false;
+    });
+});
+</script>
+
+<style>
+.dp-amount-container {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.dp-amount-display {
+    color: #198754;
+}
+</style>
 
 
 <!-- Custom Styles untuk Hover dan Efek Morph -->

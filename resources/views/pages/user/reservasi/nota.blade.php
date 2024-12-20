@@ -69,18 +69,55 @@
 
                         {{-- Detail Pembayaran --}}
                         <div class="mb-4">
-                            <h4 class="text-dark" style="font-weight: bold; font-size: 16px;">Detail Pembayaran</h4>
-                            <p><strong>Total Harga:</strong> Rp {{ number_format($totalHarga, 0, ',', '.') }}</p>
-                            <p><strong>Jumlah Pembayaran:</strong> Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</p>
-                            <p><strong>Metode Pembayaran:</strong> {{ str_replace('_', ' ', $reservasi->metode_pembayaran) }}</p>
-                            <p><strong>Media Pembayaran:</strong>
-                                @if($reservasi->media_pembayaran)
-                                    {{ strtoupper($reservasi->media_pembayaran) }} ({{ $reservasi->nomor_media }})
-                                @else
-                                    Tidak Ada
-                                @endif
-                            </p>
-                        </div>
+    <h4 class="text-dark" style="font-weight: bold; font-size: 16px;">Detail Pembayaran</h4>
+    
+    <div class="payment-details">
+        <p><strong>Total Harga:</strong> Rp {{ number_format($totalHarga, 0, ',', '.') }}</p>
+        
+        @if($reservasi->metode_pembayaran === 'dp')
+            <p><strong>Pembayaran DP (10%):</strong> Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</p>
+            <p><strong>Sisa Pembayaran:</strong> Rp {{ number_format($totalHarga - $reservasi->total_bayar, 0, ',', '.') }}</p>
+            <p class="text-muted small">* Sisa pembayaran dapat dilunasi saat kedatangan</p>
+        @else
+            <p><strong>Jumlah Pembayaran:</strong> Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</p>
+        @endif
+
+        <p><strong>Metode Pembayaran:</strong> {{ str_replace('_', ' ', ucfirst($reservasi->metode_pembayaran)) }}</p>
+        
+        <p><strong>Media Pembayaran:</strong>
+            @if($reservasi->media_pembayaran)
+                {{ strtoupper($reservasi->media_pembayaran) }} 
+                @if($reservasi->nomor_media)
+                    ({{ $reservasi->nomor_media }})
+                @endif
+            @else
+                Tidak Ada
+            @endif
+        </p>
+    </div>
+</div>
+
+<style>
+.payment-details {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.payment-details p {
+    margin-bottom: 8px;
+}
+
+.payment-details .text-muted {
+    font-size: 0.875rem;
+    margin-top: 5px;
+}
+
+.text-dark {
+    color: #212529;
+}
+</style>
 
                         {{-- Tombol Cetak --}}
                         <div class="text-center">

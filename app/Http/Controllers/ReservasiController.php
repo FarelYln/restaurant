@@ -251,10 +251,12 @@ public function create(Request $request)
         'location' => 'nullable|string',
         'search_menu' => 'nullable|string',
         'sort_price' => 'nullable|in:asc,desc',
+        'tanggal' => 'nullable|date',
+        'jam' => 'nullable|date_format:H:i',
     ]);
 
     // Query untuk meja tanpa pagination
-    $query = Meja::with('location');  // Menghapus where status karena tidak menggunakan status lagi
+    $query = Meja::with('location');  
 
     // Filtering berdasarkan kapasitas
     if ($request->filled('kapasitas')) {
@@ -293,6 +295,14 @@ public function create(Request $request)
 
     $menus = $menuQuery->get();
 
+    // Ambil reservasi aktif berdasarkan tanggal dan jam
+    $activeReservations = [];
+    if ($request->filled('tanggal') && $request->filled('jam')) {
+        $activeReservations = Reservation::where('tanggal', $validated['tanggal'])
+            ->where('jam', $validated['jam'])
+            ->get();
+    }
+
     return view('pages.user.reservasi.create', [
         'meja' => $meja,
         'menus' => $menus,
@@ -300,8 +310,12 @@ public function create(Request $request)
         'location' => $request->input('location'),
         'search_menu' => $request->input('search_menu'),
         'sort_price' => $request->input('sort_price'),
+        'activeReservations' => $activeReservations, // Data reservasi aktif
+        'selectedDate' => $request->input('tanggal'), // Tanggal terpilih
+        'selectedTime' => $request->input('jam'),     // Jam terpilih
     ]);
 }
+
 
 public function store(Request $request)
 {
