@@ -101,6 +101,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/reservasi/{id}', [ReservasiController::class, 'destroy'])->name('user.reservasi.destroy');
     Route::get('/reservasi/{id}/pdf', [ReservasiController::class, 'generatePDF'])->name('reservasi.pdf');
     Route::get('/reservasi/meja', [ReservasiController::class, 'getMejaByTanggal'])->name('reservasi.meja');
+    Route::post('/proses-pembayaran', [ReservasiController::class, 'prosesPembayaran'])->name('proses-pembayaran');
+
 
 });
 

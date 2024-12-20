@@ -289,52 +289,59 @@
             </div>
 
             <!-- Step 2: Payment Options -->
-            <div id="paymentStep" class="step-content" style="display: none;">
-    <div class="modal-header">
-        <h5 class="modal-title">Pilih Metode Pembayaran</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-    <div class="modal-body">
-        <div class="payment-options">
-            <!-- DP Option -->
-            <div class="payment-option-card mb-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="payment_method" id="dpPayment" value="dp">
-                    <label class="form-check-label w-100" for="dpPayment">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-wallet2 me-2"></i>
-                            <span>Down Payment (DP)</span>
-                        </div>
-                        <small class="text-muted">DP 10% dari total pesanan</small>
-                        <div class="dp-amount-container mt-2" style="display: none;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>Jumlah DP (10%):</span>
-                                <span class="dp-amount-display fw-bold">Rp 0</span>
+            <form id="paymentForm" method="POST" action="">
+    @csrf
+    <div id="paymentStep" class="step-content" style="display: none;">
+        <div class="modal-header">
+            <h5 class="modal-title">Pilih Metode Pembayaran</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="payment-options">
+                <!-- DP Option -->
+                <div class="payment-option-card mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment_method" id="dpPayment" value="dp" required>
+                        <label class="form-check-label w-100" for="dpPayment">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-wallet2 me-2"></i>
+                                <span>Down Payment (DP)</span>
                             </div>
-                            <input type="hidden" id="dpAmount" name="dp_amount" value="">
-                        </div>
-                    </label>
+                            <small class="text-muted">DP 10% dari total pesanan</small>
+                            <div class="dp-amount-container mt-2" style="display: none;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Jumlah DP (10%):</span>
+                                    <span class="dp-amount-display fw-bold">Rp 0</span>
+                                </div>
+                                <input type="hidden" id="dpAmount" name="dp_amount" value="">
+                            </div>
+                        </label>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Cash Option -->
-            <div class="payment-option-card">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="payment_method" id="cashPayment" value="cash">
-                    <label class="form-check-label w-100" for="cashPayment">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-cash me-2"></i>
-                            <span>Cash</span>
-                        </div>
-                        <small class="text-muted">Pembayaran penuh langsung</small>
-                    </label>
+                
+                <!-- Cash Option -->
+                <div class="payment-option-card">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment_method" id="cashPayment" value="cash" required>
+                        <label class="form-check-label w-100" for="cashPayment">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-cash me-2"></i>
+                                <span>Cash</span>
+                            </div>
+                            <small class="text-muted">Pembayaran penuh langsung</small>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="backToCart">Kembali</button>
+            <button type="submit" class="btn btn-warning text-white" id="confirmPayment">Konfirmasi Pembayaran</button>
+        </div>
     </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="backToCart">Kembali</button>
-        <button type="submit" class="btn btn-warning text-white">Konfirmasi Pembayaran</button>
+</form>
+
+        </div>
     </div>
 </div>
 
@@ -345,9 +352,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const showPaymentStepBtn = document.getElementById('showPaymentStep');
     const backToCartBtn = document.getElementById('backToCart');
     const dpPayment = document.getElementById('dpPayment');
+    const cashPayment = document.getElementById('cashPayment');
     const dpAmountContainer = document.querySelector('.dp-amount-container');
     const dpAmountInput = document.getElementById('dpAmount');
     const dpAmountDisplay = document.querySelector('.dp-amount-display');
+    const paymentForm = document.getElementById('paymentForm');
 
     // Format number to Rupiah
     function formatRupiah(number) {
@@ -380,16 +389,35 @@ document.addEventListener('DOMContentLoaded', function() {
         dpAmountContainer.style.display = this.checked ? 'block' : 'none';
     });
 
+    // Handle form submission
+    paymentForm.addEventListener('submit', function(event) {
+        // Validate payment method selection
+        if (!dpPayment.checked && !cashPayment.checked) {
+            event.preventDefault();
+            alert('Silakan pilih metode pembayaran.');
+            return;
+        }
+
+        // Set the form action dynamically based on selected payment method
+        if (dpPayment.checked) {
+            paymentForm.action = "/payment?method=dp";
+        } else if (cashPayment.checked) {
+            paymentForm.action = "/payment?method=cash";
+        }
+    });
+
     // Reset modal state when closed
     document.getElementById('keranjangModal').addEventListener('hidden.bs.modal', function() {
         cartStep.style.display = 'block';
         paymentStep.style.display = 'none';
         dpAmountContainer.style.display = 'none';
         dpPayment.checked = false;
-        document.getElementById('cashPayment').checked = false;
+        cashPayment.checked = false;
     });
 });
+
 </script>
+
 
 <style>
 .dp-amount-container {
