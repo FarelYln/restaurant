@@ -70,10 +70,64 @@
 
                 {{-- Total Pembayaran --}}
                 <div class="payment-total text-center mb-4" style="font-family: 'Arial', sans-serif; font-size: 20px;">
-                    <h2 style="font-family: 'Arial', sans-serif; font-size: 24px; font-weight: bold;">Total Pembayaran</h2>
-                    <h3 class="text-primary" style="font-family: 'Arial', sans-serif; font-size: 22px;">Rp
-                        {{ number_format($totalPrice, 0, ',', '.') }}</h3>
-                </div>
+    <div class="total-label">Total Pembayaran:</div>
+    <div class="total-amount" id="displayTotal">Rp 0</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dpPayment = document.getElementById('dpPayment');
+    const cashPayment = document.getElementById('cashPayment');
+    const displayTotal = document.getElementById('displayTotal');
+    
+    // Function to format number to Rupiah
+    function formatRupiah(number) {
+        return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    
+    // Function to update total display
+    function updateTotalDisplay() {
+        // Get the original total price
+        const originalTotal = parseInt(document.getElementById('totalHarga').textContent.replace(/\D/g, ''));
+        
+        if (dpPayment.checked) {
+            // If DP is selected, show 10% of total
+            const dpAmount = originalTotal * 0.1;
+            displayTotal.textContent = formatRupiah(dpAmount);
+        } else if (cashPayment.checked) {
+            // If Cash is selected, show full amount
+            displayTotal.textContent = formatRupiah(originalTotal);
+        } else {
+            // If nothing is selected
+            displayTotal.textContent = 'Rp 0';
+        }
+    }
+    
+    // Add event listeners for payment method changes
+    dpPayment.addEventListener('change', updateTotalDisplay);
+    cashPayment.addEventListener('change', updateTotalDisplay);
+});
+</script>
+
+<style>
+.payment-total {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.total-label {
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.total-amount {
+    font-weight: bold;
+    color: #212529;
+    font-size: 24px;
+}
+</style>
 
                 {{-- Pilihan Metode Pembayaran --}}
                 <div class="payment-methods" style="font-family: 'Arial', sans-serif;">

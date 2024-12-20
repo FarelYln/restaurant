@@ -313,47 +313,57 @@ public function sortMenu(Request $request)
 //         'location' => 'nullable|string',
 //         'search_menu' => 'nullable|string',
 //         'sort_price' => 'nullable|in:asc,desc',
+//         'tanggal' => 'nullable|date',
+//         'jam' => 'nullable|date_format:H:i',
 //     ]);
 
 //     // Query untuk meja tanpa pagination
-//     $query = Meja::with('location');  // Menghapus where status karena tidak menggunakan status lagi
+//     $query = Meja::with('location');  
 
-//     // Filtering berdasarkan kapasitas
-//     if ($request->filled('kapasitas')) {
-//         $query->where('kapasitas', $validated['kapasitas']);
+// //     // Filtering berdasarkan kapasitas
+// //     if ($request->filled('kapasitas')) {
+// //         $query->where('kapasitas', $validated['kapasitas']);
+// //     }
+
+// //     // Filtering berdasarkan lokasi
+// //     if ($request->filled('location')) {
+// //         $query->whereHas('location', function ($q) use ($validated) {
+// //             $q->where('name', 'like', '%' . $validated['location'] . '%');
+// //         });
+// //     }
+
+// //     if ($request->filled('floor')) {
+// //         $query->whereHas('location', function ($q) use ($request) {
+// //             $q->where('floor', $request->input('floor'));
+// //         });
+// //     }
+
+// //     // Query untuk meja tanpa pagination
+// //     $meja = $query->get();
+
+// //     // Query untuk menu dengan filtering tanpa pagination
+// //     $menuQuery = Menu::query();
+
+// //     // Filtering berdasarkan pencarian menu
+// //     if ($request->filled('search_menu')) {
+// //         $menuQuery->where('nama_menu', 'like', '%' . $validated['search_menu'] . '%')
+// //                   ->orWhere('harga', 'like', '%' . $validated['search_menu'] . '%');
+// //     }
+
+// //     // Menambahkan sorting berdasarkan harga jika parameter sort_price ada
+// //     if ($request->filled('sort_price')) {
+// //         $menuQuery->orderBy('harga', $validated['sort_price']);
+// //     }
+
+// //     $menus = $menuQuery->get();
+
+//     // Ambil reservasi aktif berdasarkan tanggal dan jam
+//     $activeReservations = [];
+//     if ($request->filled('tanggal') && $request->filled('jam')) {
+//         $activeReservations = Reservation::where('tanggal', $validated['tanggal'])
+//             ->where('jam', $validated['jam'])
+//             ->get();
 //     }
-
-//     // Filtering berdasarkan lokasi
-//     if ($request->filled('location')) {
-//         $query->whereHas('location', function ($q) use ($validated) {
-//             $q->where('name', 'like', '%' . $validated['location'] . '%');
-//         });
-//     }
-
-//     if ($request->filled('floor')) {
-//         $query->whereHas('location', function ($q) use ($request) {
-//             $q->where('floor', $request->input('floor'));
-//         });
-//     }
-
-//     // Query untuk meja tanpa pagination
-//     $meja = $query->get();
-
-//     // Query untuk menu dengan filtering tanpa pagination
-//     $menuQuery = Menu::query();
-
-//     // Filtering berdasarkan pencarian menu
-//     if ($request->filled('search_menu')) {
-//         $menuQuery->where('nama_menu', 'like', '%' . $validated['search_menu'] . '%')
-//                   ->orWhere('harga', 'like', '%' . $validated['search_menu'] . '%');
-//     }
-
-//     // Menambahkan sorting berdasarkan harga jika parameter sort_price ada
-//     if ($request->filled('sort_price')) {
-//         $menuQuery->orderBy('harga', $validated['sort_price']);
-//     }
-
-//     $menus = $menuQuery->get();
 
 //     return view('pages.user.reservasi.create', [
 //         'meja' => $meja,
@@ -362,8 +372,12 @@ public function sortMenu(Request $request)
 //         'location' => $request->input('location'),
 //         'search_menu' => $request->input('search_menu'),
 //         'sort_price' => $request->input('sort_price'),
+//         'activeReservations' => $activeReservations, // Data reservasi aktif
+//         'selectedDate' => $request->input('tanggal'), // Tanggal terpilih
+//         'selectedTime' => $request->input('jam'),     // Jam terpilih
 //     ]);
 // }
+
 
 public function store(Request $request)
 {
