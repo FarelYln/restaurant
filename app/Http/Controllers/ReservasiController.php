@@ -575,6 +575,27 @@ public function store(Request $request)
     }
     
     
+
+    public function prosesPembayaran(Request $request)
+{
+    $validated = $request->validate([
+        'payment_method' => 'required|in:dp,cash',
+        'dp_amount' => 'nullable|numeric',
+    ]);
+
+    // Proses logika pembayaran berdasarkan metode yang dipilih
+    if ($validated['payment_method'] === 'dp') {
+        $jumlahBayar = $validated['dp_amount'];
+    } else {
+        $jumlahBayar = $request->total_harga; // Ambil total harga dari database/session
+    }
+
+    // Simpan data pembayaran, redirect ke halaman sukses
+    return redirect()->route('halaman-sukses')
+        ->with('success', 'Pembayaran berhasil diproses.');
+}
+
+
     
     
     
