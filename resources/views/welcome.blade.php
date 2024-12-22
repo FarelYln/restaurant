@@ -1,5 +1,18 @@
 @extends('layouts.landing_page.app')
 @section('content')
+    <style>
+        .card-img-container {
+            height: 200px;
+            /* Sesuaikan tinggi gambar sesuai keinginan */
+            overflow: hidden;
+        }
+
+        .object-fit-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
     <div class="container-xxl py-5 bg-dark hero-header mb-5">
         <div class="container my-5 py-5">
             <div class="row align-items-center g-5">
@@ -82,7 +95,6 @@
         </div>
         <!-- Service End -->
 
-
         <!-- About Start -->
         <div class="container-xxl py-5">
             <div class="container">
@@ -141,6 +153,72 @@
             </div>
         </div>
         <!-- About End -->
+        <!-- Floor and Room Layout Start -->
+        <div class="container-xxl py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5 fw-bold">Temukan Suasana Istimewa di Restoran Kami</h2>
+                <div class="row g-4">
+                    <!-- Lantai 1 -->
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-img-container">
+                                <img class="card-img-top img-fluid rounded-top object-fit-cover"
+                                    src="{{ asset('asset_landing/img/floor 3.jpeg') }}" alt="Lantai 1">
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold">Lantai 1</h5>
+                                <p class="card-text text-muted">Lantai utama dengan meja untuk keluarga besar dan area
+                                    bersantap bersama.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Lantai 2 -->
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
+                        <div class="card border-0 shadow h-100">
+                            <div class="card-img-container">
+                                <img class="card-img-top img-fluid rounded-top object-fit-cover"
+                                    src="{{ asset('asset_landing/img/floor 4.jpeg') }}" alt="Lantai 2">
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold">Lantai 2</h5>
+                                <p class="card-text text-muted">Ruang bersantap pribadi dengan suasana tenang, ideal untuk
+                                    acara khusus atau pertemuan kecil.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Area Luar -->
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="card border-0 shadow h-100">
+                            <img class="card-img-top img-fluid rounded-top object-fit-cover"
+                            src="{{ asset('asset_landing/img/floor2.jpg') }}"
+                                alt="Area Luar">
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold">Area Luar</h5>
+                                <p class="card-text text-muted">Area terbuka dengan pemandangan taman, cocok untuk
+                                    menikmati udara segar dan suasana santai.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Ruangan Dalam -->
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.4s">
+                        <div class="card border-0 shadow h-100">
+                            <img class="card-img-top img-fluid rounded-top object-fit-cover"
+                            src="{{ asset('asset_landing/img/floor1.jpg') }}"
+                                alt="Ruangan Dalam">
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold">Ruangan Dalam</h5>
+                                <p class="card-text text-muted">Ruang indoor dengan dekorasi modern, dilengkapi dengan meja
+                                    kecil untuk pasangan atau keluarga kecil.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Floor and Room Layout End -->
+
+
         <!-- Menu Start -->
         <div class="container-xxl py-5">
             <div class="container">
@@ -306,8 +384,7 @@
                         <p>Pengalaman yang luar biasa, sangat profesional dan melayani dengan sangat baik.</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                src="{{ asset('asset_landing/img/2.jpg') }}"
-                                style="width: 50px; height: 50px;">
+                                src="{{ asset('asset_landing/img/2.jpg') }}" style="width: 50px; height: 50px;">
                             <div class="ps-3">
                                 <h5 class="mb-1">Polo</h5>
                             </div>
@@ -319,8 +396,7 @@
                         <p>Pengalaman yang luar biasa! Mereka sangat profesional dan melayani dengan sangat baik.</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                src="{{ asset('asset_landing/img/3.jpg') }}"
-                                style="width: 50px; height: 50px;">
+                                src="{{ asset('asset_landing/img/3.jpg') }}" style="width: 50px; height: 50px;">
                             <div class="ps-3">
                                 <h5 class="mb-1">Maldini</h5>
                             </div>
@@ -331,8 +407,7 @@
                         <p>Pelayanan yang sangat memuaskan! Kami akan kembali lagi untuk menggunakan layanan mereka.</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                src="{{ asset('asset_landing/img/3.jpg') }}"
-                                style="width: 50px; height: 50px;">
+                                src="{{ asset('asset_landing/img/3.jpg') }}" style="width: 50px; height: 50px;">
                             <div class="ps-3">
                                 <h5 class="mb-1">Fernando Torres</h5>
                             </div>
@@ -343,8 +418,7 @@
                         <p>Suasana yang sangat menyenangkan, sangat cocok untuk acara keluarga atau bisnis!</p>
                         <div class="d-flex align-items-center">
                             <img class="img-fluid flex-shrink-0 rounded-circle"
-                                src="{{ asset('asset_landing/img/2.jpg') }}"
-                                style="width: 50px; height: 50px;">
+                                src="{{ asset('asset_landing/img/2.jpg') }}" style="width: 50px; height: 50px;">
                             <div class="ps-3">
                                 <h5 class="mb-1">Agus</h5>
                             </div>
