@@ -309,17 +309,42 @@ public function store(Request $request)
 {
     $validated = $request->validate([
         'tanggal_reservasi' => 'required|date|after_or_equal:today',
-        'jam_reservasi' => [
-            'required',
-            'date_format:H:i',
-            function ($attribute, $value, $fail) {
-                $jamBuka = '08:00';
-                $jamTutup = '22:00';
-                if ($value < $jamBuka || $value > $jamTutup) {
-                    $fail('Jam reservasi harus antara pukul 08:00 hingga 22:00.');
-                }
+'jam_reservasi' => [
+    'required',
+    'date_format:H:i',
+    function ($attribute, $value, $fail) {
+        // Zona waktu Jakarta
+        $timezone = 'Asia/Jakarta';
+
+        // Jam buka dan jam tutup
+        $jamBuka = Carbon::createFromTimeString('08:00', $timezone);
+        $jamTutup = Carbon::createFromTimeString('22:00', $timezone);
+
+        // Waktu sekarang di zona waktu Jakarta
+        $waktuSekarang = Carbon::now($timezone);
+
+        // Mengonversi jam_reservasi menjadi Carbon instance
+        $waktuReservasi = Carbon::createFromFormat('H:i', $value, $timezone);
+
+        // Validasi jam reservasi apakah berada di luar jam operasional
+        if ($waktuReservasi->lt($jamBuka) || $waktuReservasi->gt($jamTutup)) {
+            $fail('Jam reservasi harus antara pukul 08:00 hingga 22:00.');
+        }
+
+        // Validasi apakah waktu reservasi minimal 1 jam dari waktu sekarang hanya jika tanggalnya hari ini
+        $tanggalReservasi = request()->input('tanggal_reservasi');  // Mendapatkan tanggal dari inputan
+        $waktuReservasiTanggal = Carbon::createFromFormat('Y-m-d H:i', $tanggalReservasi . ' ' . $value, $timezone);
+
+        if ($waktuReservasiTanggal->isToday()) {
+            // Validasi jika tanggalnya hari ini
+            if ($waktuReservasiTanggal->lt($waktuSekarang->copy()->addHour())) {
+                $fail('Jam reservasi harus minimal 1 jam dari waktu sekarang.');
             }
-        ],
+        }
+    }
+],
+
+
         'id_meja' => [
             'required', 
             'array', 
@@ -335,11 +360,11 @@ public function store(Request $request)
                         $query->where('meja.id', $mejaId);
                     })
                     ->whereDate('tanggal_reservasi', $tanggalReservasi)
-                    ->whereIn('status_reservasi', ['pending', 'confirmed'])
+                    ->whereIn('status_reservasi', ['confirmed'])
                     ->first();
 
                     if ($existingReservation) {
-                        $fail("Meja dengan ID $mejaId sudah direservasi pada tanggal " . 
+                        $fail("Meja dengan Nomor $mejaId sudah direservasi pada tanggal " . 
                               Carbon::parse($tanggalReservasi)->format('d-m-Y') . 
                               ". Silakan pilih meja atau tanggal lain.");
                     }
@@ -430,16 +455,17 @@ public function store(Request $request)
     
     public function confirmPayment($id, Request $request)
     {
-        // dd($request->all());  // Tambahkan ini untuk debugging
+        // Validasi request
         $request->validate([
             'payment_method' => 'required|in:scan,kartu_kredit,e_wallet',
             'total_price' => 'required|numeric',
+            'payment_option' => 'required|in:full,dp',
         ]);
     
         // Ambil reservasi yang sesuai
         $reservasi = Reservasi::findOrFail($id);
     
-        // Menyimpan data kartu kredit tambahan
+        // Menyimpan data kartu kredit atau e-wallet tambahan
         $mediaProvider = null;
         $nomorMedia = null;
         $cardHolderName = null;
@@ -464,32 +490,31 @@ public function store(Request $request)
                 $nomorMedia = $request->input('card_number');
                 $cardHolderName = $request->input('card_holder_name');
                 break;
-    
-            default:
-                $mediaProvider = null;
-                $nomorMedia = null;
-                break;
         }
     
-        // // Debug output for checking the request data
-        // dd($request->all(), $mediaProvider, $nomorMedia, $cardHolderName);
+        // Tentukan total bayar berdasarkan opsi pembayaran
+        $totalBayar = $request->input('total_price');
+        if ($request->input('payment_option') === 'dp') {
+            $totalBayar = $totalBayar * 0.1; // Hitung 10% dari total harga
+        }
     
-        // Lanjutkan dengan pembaruan data reservasi
+        // Update data reservasi
         $reservasi->update([
             'metode_pembayaran' => $request->input('payment_method'),
             'media_pembayaran' => $mediaProvider,
             'nomor_media' => $nomorMedia,
-            'total_bayar' => $request->input('total_price'),
+            'total_bayar' => $totalBayar,
             'status_reservasi' => 'confirmed',
             'card_holder_name' => $cardHolderName,
         ]);
-
-        // Proses lanjutan (ubah status meja, dll)
-    $mejaIds = $reservasi->meja->pluck('id')->toArray();
-    Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
-        
+    
+        // Ubah status meja menjadi tidak tersedia
+        $mejaIds = $reservasi->meja->pluck('id')->toArray();
+    
+        // Redirect ke halaman nota
         return redirect()->route('user.reservasi.nota', $id);
     }
+    
     
     
     

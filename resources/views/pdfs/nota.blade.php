@@ -21,6 +21,7 @@
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border-radius: 8px;
+            overflow: hidden;
         }
         .invoice-header {
             display: flex;
@@ -28,7 +29,7 @@
             align-items: center;
             border-bottom: 2px solid #007bff;
             padding-bottom: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
         .invoice-header h1 {
             margin: 0;
@@ -38,7 +39,7 @@
         .invoice-details {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
         .invoice-details div {
             width: 48%;
@@ -46,7 +47,7 @@
         .invoice-details h3 {
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 5px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             color: #007bff;
             font-size: 14px;
         }
@@ -56,20 +57,19 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             font-size: 11px;
         }
         th {
             background-color: #f8f9fa;
             color: #333;
             font-weight: bold;
-            padding: 8px;
+            padding: 10px;
             text-align: left;
             border: 1px solid #e0e0e0;
-            font-size: 11px;
         }
         td {
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #e0e0e0;
         }
         .total-row {
@@ -78,13 +78,14 @@
         }
         .payment-details {
             background-color: #f8f9fa;
-            padding: 10px;
+            padding: 15px;
             border-radius: 5px;
             font-size: 12px;
+            margin-top: 20px;
         }
         .footer {
             text-align: center;
-            margin-top: 10px;
+            margin-top: 30px;
             color: #6c757d;
             font-size: 10px;
             border-top: 1px solid #e0e0e0;
@@ -165,23 +166,33 @@
             </tfoot>
         </table>
 
-        <div class="payment-details">
-            <h3>Detail Pembayaran</h3>
-            <div class="invoice-details">
-                <div>
-                    <p><strong>Total Harga:</strong> Rp {{ number_format($totalHarga, 0, ',', '.') }}</p>
-                    <p><strong>Metode Pembayaran:</strong> {{ str_replace('_', ' ', $reservasi->metode_pembayaran) }}</p>
-                </div>
-                <div>
-                    <p><strong>Jumlah Pembayaran:</strong> Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</p>
-                    <p><strong>Media Pembayaran:</strong>
-                        @if($reservasi->media_pembayaran)
-                            {{ strtoupper($reservasi->media_pembayaran) }} ({{ $reservasi->nomor_media }})
-                        @else
-                            Tidak Ada
+        {{-- Detail Pembayaran --}}
+        <div class="mb-4">
+            <h4 class="text-dark" style="font-weight: bold; font-size: 16px;">Detail Pembayaran</h4>
+            
+            <div class="payment-details">
+                <p><strong>Total Harga:</strong> Rp {{ number_format($totalHarga, 0, ',', '.') }}</p>
+                <p><strong>Jumlah Pembayaran:</strong> Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}</p>
+                
+                {{-- Cek apakah jumlah bayar sesuai dengan total harga --}}
+                @if($reservasi->total_bayar < $totalHarga)
+                    <p class="text-danger"><strong>Kurang Pembayaran:</strong> Rp {{ number_format($totalHarga - $reservasi->total_bayar, 0, ',', '.') }}</p>
+                @elseif($reservasi->total_bayar > $totalHarga)
+                    <p class="text-success"><strong>Kembalian:</strong> Rp {{ number_format($reservasi->total_bayar - $totalHarga, 0, ',', '.') }}</p>
+                @endif
+
+                <p><strong>Metode Pembayaran:</strong> {{ str_replace('_', ' ', ucfirst($reservasi->metode_pembayaran)) }}</p>
+                
+                <p><strong>Media Pembayaran:</strong>
+                    @if($reservasi->media_pembayaran)
+                        {{ strtoupper($reservasi->media_pembayaran) }} 
+                        @if($reservasi->nomor_media)
+                            ({{ $reservasi->nomor_media }})
                         @endif
-                    </p>
-                </div>
+                    @else
+                        Tidak Ada
+                    @endif
+                </p>
             </div>
         </div>
 
