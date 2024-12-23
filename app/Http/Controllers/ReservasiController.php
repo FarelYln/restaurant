@@ -501,6 +501,7 @@ public function getMejaByTanggal(Request $request)
 
     public function payment($id)
     {
+      
         // Ambil data reservasi berdasarkan ID yang diteruskan
         $reservasiData = Reservasi::with('menus')->find($id);
     
@@ -520,16 +521,18 @@ public function getMejaByTanggal(Request $request)
     
     public function confirmPayment($id, Request $request)
     {
-        // dd($request->all());  // Tambahkan ini untuk debugging
+        // dd($request)->all();
+        // Validasi request
         $request->validate([
             'payment_method' => 'required|in:scan,kartu_kredit,e_wallet',
             'total_price' => 'required|numeric',
+            'payment_option' => 'required|in:full,dp',
         ]);
     
         // Ambil reservasi yang sesuai
         $reservasi = Reservasi::findOrFail($id);
     
-        // Menyimpan data kartu kredit tambahan
+        // Menyimpan data kartu kredit atau e-wallet tambahan
         $mediaProvider = null;
         $nomorMedia = null;
         $cardHolderName = null;
@@ -554,32 +557,31 @@ public function getMejaByTanggal(Request $request)
                 $nomorMedia = $request->input('card_number');
                 $cardHolderName = $request->input('card_holder_name');
                 break;
-    
-            default:
-                $mediaProvider = null;
-                $nomorMedia = null;
-                break;
         }
     
-        // // Debug output for checking the request data
-        // dd($request->all(), $mediaProvider, $nomorMedia, $cardHolderName);
+        // Tentukan total bayar berdasarkan opsi pembayaran
+        $totalBayar = $request->input('total_price');
+        if ($request->input('payment_option') === 'dp') {
+            $totalBayar = $totalBayar * 0.1; // Hitung 10% dari total harga
+        }
     
-        // Lanjutkan dengan pembaruan data reservasi
+        // Update data reservasi
         $reservasi->update([
             'metode_pembayaran' => $request->input('payment_method'),
             'media_pembayaran' => $mediaProvider,
             'nomor_media' => $nomorMedia,
-            'total_bayar' => $request->input('total_price'),
+            'total_bayar' => $totalBayar,
             'status_reservasi' => 'confirmed',
             'card_holder_name' => $cardHolderName,
         ]);
-
-        // Proses lanjutan (ubah status meja, dll)
-    $mejaIds = $reservasi->meja->pluck('id')->toArray();
-    Meja::whereIn('id', $mejaIds)->update(['status' => 'tidak tersedia']);
-        
+    
+        // Ubah status meja menjadi tidak tersedia
+        $mejaIds = $reservasi->meja->pluck('id')->toArray();
+    
+        // Redirect ke halaman nota
         return redirect()->route('user.reservasi.nota', $id);
     }
+    
     
     
 

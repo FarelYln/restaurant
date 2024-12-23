@@ -21,6 +21,16 @@
                 /* Menambahkan jarak antar gambar */
             }
         </style>
+        <style>
+            .form-check-label img {
+                width: 40px;
+                height: auto;
+            }
+
+            .form-check-label img[src*="ovo-logo"] {
+                width: 30px;
+            }
+        </style>
         <h1 class="mb-4 text-center">Pembayaran</h1>
         <div class="card mb-4 shadow mt-5">
             <div class="card-header bg-primary text-white">
@@ -68,119 +78,63 @@
                     </tfoot>
                 </table>
 
-                {{-- Total Pembayaran --}}
-                <div class="payment-total text-center mb-4" style="font-family: 'Arial', sans-serif; font-size: 20px;">
-    <div class="total-label">Total Pembayaran:</div>
-    <div class="total-amount" id="displayTotal">Rp 0</div>
-</div>
+                {{-- Form Pembayaran --}}
+                <form id="paymentForm" action="{{ route('user.reservasi.confirm', ['id' => $reservasiData->id]) }}" method="POST">
+                    @csrf
+                    
+                    {{-- Pilihan Pembayaran --}}
+                    <div class="form-group mb-3">
+                        <label for="payment_option">Pilihan Pembayaran</label>
+                        <select name="payment_option" id="payment_option" class="form-control" required>
+                            <option value="full">Bayar Penuh</option>
+                            <option value="dp">DP 10%</option>
+                        </select>
+                    </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const dpPayment = document.getElementById('dpPayment');
-    const cashPayment = document.getElementById('cashPayment');
-    const displayTotal = document.getElementById('displayTotal');
-    
-    // Function to format number to Rupiah
-    function formatRupiah(number) {
-        return 'Rp ' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-    
-    // Function to update total display
-    function updateTotalDisplay() {
-        // Get the original total price
-        const originalTotal = parseInt(document.getElementById('totalHarga').textContent.replace(/\D/g, ''));
-        
-        if (dpPayment.checked) {
-            // If DP is selected, show 10% of total
-            const dpAmount = originalTotal * 0.1;
-            displayTotal.textContent = formatRupiah(dpAmount);
-        } else if (cashPayment.checked) {
-            // If Cash is selected, show full amount
-            displayTotal.textContent = formatRupiah(originalTotal);
-        } else {
-            // If nothing is selected
-            displayTotal.textContent = 'Rp 0';
-        }
-    }
-    
-    // Add event listeners for payment method changes
-    dpPayment.addEventListener('change', updateTotalDisplay);
-    cashPayment.addEventListener('change', updateTotalDisplay);
-});
-</script>
+                    {{-- Total Pembayaran --}}
+                    <div class="payment-total text-center mb-4">
+                        <div class="total-label">Total Pembayaran:</div>
+                        <div class="total-amount" id="displayTotal">
+                            Rp {{ number_format($totalHarga, 0, ',', '.') }}
+                        </div>
+                        <input type="hidden" name="total_price" id="totalPriceInput" value="{{ $totalHarga }}">
+                    </div>
 
-<style>
-.payment-total {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.total-label {
-    color: #6c757d;
-    margin-bottom: 5px;
-}
-
-.total-amount {
-    font-weight: bold;
-    color: #212529;
-    font-size: 24px;
-}
-</style>
-
-                {{-- Pilihan Metode Pembayaran --}}
-                <div class="payment-methods" style="font-family: 'Arial', sans-serif;">
-                    <h4 class="mb-3" style="font-family: 'Arial', sans-serif; font-size: 20px;">Pilih Metode Pembayaran
-                    </h4>
-                    <div class="row">
-                        {{-- E-Wallet --}}
-                        <div class="col-md-6 mb-3">
-                            <div class="payment-method-card" data-method="e-wallet"
-                                style="font-family: 'Arial', sans-serif;">
-                                <h5 style="font-family: 'Arial', sans-serif; font-size: 18px;">E-Wallet</h5>
-                                <div class="payment-logos">
-                                    <img src="{{ asset('asset_landing/img/gopay-logo.png') }}" alt="GoPay">
-                                    <img src="{{ asset('asset_landing/img/dana-logo.png') }}" alt="Dana">
-                                    <img style="width: 40px" src="{{ asset('asset_landing/img/ovo-logo.png') }}"
-                                        alt="OVO">
-                                    <img src="{{ asset('asset_landing/img/shopee-logo.png') }}" alt="ShopeePay">
+                    {{-- Pilihan Metode Pembayaran --}}
+                    <div class="payment-methods">
+                        <h4 class="mb-3">Pilih Metode Pembayaran</h4>
+                        <div class="row">
+                            {{-- E-Wallet --}}
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-method-card" data-method="e-wallet">
+                                    <h5>E-Wallet</h5>
+                                    <div class="payment-logos">
+                                        <img src="{{ asset('asset_landing/img/gopay-logo.png') }}" alt="GoPay">
+                                        <img src="{{ asset('asset_landing/img/dana-logo.png') }}" alt="Dana">
+                                        <img style="width: 40px" src="{{ asset('asset_landing/img/ovo-logo.png') }}" alt="OVO">
+                                        <img src="{{ asset('asset_landing/img/shopee-logo.png') }}" alt="ShopeePay">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {{-- Kartu Kredit --}}
-                        <div class="col-md-6 mb-3">
-                            <div class="payment-method-card" data-method="credit-card"
-                                style="font-family: 'Arial', sans-serif;">
-                                <h5 style="font-family: 'Arial', sans-serif; font-size: 18px;">Kartu Kredit</h5>
-                                <div class="payment-logos">
-                                    <img src="{{ asset('asset_landing/img/visa-logo.png') }}" alt="Visa">
-                                    <img src="{{ asset('asset_landing/img/mastercard-logo.png') }}" alt="Mastercard">
-                                    <img src="{{ asset('asset_landing/img/bca-logo.png') }}" alt="BCA">
+                            {{-- Kartu Kredit --}}
+                            <div class="col-md-6 mb-3">
+                                <div class="payment-method-card" data-method="credit-card">
+                                    <h5>Kartu Kredit</h5>
+                                    <div class="payment-logos">
+                                        <img src="{{ asset('asset_landing/img/visa-logo.png') }}" alt="Visa">
+                                        <img src="{{ asset('asset_landing/img/mastercard-logo.png') }}" alt="Mastercard">
+                                        <img src="{{ asset('asset_landing/img/bca-logo.png') }}" alt="BCA">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Form Pembayaran --}}
-                <form id="paymentForm" action="{{ route('user.reservasi.confirm', ['id' => $reservasiData->id]) }}"
-                    method="POST">
-                    @csrf
-                    <input type="hidden" name="total_price" value="{{ $totalPrice }}">
+                    {{-- Input tersembunyi untuk metode pembayaran --}}
                     <input type="hidden" name="payment_method" id="selectedPaymentMethod">
-                    <style>
-                        .form-check-label img {
-                            width: 40px;
-                            height: auto;
-                        }
 
-                        .form-check-label img[src*="ovo-logo"] {
-                            width: 30px;
-                        }
-                    </style>
-                    {{-- E-Wallet Section --}}
+                    {{-- Bagian Detail Pembayaran --}}
                     <div id="e-wallet-section" class="payment-detail-section" style="display:none;">
                         <h4>Pilih Provider E-Wallet</h4>
                         <div class="row">
@@ -223,13 +177,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-md-6 mb-3">
                                 <label>Tipe Kartu</label>
                                 <select name="credit_card_type" class="form-control">
-                                    <option value="visa" {{ old('credit_card_type') == 'visa' ? 'selected' : '' }}>Visa
-                                    </option>
-                                    <option value="mastercard"
-                                        {{ old('credit_card_type') == 'mastercard' ? 'selected' : '' }}>
-                                        Mastercard</option>
-                                    <option value="bca" {{ old('credit_card_type') == 'bca' ? 'selected' : '' }}>BCA
-                                    </option>
+                                    <option value="visa" {{ old('credit_card_type') == 'visa' ? 'selected' : '' }}>Visa</option>
+                                    <option value="mastercard" {{ old('credit_card_type') == 'mastercard' ? 'selected' : '' }}>Mastercard</option>
+                                    <option value="bca" {{ old('credit_card_type') == 'bca' ? 'selected' : '' }}>BCA</option>
                                 </select>
                                 @error('credit_card_type')
                                     <div class="alert alert-danger mt-2">{{ $message }}</div>
@@ -252,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="alert alert-danger mt-2">{{ $message }}</div>
                             @enderror
                         </div>
-
                     </div>
 
                     <div class="text-center mt-4">
@@ -272,6 +221,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const paymentMethodCards = document.querySelectorAll('.payment-method-card');
             const paymentDetailSections = document.querySelectorAll('.payment-detail-section');
             const selectedPaymentMethodInput = document.getElementById('selectedPaymentMethod');
+            const totalPriceInput = document.getElementById('totalPriceInput');
+            const paymentOptionSelect = document.getElementById('payment_option');
+            const displayTotal = document.getElementById('displayTotal');
 
             paymentMethodCards.forEach(card => {
                 card.addEventListener('click', function() {
@@ -289,10 +241,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         selectedPaymentMethodInput.value = 'e_wallet';
                     } else if (method === 'credit-card') {
                         document.getElementById('credit-card-section').style.display = 'block';
-                        selectedPaymentMethodInput.value =
-                            'kartu_kredit'; // Make sure this is set to 'kartu_kredit'
+                        selectedPaymentMethodInput.value = 'kartu_kredit';
                     }
                 });
+            });
+
+            paymentOptionSelect.addEventListener('change', function() {
+                let totalBayar = parseFloat(totalPriceInput.value);
+                if (this.value === 'dp') {
+                    totalBayar *= 0.1; // Hitung 10% dari total harga
+                }
+                displayTotal.innerText = 'Rp ' + totalBayar.toLocaleString('id-ID');
             });
         });
     </script>

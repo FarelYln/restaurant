@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_user'); 
             $table->dateTime('tanggal_reservasi'); 
             $table->enum('status_reservasi', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending'); 
-            $table->boolean('is_paid')->default(false); 
             $table->timestamps(); 
             
 
