@@ -18,8 +18,7 @@ return new class extends Migration
             $table->dateTime('tanggal_reservasi'); 
             $table->enum('status_reservasi', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending'); 
             $table->timestamps(); 
-            
-
+        
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade'); 
         });
     }
