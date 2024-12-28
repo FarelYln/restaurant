@@ -82,22 +82,28 @@
                 <form id="paymentForm" action="{{ route('user.reservasi.confirm', ['id' => $reservasiData->id]) }}" method="POST">
                     @csrf
                     
-                    {{-- Pilihan Pembayaran --}}
-                    <div class="form-group mb-3">
-                        <label for="payment_option">Pilihan Pembayaran</label>
-                        <select name="payment_option" id="payment_option" class="form-control" required>
-                            <option value="full">Bayar Penuh</option>
-                            <option value="dp">DP 10%</option>
-                        </select>
-                    </div>
-
-                    {{-- Total Pembayaran --}}
-                    <div class="payment-total text-center mb-4">
-                        <div class="total-label">Total Pembayaran:</div>
-                        <div class="total-amount" id="displayTotal">
-                            Rp {{ number_format($totalHarga, 0, ',', '.') }}
+                    <div class="row mb-3 align-items-end">
+                        {{-- Pilihan Pembayaran --}}
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="payment_option">Pilihan Pembayaran</label>
+                                <select name="payment_option" id="payment_option" class="form-control" required>
+                                    <option value="full">Bayar Penuh</option>
+                                    <option value="dp">DP 10%</option>
+                                </select>
+                            </div>
                         </div>
-                        <input type="hidden" name="total_price" id="totalPriceInput" value="{{ $totalHarga }}">
+                    
+                        {{-- Total Pembayaran --}}
+                        <div class="col-md-6">
+                            <div class="payment-total ">
+                                <div class="total-label">Total Pembayaran:</div>
+                                <div style="font-weight: bold" class="total-amount" id="displayTotal">
+                                    Rp {{ number_format($totalHarga, 0, ',', '.') }}
+                                </div>
+                                <input type="hidden" name="total_price" id="totalPriceInput" value="{{ $totalHarga }}">
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Pilihan Metode Pembayaran --}}

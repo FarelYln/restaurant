@@ -207,7 +207,7 @@
                             src="{{ asset('asset_landing/img/floor1.jpg') }}"
                                 alt="Ruangan Dalam">
                             <div class="card-body text-center">
-                                <h5 class="card-title fw-bold">Ruangan Dalam</h5>
+                                <h5 class="card-title fw-bold">Area Dalam</h5>
                                 <p class="card-text text-muted">Ruang indoor dengan dekorasi modern, dilengkapi dengan meja
                                     kecil untuk pasangan atau keluarga kecil.</p>
                             </div>
@@ -228,10 +228,10 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                 <div class="card border-0 shadow h-100">
                     <img class="card-img-top rounded-top object-fit-cover"
-                        src="{{ asset('asset_landing/img/meja1.jpg') }}" alt="Meja untuk 1 Orang">
+                        src="{{ asset('asset_landing/img/meja01.jpeg') }}" alt="Meja untuk 1 Orang">
                     <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Meja untuk 1 Orang</h5>
-                        <p class="card-text text-muted">Cocok untuk bersantap sendiri dengan nyaman.</p>
+                        <h5 class="card-title fw-bold">Meja untuk 2 Orang</h5>
+                        <p class="card-text text-muted">Cocok untuk bersantap bersama pasangan anda.</p>
                     </div>
                 </div>
             </div>
@@ -239,10 +239,10 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
                 <div class="card border-0 shadow h-100">
                     <img class="card-img-top img-fluid rounded-top object-fit-cover"
-                        src="{{ asset('asset_landing/img/meja2.jpg') }}" alt="Meja untuk 2 Orang">
+                        src="{{ asset('asset_landing/img/meja3.jpg') }}" alt="Meja untuk 4 Orang">
                     <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Meja untuk 1-2 Orang</h5>
-                        <p class="card-text text-muted">Pas untuk pasangan yang ingin bersantap romantis.</p>
+                        <h5 class="card-title fw-bold">Meja untuk 4 Orang</h5>
+                        <p class="card-text text-muted">Pas untuk makan bersama dengan keluarga kecil.</p>
                     </div>
                 </div>
             </div>
@@ -250,10 +250,10 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
                 <div class="card border-0 shadow h-100">
                     <img class="card-img-top img-fluid rounded-top object-fit-cover"
-                        src="{{ asset('asset_landing/img/meja3.jpg') }}" alt="Meja untuk 3 Orang">
+                        src="{{ asset('asset_landing/img/meja4.jpg') }}" alt="Meja untuk 8 Orang">
                     <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Meja untuk 2-4 Orang</h5>
-                        <p class="card-text text-muted">Ideal untuk keluarga kecil atau teman dekat.</p>
+                        <h5 class="card-title fw-bold">Meja untuk 8 Orang</h5>
+                        <p class="card-text text-muted">Ideal untuk keluarga dan teman teman anda.</p>
                     </div>
                 </div>
             </div>
@@ -261,10 +261,10 @@
             <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.4s">
                 <div class="card border-0 shadow h-100">
                     <img class="card-img-top img-fluid rounded-top object-fit-cover"
-                        src="{{ asset('asset_landing/img/meja4.jpg') }}" alt="Meja untuk 4 Orang">
+                        src="{{ asset('asset_landing/img/meja04.jpeg') }}" alt="Meja untuk 4 Orang">
                     <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Meja untuk 4=8 Orang</h5>
-                        <p class="card-text text-muted">Nyaman untuk keluarga atau grup kecil.</p>
+                        <h5 class="card-title fw-bold">Meja untuk 10 Orang</h5>
+                        <p class="card-text text-muted">Meja dengan kursi banyak dan nyaman untuk keluarga.</p>
                     </div>
                 </div>
             </div>
@@ -273,7 +273,18 @@
 </div>
 <!-- Gallery End -->
 
+<style>
+.card {
+    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backface-visibility: hidden;
+}
 
+.card:hover {
+    transform: scale(1.02) translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+</style>
 
         <!-- Menu Start -->
         <div class="container-xxl py-5">
