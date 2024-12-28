@@ -296,11 +296,12 @@
         </div>
 
         <div>
-            <button type="button" class="btn btn-warning d-flex align-items-center" data-bs-toggle="modal"
-                data-bs-target="#keranjangModal">
+            <button type="button" class="btn btn-warning d-flex align-items-center justify-content-center w-100" 
+                data-bs-toggle="modal" data-bs-target="#keranjangModal">
                 <i class="bi bi-check-lg me-2"></i> Konfirmasi Pesanan
             </button>
         </div>
+               
 
         {{-- Hidden Input untuk Status --}}
         <input type="hidden" name="status_reservasi" value="pending">
