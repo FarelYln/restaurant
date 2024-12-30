@@ -155,14 +155,15 @@
                                 <p class="mb-1">Nama: {{ $reservasi->user->name }}</p>
                                 <p class="mb-1">Email: {{ $reservasi->user->email }}</p>
                             </div>
-
+                        
                             <div class="mb-3">
                                 <strong>Detail Reservasi</strong>
                                 <p class="mb-1">Tanggal: {{ $reservasi->tanggal_reservasi->format('d M Y H:i') }}</p>
                                 <p class="mb-1">Metode Pembayaran: {{ str_replace('_', ' ', $reservasi->metode_pembayaran) }}</p>
                                 <p class="mb-1">Media: {{ $reservasi->media_pembayaran }} ({{ $reservasi->nomor_media }})</p>
+                                <p class="mb-1">Status Pembayaran: {{ $reservasi->status_pembayaran }}</p>
                             </div>
-
+                        
                             <div class="mb-3">
                                 <strong>Meja dan Lantai</strong>
                                 <p class="mb-1">
@@ -176,7 +177,6 @@
                                 </p>
                             </div>
                             
-                            
                             <div class="mb-3">
                                 <strong>Pesanan</strong>
                                 @foreach($reservasi->menus as $menu)
@@ -186,25 +186,33 @@
                                     </p>
                                 @endforeach
                             </div>
-
-                            <div class="mt-3">
-                                <strong>Total Harga</strong>
-                                <h5 class="text-primary">
-                                    Rp {{ number_format($reservasi->menus->sum(function ($menu) {
-                                        return $menu->pivot->jumlah_pesanan * $menu->harga;
-                                    }), 0, ',', '.') }}
-                                </h5>
+                        
+                            <div class="mt-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Total Harga</strong>
+                                    <h5 class="text-primary mb-0">
+                                        Rp {{ number_format($reservasi->menus->sum(function ($menu) {
+                                            return $menu->pivot->jumlah_pesanan * $menu->harga;
+                                        }), 0, ',', '.') }}
+                                    </h5>
+                                </div>
+                                <div>
+                                    <strong>Total Bayar</strong>
+                                    <h5 class="text-primary mb-0">
+                                        Rp {{ number_format($reservasi->total_bayar, 0, ',', '.') }}
+                                    </h5>
+                                </div>
                             </div>
-
+                        
                             @if($reservasi->status_reservasi == 'confirmed')
                                 <div class="text-center mt-3">
-                                    <form action="{{ route('admin.reservasi.checkout', $reservasi->id) }}" method="GET"
-                                        class="checkout-form">
+                                    <form action="{{ route('admin.reservasi.checkout', $reservasi->id) }}" method="GET" class="checkout-form">
                                         <button type="submit" class="btn btn-primary checkout">Selesai</button>
                                     </form>
                                 </div>
                             @endif
                         </div>
+                        
                     </div>
                 </div>
             @endforeach
