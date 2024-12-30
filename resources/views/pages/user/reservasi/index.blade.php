@@ -65,7 +65,10 @@
                                         {{ $statusIndo }}
                                     </span>
                                 </p>
-                                <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge {{ $reservasi->status_pembayaran === 'lunas' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                        {{ ucfirst($reservasi->status_pembayaran) }}
+                                    </span>
                                     <a href="{{ route('user.reservasi.nota', $reservasi->id) }}" 
                                        class="btn btn-primary btn-sm shadow-sm" 
                                        style="font-family: 'Poppins', sans-serif; border-radius: 25px; padding: 5px 15px;">

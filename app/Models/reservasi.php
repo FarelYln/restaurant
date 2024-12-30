@@ -25,6 +25,7 @@ class reservasi extends Model
         'total_bayar', 
         'expired_at',
         'card_holder_name',
+        'status_pembayaran',
     ];
 
     protected $casts = [

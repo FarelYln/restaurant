@@ -492,10 +492,13 @@ public function store(Request $request)
                 break;
         }
     
-        // Tentukan total bayar berdasarkan opsi pembayaran
+        // Tentukan total bayar dan status pembayaran berdasarkan opsi pembayaran
         $totalBayar = $request->input('total_price');
+        $statusPembayaran = 'lunas';  // Default status
+    
         if ($request->input('payment_option') === 'dp') {
             $totalBayar = $totalBayar * 0.1; // Hitung 10% dari total harga
+            $statusPembayaran = 'dp';
         }
     
         // Update data reservasi
@@ -505,11 +508,9 @@ public function store(Request $request)
             'nomor_media' => $nomorMedia,
             'total_bayar' => $totalBayar,
             'status_reservasi' => 'confirmed',
+            'status_pembayaran' => $statusPembayaran,  // Tambahkan status pembayaran
             'card_holder_name' => $cardHolderName,
         ]);
-    
-        // Ubah status meja menjadi tidak tersedia
-        $mejaIds = $reservasi->meja->pluck('id')->toArray();
     
         // Redirect ke halaman nota
         return redirect()->route('user.reservasi.nota', $id);
@@ -568,13 +569,11 @@ public function store(Request $request)
                 return back()->with('error', 'Reservasi tidak dalam status yang dapat di-checkout.');
             }
     
-            // Ubah status reservasi menjadi completed
-            $reservasi->update(['status_reservasi' => 'completed']);
-    
-            // Kembalikan status meja menjadi tersedia
-            foreach ($reservasi->meja as $meja) {
-                $meja->update(['status' => 'tersedia']);
-            }
+            // Ubah status reservasi menjadi completed dan status pembayaran menjadi lunas
+            $reservasi->update([
+                'status_reservasi' => 'completed',
+                'status_pembayaran' => 'lunas'
+            ]);
     
             DB::commit();
             return redirect()->route('admin.reservasi.index')->with('success', 'Checkout berhasil dilakukan dan data akan masuk ke history.');

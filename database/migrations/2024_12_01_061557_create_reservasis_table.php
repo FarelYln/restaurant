@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_user'); 
             $table->dateTime('tanggal_reservasi'); 
             $table->enum('status_reservasi', ['pending', 'confirmed', 'completed', 'canceled'])->default('pending'); 
+            $table->enum('status_pembayaran', ['dp', 'lunas'])->nullable();
             $table->timestamps(); 
         
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade'); 
